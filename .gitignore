@@ -7,3 +7,6 @@ dist
 media
 design
 .claude
+
+.vercel
+.env*
