@@ -1,0 +1,886 @@
+/* ---------- Opening: back button, title and summary, main image ---------- */
+
+.project {
+  position: relative;
+}
+
+.project__back {
+  position: absolute;
+  top: var(--side);
+  left: calc(var(--side) + 8px);
+  z-index: 2;
+  height: 50px;
+  padding-block: 0;
+}
+
+/* Title and summary on the left, the main image pinned top right. */
+.project__intro {
+  position: relative;
+  min-height: calc(var(--media-top) + var(--media-h));
+  padding: var(--media-top) calc(var(--media-w) + var(--side) + clamp(28px, 4vw, 72px)) 0
+    calc(var(--side) + 8px);
+}
+
+.project__media {
+  position: absolute;
+  top: var(--media-top);
+  right: var(--side);
+  width: var(--media-w);
+  height: var(--media-h);
+  border-radius: var(--radius-l);
+  box-shadow: var(--media-shadow);
+}
+
+.project__intro-text {
+  container-type: inline-size;
+}
+
+/* Web projects: no main image. Title on the left, the opening paragraph on
+   the right, and the site full width underneath. */
+.project__intro[data-layout='web'] {
+  display: grid;
+  grid-template-columns: minmax(0, 5fr) minmax(0, 6fr);
+  gap: 22px clamp(28px, 5vw, 96px);
+  align-items: end;
+  min-height: 0;
+  padding: var(--media-top) calc(var(--side) + 8px) 0;
+}
+
+.project__intro[data-layout='web'] .project__summary {
+  margin-top: 0;
+}
+
+.project__site {
+  padding: clamp(36px, 5vw, 72px) calc(var(--side) + 8px) 0;
+}
+
+.project__site .viewer {
+  height: min(82svh, 900px);
+}
+
+.project__title {
+  font-family: var(--display);
+  font-size: clamp(42px, 12cqw, 112px);
+  font-weight: 800;
+  line-height: 1.02;
+  letter-spacing: -0.025em;
+  text-wrap: balance;
+}
+
+.project__summary {
+  max-width: 34em;
+  margin-top: clamp(22px, 3svh, 36px);
+  font-size: clamp(18px, 1.45vw, 23px);
+  line-height: 1.5;
+  text-wrap: pretty;
+}
+
+.project__body {
+  max-width: 1480px;
+  margin: 0 auto;
+  padding: clamp(60px, 8vw, 130px) calc(var(--side) + 8px) 0;
+}
+
+.rise {
+  animation: rise 1s var(--ease-out) both;
+  animation-delay: calc(var(--i, 0) * 110ms + 120ms);
+}
+
+.gallery figcaption,
+.chapter__label {
+  font-family: var(--mono);
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--ink-soft);
+}
+
+/* Chapter eyebrows are red, as section labels are on PhaseTwo. */
+.chapter__label {
+  color: var(--red);
+}
+
+/* ---------- Story ---------- */
+
+.story__title {
+  padding-bottom: clamp(20px, 3vw, 40px);
+  font-family: var(--display);
+  font-size: clamp(40px, 6vw, 96px);
+  font-weight: 800;
+  line-height: 1;
+  letter-spacing: -0.025em;
+}
+
+.chapter {
+  display: grid;
+  grid-template-columns: minmax(0, 5fr) minmax(0, 6fr);
+  gap: clamp(28px, 5vw, 96px);
+  align-items: center;
+  padding: clamp(40px, 6vw, 90px) 0;
+  border-top: 1px solid var(--line);
+}
+
+.chapter[data-side='left'] {
+  grid-template-columns: minmax(0, 6fr) minmax(0, 5fr);
+}
+
+.chapter[data-side='left'] .chapter__media {
+  order: -1;
+}
+
+.chapter[data-plain] {
+  grid-template-columns: minmax(0, 1fr);
+}
+
+.chapter[data-plain] .chapter__text {
+  max-width: 46em;
+}
+
+.chapter__label {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.chapter__label span {
+  font-weight: 700;
+}
+
+.chapter__heading {
+  margin-bottom: 18px;
+  font-family: var(--display);
+  font-size: clamp(28px, 2.9vw, 46px);
+  font-weight: 800;
+  line-height: 1.02;
+  letter-spacing: -0.018em;
+  text-wrap: balance;
+}
+
+.chapter__body {
+  max-width: 36em;
+  font-size: clamp(17px, 1.3vw, 20px);
+  line-height: 1.6;
+  text-wrap: pretty;
+}
+
+.chapter__body + .chapter__body {
+  margin-top: 0.9em;
+}
+
+.chapter__stats {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: clamp(24px, 3vw, 40px);
+}
+
+.chapter__stats li {
+  display: flex;
+  flex: 1 1 0;
+  flex-direction: column;
+  gap: 18px;
+  min-width: 140px;
+  padding: 20px 22px;
+  border-radius: var(--radius-m);
+  background: var(--blue-wash);
+}
+
+.chapter__stats strong {
+  color: var(--blue);
+  font-family: var(--display);
+  font-size: clamp(40px, 4vw, 64px);
+  font-weight: 800;
+  line-height: 0.9;
+}
+
+.chapter__stats span {
+  font-size: 15px;
+  font-weight: 600;
+}
+
+/* Requirements or calculation checks: label on the left, figures in mono. */
+.chapter__facts {
+  max-width: 40em;
+  margin-top: clamp(22px, 2.6vw, 34px);
+  border-top: 1px solid var(--line);
+}
+
+.chapter__facts div {
+  display: grid;
+  grid-template-columns: 8.5em minmax(0, 1fr);
+  gap: 14px;
+  padding: 10px 0;
+  border-bottom: 1px solid var(--line);
+}
+
+.chapter__facts dt {
+  font-size: 14px;
+  font-weight: 650;
+}
+
+.chapter__facts dd {
+  font-family: var(--mono);
+  font-size: 13.5px;
+  line-height: 1.5;
+}
+
+.chapter__wide {
+  grid-column: 1 / -1;
+}
+
+/* ---------- Tables (decision matrix, revisions) ---------- */
+
+.data__scroll {
+  overflow-x: auto;
+  border-radius: var(--radius-m);
+  outline: 1.5px solid var(--ink);
+  outline-offset: -1.5px;
+}
+
+.data table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 14.5px;
+  font-variant-numeric: tabular-nums;
+}
+
+.data th,
+.data td {
+  padding: 11px 14px;
+  border-bottom: 1px solid var(--line);
+  text-align: left;
+  white-space: nowrap;
+}
+
+.data thead th {
+  background: var(--ink);
+  color: #fff;
+  font-family: var(--mono);
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.data tbody th {
+  font-weight: 600;
+  white-space: normal;
+  min-width: 11em;
+}
+
+.data td {
+  font-family: var(--mono);
+  font-size: 13.5px;
+}
+
+.data td.is-text {
+  min-width: 16em;
+  font-family: var(--font);
+  font-size: 14.5px;
+  white-space: normal;
+}
+
+.data tbody tr:last-child th,
+.data tbody tr:last-child td {
+  border-bottom: 0;
+}
+
+.data .is-lit {
+  background: var(--blue-wash);
+  color: var(--blue-deep);
+  font-weight: 600;
+}
+
+.data thead .is-lit {
+  background: var(--blue);
+  color: #fff;
+}
+
+.data figcaption {
+  margin-top: 12px;
+  color: var(--ink-soft);
+  font-size: 15px;
+}
+
+/* ---------- Stacked spreadsheets ---------- */
+
+.stack {
+  display: grid;
+  padding: 8px 0 0;
+}
+
+/* Each sheet overlaps the one before it; hovering one lifts it to the top. */
+.stack__sheet {
+  position: relative;
+  z-index: var(--i);
+  display: block;
+  padding: 12px;
+  border-radius: var(--radius-m);
+  background: #fff;
+  outline: 1.5px solid var(--ink);
+  outline-offset: -1.5px;
+  box-shadow: 0 18px 36px -20px rgba(26, 26, 26, 0.35);
+  rotate: calc((var(--i) - 1) * 1.2deg);
+  transition:
+    translate 0.5s var(--ease-out),
+    rotate 0.5s var(--ease-out),
+    box-shadow 0.5s var(--ease-out);
+}
+
+.stack__sheet + .stack__sheet {
+  margin-top: -18px;
+}
+
+.stack__sheet:hover,
+.stack__sheet:focus-visible {
+  z-index: 10;
+  translate: 0 -8px;
+  rotate: 0deg;
+  box-shadow: 0 30px 50px -22px rgba(26, 26, 26, 0.45);
+}
+
+.stack__label {
+  display: inline-block;
+  margin: 0 0 10px 2px;
+  padding: 6px 10px;
+  border-radius: 999px;
+  background: var(--ink);
+  color: #fff;
+  font-family: var(--mono);
+  font-size: 11px;
+  line-height: 1;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.stack__sheet img {
+  width: 100%;
+  border-radius: 6px;
+}
+
+/* ---------- Linkage diagram ---------- */
+
+.linkage {
+  padding: clamp(14px, 2vw, 24px);
+  border-radius: var(--radius-m);
+  background: var(--blue-wash);
+  outline: 1.5px solid var(--ink);
+  outline-offset: -1.5px;
+}
+
+.linkage svg {
+  display: block;
+  width: 100%;
+  height: auto;
+  overflow: visible;
+}
+
+.linkage__ground {
+  stroke: var(--ink-soft);
+  stroke-width: 0.8;
+  stroke-dasharray: 3 3;
+}
+
+.linkage__sweep {
+  fill: color-mix(in srgb, var(--blue) 16%, transparent);
+  stroke: color-mix(in srgb, var(--blue) 45%, transparent);
+  stroke-width: 0.6;
+}
+
+.linkage__path {
+  fill: none;
+  stroke: color-mix(in srgb, var(--blue) 40%, transparent);
+  stroke-width: 0.6;
+  stroke-dasharray: 2 2;
+}
+
+.linkage__link {
+  stroke: var(--ink);
+  stroke-width: 4;
+  stroke-linecap: round;
+}
+
+.linkage__link--crank {
+  stroke: var(--blue);
+}
+
+.linkage__link--rocker {
+  stroke-width: 5;
+}
+
+.linkage__mount {
+  fill: var(--ink-soft);
+}
+
+.linkage__pivot,
+.linkage__joint {
+  fill: #fff;
+  stroke: var(--ink);
+  stroke-width: 1.4;
+}
+
+.linkage__label {
+  fill: var(--ink-soft);
+  font-family: var(--mono);
+  font-size: 6.5px;
+}
+
+.linkage__readout {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 8px;
+  margin-top: 14px;
+}
+
+.linkage__readout div {
+  padding: 10px 12px;
+  border-radius: 12px;
+  background: #fff;
+}
+
+.linkage__readout dt {
+  color: var(--ink-soft);
+  font-family: var(--mono);
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.linkage__readout dd {
+  margin-top: 4px;
+  font-family: var(--display);
+  font-size: 22px;
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+}
+
+.linkage figcaption {
+  margin-top: 14px;
+  color: var(--ink-soft);
+  font-size: 15px;
+  line-height: 1.5;
+}
+
+/* A single picture with an optional caption underneath. */
+.shot img {
+  width: 100%;
+  max-height: 78svh;
+  object-fit: cover;
+  border-radius: var(--radius-m);
+  outline: 1.5px solid var(--ink);
+  outline-offset: -1.5px;
+}
+
+/* Small screenshots stay near their real size instead of going blurry. */
+.shot[data-small] {
+  max-width: 560px;
+}
+
+.chapter[data-side='left'] .shot[data-small] {
+  margin-left: auto;
+}
+
+.shot figcaption,
+.slides__foot {
+  margin-top: 14px;
+  color: var(--ink-soft);
+  font-size: 15px;
+  line-height: 1.5;
+  text-wrap: pretty;
+}
+
+/* ---------- Slideshow ---------- */
+
+/* Portrait photos: as wide as the column allows without passing 78% of the
+   window height. */
+.slides {
+  width: min(100%, calc(78svh * var(--ratio, 0.8)));
+}
+
+.slides__frame {
+  position: relative;
+  aspect-ratio: var(--ratio, 0.8);
+  overflow: hidden;
+  border-radius: var(--radius-m);
+  background: #fff;
+  outline: 1.5px solid var(--ink);
+  outline-offset: -1.5px;
+  touch-action: pan-y;
+}
+
+.slides__track {
+  display: flex;
+  height: 100%;
+  transition: transform 0.8s var(--ease-out);
+}
+
+.slides__track img {
+  flex: none;
+  width: 100%;
+  height: 100%;
+  max-width: none;
+  object-fit: cover;
+  user-select: none;
+}
+
+.slides__track img[data-fit='contain'] {
+  object-fit: contain;
+  padding: 10px;
+}
+
+.slides__nav {
+  position: absolute;
+  top: 50%;
+  display: grid;
+  place-items: center;
+  width: 48px;
+  height: 48px;
+  margin-top: -24px;
+  border-radius: 50%;
+  background: #fff;
+  color: var(--ink);
+  box-shadow: inset 0 0 0 1.5px var(--ink);
+  transition:
+    background-color 0.3s,
+    color 0.3s,
+    box-shadow 0.3s;
+}
+
+.slides__nav:hover {
+  background: var(--blue);
+  box-shadow: inset 0 0 0 1.5px var(--blue);
+  color: #fff;
+}
+
+.slides__nav--prev {
+  left: 14px;
+}
+
+.slides__nav--next {
+  right: 14px;
+}
+
+.slides__foot {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.slides__dots {
+  display: flex;
+  flex: none;
+  gap: 4px;
+}
+
+.slides__dot {
+  width: 10px;
+  height: 10px;
+  margin: 6px 2px;
+  border-radius: 999px;
+  background: #c9daf5;
+  transition:
+    width 0.5s var(--ease-out),
+    background-color 0.3s;
+}
+
+.slides__dot[aria-current] {
+  width: 30px;
+  background: var(--blue);
+}
+
+/* ---------- Stats (projects without a story yet) ---------- */
+
+.stats {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+  margin-bottom: clamp(40px, 6vw, 96px);
+}
+
+.stats li {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: clamp(28px, 4vw, 64px);
+  padding: clamp(18px, 2vw, 28px);
+  border-radius: var(--radius-m);
+  background: var(--blue-wash);
+}
+
+.stats strong {
+  color: var(--blue);
+  font-size: clamp(38px, 5.2vw, 88px);
+  font-family: var(--display);
+  font-weight: 800;
+  line-height: 0.9;
+  letter-spacing: -0.025em;
+  white-space: nowrap;
+}
+
+.stats span {
+  font-size: 15px;
+  font-weight: 600;
+  line-height: 1.3;
+}
+
+/* ---------- Written sections ---------- */
+
+.block {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 2fr);
+  gap: 16px 28px;
+  padding: clamp(26px, 3.4vw, 48px) 0;
+  border-top: 1px solid var(--line);
+}
+
+.block h2 {
+  display: flex;
+  align-items: baseline;
+  gap: 16px;
+  font-size: clamp(22px, 2.1vw, 32px);
+  font-family: var(--display);
+  font-weight: 800;
+  line-height: 1.05;
+  letter-spacing: -0.015em;
+}
+
+.block h2 span {
+  color: var(--blue);
+  font-family: var(--mono);
+  font-size: 13px;
+  font-weight: 500;
+  font-stretch: 100%;
+  letter-spacing: 0;
+}
+
+.block p {
+  max-width: 36em;
+  font-size: clamp(17px, 1.35vw, 21px);
+  line-height: 1.5;
+  text-wrap: pretty;
+}
+
+.block p + p {
+  margin-top: 0.9em;
+}
+
+/* ---------- Website viewer ---------- */
+
+/* Scroll inside it to look round the site. */
+.viewer {
+  height: min(80svh, 820px);
+  overflow-y: auto;
+  overscroll-behavior: auto;
+  border-radius: var(--radius-m);
+  outline: 1.5px solid var(--ink);
+  outline-offset: -1.5px;
+  background: #fff;
+  box-shadow:
+    0 26px 50px -22px rgba(26, 26, 26, 0.28),
+    0 60px 100px -46px rgba(29, 88, 180, 0.24);
+}
+
+.viewer img {
+  width: 100%;
+}
+
+.viewer iframe {
+  display: block;
+  width: 100%;
+  height: 100%;
+  border: 0;
+}
+
+/* ---------- What I've built ---------- */
+
+.build {
+  padding: clamp(40px, 6vw, 90px) 0;
+  border-top: 1px solid var(--line);
+}
+
+/* Name on the left, what it is on the right, the site full width below. */
+.build__head {
+  display: grid;
+  grid-template-columns: minmax(0, 5fr) minmax(0, 6fr);
+  gap: 18px clamp(28px, 5vw, 96px);
+  align-items: start;
+  margin-bottom: clamp(28px, 4vw, 52px);
+}
+
+.build__name {
+  font-family: var(--display);
+  font-size: clamp(32px, 4vw, 64px);
+  font-weight: 800;
+  line-height: 0.98;
+  letter-spacing: -0.02em;
+}
+
+.build__about p {
+  max-width: 36em;
+  font-size: clamp(17px, 1.3vw, 20px);
+  line-height: 1.6;
+  text-wrap: pretty;
+}
+
+.build__about p + p {
+  margin-top: 0.8em;
+}
+
+.build__link {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 16px;
+  color: var(--blue);
+  font-weight: 650;
+  border-bottom: 1.5px solid currentColor;
+}
+
+.build__link .arrow {
+  transition: translate 0.35s var(--ease-out);
+}
+
+.build__link:hover .arrow {
+  translate: 2px -2px;
+}
+
+/* ---------- "Click to open" on the main image ---------- */
+
+.project__open {
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+  display: grid;
+  place-items: center;
+  border-radius: var(--radius-l);
+  background: rgba(26, 26, 26, 0);
+  transition: background-color 0.4s var(--ease-out);
+}
+
+.project__open-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 16px 24px;
+  border-radius: 999px;
+  background: var(--blue);
+  color: #fff;
+  font-size: 16px;
+  font-weight: 650;
+  opacity: 0;
+  translate: 0 10px;
+  scale: 0.96;
+  transition:
+    opacity 0.35s var(--ease-out),
+    translate 0.5s var(--ease-out),
+    scale 0.5s var(--ease-out);
+}
+
+.project__open:hover,
+.project__open:focus-visible {
+  background: rgba(26, 26, 26, 0.28);
+}
+
+.project__open:hover .project__open-label,
+.project__open:focus-visible .project__open-label {
+  opacity: 1;
+  translate: 0 0;
+  scale: 1;
+}
+
+/* No hover on touch screens, so keep the label showing in the corner. */
+@media (hover: none) {
+  .project__open {
+    place-items: end;
+    padding: 14px;
+  }
+
+  .project__open-label {
+    opacity: 1;
+    translate: 0 0;
+    scale: 1;
+    padding: 12px 18px;
+    font-size: 14px;
+  }
+}
+
+/* ---------- Gallery ---------- */
+
+.gallery {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+  padding: clamp(20px, 3vw, 44px) 0 clamp(30px, 4vw, 60px);
+}
+
+.gallery[data-count='2'] {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.gallery__tile {
+  position: relative;
+  aspect-ratio: 4 / 3;
+  overflow: hidden;
+  border-radius: var(--radius-m);
+  background: var(--blue-wash);
+}
+
+.gallery__tile img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.gallery figcaption {
+  margin-top: 10px;
+}
+
+@media (max-width: 760px) {
+  /* Image first, under the back button, then the title and summary. */
+  .project__intro {
+    padding: calc(var(--media-top) + var(--media-h) + 28px) calc(var(--side) + 4px) 0;
+  }
+
+  .project__intro[data-layout='web'] {
+    grid-template-columns: minmax(0, 1fr);
+    padding: var(--media-top) calc(var(--side) + 4px) 0;
+  }
+
+  .chapter,
+  .chapter[data-side='left'],
+  .build__head {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .chapter[data-side='left'] .chapter__media {
+    order: 0;
+  }
+
+  .linkage__readout {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .chapter__facts div {
+    grid-template-columns: 1fr;
+    gap: 2px;
+  }
+
+  .stats,
+  .gallery,
+  .gallery[data-count='2'],
+  .block {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .project__back {
+  margin-bottom: clamp(22px, 3vw, 40px);
+}
+
+.rise {
+    animation: none;
+  }
+}

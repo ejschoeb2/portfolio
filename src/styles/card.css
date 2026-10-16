@@ -1,0 +1,309 @@
+/* The project card in the carousel. It sizes its type from its own width. */
+
+/* --p (inherited, 0 → 1) is how full the Learn more button is. */
+.card {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  border-radius: var(--radius-l);
+  background: var(--blue-wash);
+  color: #fff;
+  box-shadow:
+    0 2px 6px rgba(26, 26, 26, 0.06),
+    0 34px 64px -24px rgba(26, 26, 26, 0.4),
+    0 80px 130px -50px rgba(29, 88, 180, 0.38);
+  container-type: size;
+  isolation: isolate;
+  user-select: none;
+}
+
+/* Ink edge (same as the round icon buttons), drawn on top so photos don't hide it. */
+.card::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 5;
+  border-radius: inherit;
+  box-shadow: inset 0 0 0 2px var(--ink);
+  pointer-events: none;
+}
+
+.card__inner {
+  --pad: clamp(16px, 2.5cqw, 38px);
+  position: absolute;
+  inset: 0;
+}
+
+/* ---------- Media ---------- */
+
+.card__photo {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  max-width: none;
+  object-fit: cover;
+}
+
+.card[data-media='photo'] .card__inner::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  background: linear-gradient(
+    to top,
+    rgba(7, 13, 28, 0.8) 0%,
+    rgba(7, 13, 28, 0.38) 32%,
+    rgba(7, 13, 28, 0) 58%
+  );
+  pointer-events: none;
+}
+
+.card[data-media='screen'] {
+  background: #fff;
+  color: var(--ink);
+}
+
+/* The picture on the right of a white card, with a deep shadow so it stands
+   off the white. */
+.card__screen {
+  position: absolute;
+  top: 11%;
+  right: -3cqw;
+  height: 64%;
+  aspect-ratio: 16 / 10;
+  overflow: hidden;
+  border-radius: 14px;
+  background: #fff;
+  box-shadow: var(--media-shadow);
+}
+
+.card__screen img {
+  width: 100%;
+  height: 100%;
+  max-width: none;
+  object-fit: cover;
+  object-position: left top;
+}
+
+.card[data-media='sheet'] {
+  color: var(--ink);
+}
+
+/* Keep the text clear of the sheet's zone marks along the bottom and right. */
+.card[data-media='sheet'] .card__bottom {
+  right: calc(var(--pad) + 18px);
+  bottom: calc(var(--pad) + 18px);
+}
+
+/* ---------- Text ---------- */
+
+.card__bottom {
+  position: absolute;
+  z-index: 2;
+  left: var(--pad);
+  right: var(--pad);
+  bottom: var(--pad);
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 28px;
+}
+
+.card__title {
+  max-width: 13em;
+  font-size: clamp(30px, 4.9cqw, 88px);
+  font-family: var(--display);
+  font-weight: 800;
+  line-height: 0.96;
+  letter-spacing: -0.018em;
+  text-wrap: balance;
+}
+
+.card__blurb {
+  max-width: 33em;
+  margin-top: clamp(10px, 1.3cqw, 20px);
+  font-size: clamp(15px, 1.4cqw, 21px);
+  font-weight: 500;
+  line-height: 1.35;
+  text-wrap: pretty;
+}
+
+.card[data-media='sheet'] .card__blurb,
+.card[data-media='screen'] .card__blurb {
+  color: var(--ink-soft);
+}
+
+/* ---------- Learn more ---------- */
+
+.learn {
+  position: relative;
+  flex: none;
+  display: inline-flex;
+  overflow: hidden;
+  border-radius: 999px;
+  background: var(--blue);
+  box-shadow: 0 10px 24px -10px rgba(48, 118, 224, 0.75);
+  color: #fff;
+  font-size: 15px;
+  font-weight: 650;
+  white-space: nowrap;
+  opacity: var(--button-opacity, 1);
+}
+
+.learn__label {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 16px 22px 16px 24px;
+}
+
+/* Blue, filling to red like the hero's "What I've been up to". A red copy of
+   the button is laid over the top and unmasked from the left. */
+.learn__fill {
+  position: absolute;
+  inset: 0;
+  background: var(--red);
+  color: #fff;
+  clip-path: inset(0 calc((1 - var(--p, 0)) * 100%) 0 0);
+}
+
+.card[data-enabled='false'] .learn {
+  pointer-events: none;
+}
+
+@container (max-width: 640px) {
+  .card__bottom {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 18px;
+  }
+
+  .card__screen {
+    top: 14%;
+    right: auto;
+    left: var(--pad);
+    height: 46%;
+  }
+
+  .sheet__block {
+    display: none;
+  }
+}
+
+/* ---------- Drawing sheet (stand-in for a missing photo) ---------- */
+
+.sheet {
+  --sheet-line: color-mix(in srgb, var(--blue) 38%, transparent);
+  position: absolute;
+  inset: 0;
+  background: var(--blue-wash);
+  color: var(--blue-deep);
+  font-family: var(--mono);
+  font-size: 10px;
+  line-height: 1;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  container-type: size;
+}
+
+.sheet__frame {
+  position: absolute;
+  inset: clamp(8px, 1.4cqw, 16px);
+  border: 1px solid var(--sheet-line);
+  border-radius: 16px;
+}
+
+.sheet__zones {
+  position: absolute;
+  display: grid;
+  color: color-mix(in srgb, var(--blue-deep) 65%, transparent);
+}
+
+.sheet__zones span {
+  display: grid;
+  place-items: center;
+}
+
+.sheet__zones--x {
+  inset: auto 22px 0 22px;
+  height: 18px;
+  grid-auto-flow: column;
+  grid-auto-columns: 1fr;
+  border-top: 1px solid var(--sheet-line);
+}
+
+.sheet__zones--x span + span {
+  border-left: 1px solid var(--sheet-line);
+}
+
+.sheet__zones--y {
+  inset: 22px 0 22px auto;
+  width: 18px;
+  grid-auto-rows: 1fr;
+  border-left: 1px solid var(--sheet-line);
+}
+
+.sheet__zones--y span + span {
+  border-top: 1px solid var(--sheet-line);
+}
+
+/* Centre mark */
+.sheet__mark {
+  position: absolute;
+  top: 44%;
+  left: 50%;
+  width: 34px;
+  height: 34px;
+  translate: -50% -50%;
+  border: 1px solid var(--sheet-line);
+  border-radius: 50%;
+  background:
+    linear-gradient(var(--sheet-line), var(--sheet-line)) center / 56px 1px no-repeat,
+    linear-gradient(var(--sheet-line), var(--sheet-line)) center / 1px 56px no-repeat;
+  background-clip: border-box;
+  overflow: visible;
+}
+
+.sheet__block {
+  position: absolute;
+  top: clamp(8px, 1.2cqw, 14px);
+  right: clamp(26px, 2.6cqw, 34px);
+  display: grid;
+  grid-auto-flow: column;
+  border: 1px solid var(--sheet-line);
+  border-radius: 8px;
+  background: color-mix(in srgb, #fff 55%, transparent);
+}
+
+.sheet__block div {
+  padding: 8px 12px 9px;
+}
+
+.sheet__block div + div {
+  border-left: 1px solid var(--sheet-line);
+}
+
+.sheet__block dt {
+  margin-bottom: 6px;
+  font-size: 9px;
+  color: color-mix(in srgb, var(--blue-deep) 62%, transparent);
+}
+
+.sheet__block dd {
+  font-size: 11px;
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+@container (max-width: 420px) {
+  .sheet__block {
+    grid-auto-flow: row;
+  }
+
+  .sheet__block div + div {
+    border-left: 0;
+    border-top: 1px solid var(--sheet-line);
+  }
+}

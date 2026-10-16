@@ -1,0 +1,9 @@
+node_modules
+dist
+.vercel
+*.local
+
+# Full-size source photos and drawings (public/images holds the web copies)
+media
+design
+.claude
