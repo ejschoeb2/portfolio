@@ -43,10 +43,15 @@ export type Table = {
   caption?: string
 }
 
+/** A panel in a chapter's switcher: a table, or the launcher's linkage animation. */
+export type Panel = { caption: string } & ({ kind: 'table'; table: Table } | { kind: 'linkage' })
+
 /** One step of a project's story: text on one side, a picture or slideshow on the other. */
 export type Chapter = {
+  /** The date or stage, shown above the text. */
   label: string
-  heading: string
+  heading?: string
+  /** **Figures** in a paragraph are picked out in bold blue. */
   body: string[]
   media?:
     | { kind: 'image'; image: StoryImage; small?: boolean }
@@ -57,6 +62,8 @@ export type Chapter = {
     | { kind: 'stack'; images: StoryImage[] }
     /** The ball launcher's four-bar linkage, animated from its real link lengths. */
     | { kind: 'linkage' }
+    /** Several tables or animations, switched with arrows and dots. */
+    | { kind: 'panels'; panels: Panel[] }
   /** Which side the picture sits on (default right). */
   side?: 'left' | 'right'
   stats?: { value: string; label: string }[]
@@ -115,7 +122,7 @@ export const projects: Project[] = [
     ],
     lede: 'Our kitchen bin fills in under a day. I am redesigning it as one that rolls out from under the worktop, opens and closes itself, and seals against flies.',
     intro:
-      'Nine of us share one kitchen bin. I measured what goes wrong with it, wrote a specification and designed a replacement that rolls out from under the worktop, opens hands-free and seals against flies. Every decision, including the dead ends, is in the timeline below.',
+      'Nine of us share a kitchen bin that keeps letting us down. I’m designing a replacement that rolls out from under the worktop, opens by itself and keeps the flies out.',
     sections: [],
   },
   {
@@ -138,24 +145,37 @@ export const projects: Project[] = [
     ],
     lede: 'A university project to fire four table-tennis balls into alternating target zones using two motors and no electronics.',
     intro:
-      'A table-tennis ball launcher I designed and built in a team of five at the University of Bath. It is fully mechanical: once its two battery motors are switched on, a Geneva wheel, a gear train and a four-bar linkage do all the feeding, timing and aiming, firing four balls into alternating target zones. I led the CAD.',
+      'I designed a fully mechanical launcher in a team of five for a University of Bath project. It fires table-tennis balls across the table and over the net, to alternating left and right zones in quick succession. The design is complete, and we build the finished launcher on 23 October. The whole process is below.',
     story: [
       {
         label: 'Feb 2026',
-        heading: 'The brief',
         body: [
-          'We received the design brief: build a prototype that fires four table-tennis balls, one at a time, into two target zones at the far end of a 1400 × 750 mm table, in the order A, C, A, C. It had to run on batteries, and once the motors were on, everything else had to be done mechanically.',
-          'As a group we turned the brief into a product design specification of demands and wishes, built a morphological chart of the ways each function could be solved, and each drew up our own concept.',
+          'In February we received the brief: build a prototype that fires four table-tennis balls, one at a time, into two target zones at the far end of a 1400 × 750 mm table, in the order A, C, A, C. Once the battery motors are switched on, everything else has to happen mechanically.',
+          'As a team, we turned the brief into a product design specification of everything the launcher had to do.',
         ],
-        facts: [
-          { label: 'Sequence', value: '4 balls, A‑C‑A‑C, 3–10 s apart' },
-          { label: 'Flight', value: 'Clear the net by 76 mm, peak under 508 mm' },
-          { label: 'Power', value: 'Batteries only, 9 V max, 2 motors max' },
-          { label: 'Control', value: 'Mechanical only after switch-on' },
-          { label: 'Size', value: 'Stows in 380 × 180 × 300 mm' },
-          { label: 'Budget', value: '£85 for bought-in parts' },
-          { label: 'Making', value: 'Laser cutting, 3D printing, hand machining; no glue, welding or CNC' },
+        media: {
+          kind: 'table',
+          table: {
+            head: ['Requirement', 'Target'],
+            rows: [
+              ['Sequence', '4 balls, A‑C‑A‑C, 3–10 s apart'],
+              ['Flight', 'Clear the net by 76 mm, peak under 508 mm'],
+              ['Power', 'Batteries only, 9 V max, 2 motors max'],
+              ['Control', 'Mechanical only after switch-on'],
+              ['Size', 'Stows in 380 × 180 × 300 mm'],
+              ['Budget', '£85 for bought-in parts'],
+              ['Making', 'Laser cutting, 3D printing and hand machining; no glue, welding or CNC'],
+            ],
+          },
+        },
+      },
+      {
+        label: 'Concepts',
+        body: [
+          'With the specification set, we mapped out the different ways each part of the job could be done, from feeding the balls to aiming them. Then each of us drew up our own concept for the whole launcher.',
+          'Use the arrows to look through three of them, starting with mine.',
         ],
+        side: 'left',
         media: {
           kind: 'slides',
           ratio: 4 / 3,
@@ -181,11 +201,9 @@ export const projects: Project[] = [
       },
       {
         label: 'Mar 2026',
-        heading: 'Choosing a concept',
         body: [
-          'To compare the designs fairly we used a weighted decision matrix. Each concept was scored from 1 to 5 against eight criteria taken from the specification, each weighted from 2 (desirable) to 5 (essential).',
-          'Louis’s concept came out on top at 125 out of 145, mainly because of its Geneva mechanism: one continuous motor input gives a clean four-step index that can drive both the ball feed and the A‑C‑A‑C sequencing.',
-          'We then tested whether mixing in ideas from the other concepts could do better. We swapped Louis’s scotch yoke for the cam-driven swivel from mine and Zak’s, which is more compact with fewer sliding parts, and set up a single Geneva wheel to drive both the feed and the aim. That removed a whole subsystem, and the combined design re-scored 135 out of 145.',
+          'To choose between our concepts, we scored each one against eight criteria from the specification in a weighted decision matrix. Louis’s came out on top, thanks to its Geneva mechanism, which turns one motor’s steady rotation into four clean steps.',
+          'We then combined it with the best ideas from the others, including the cam-driven swivel from mine and Zak’s, so a single Geneva wheel drives both the feed and the aim. The combined design scored **135 out of 145**.',
         ],
         media: {
           kind: 'table',
@@ -209,15 +227,9 @@ export const projects: Project[] = [
       },
       {
         label: 'Calculations',
-        heading: 'Working out the numbers',
         body: [
-          'With a concept chosen, we worked outwards from the target to size every part. I built a trajectory model including drag and the topspin from a single flywheel, which works like a little extra gravity. It set the launch at 3.35 m/s and 35°, landing 930 mm away in the middle of the target zones, with the aim swinging ±14.3° between them.',
-          'From there we sized the ramp and the flywheel: a 64 mm wheel spinning at 1,691 RPM, storing about 12 times the energy it gives each ball, so its speed only drops around 4% per shot. Then we chose the parts to match, searching supplier catalogues online for motors, bearings and couplings with enough headroom, and arranged bearings so the motor shafts only ever carry torque.',
-        ],
-        stats: [
-          { value: '3.35 m/s', label: 'launch speed' },
-          { value: '1,691', label: 'flywheel RPM' },
-          { value: '±14.3°', label: 'aim between zones' },
+          'To size the parts, we worked backwards from the target. I modelled the ball’s flight, including drag and the topspin from the flywheel. It set the launch at **3.35 m/s** and **35°**, landing **930 mm** away, with the aim swinging **±14.3°** between the two zones.',
+          'From that we sized the flywheel: a **64 mm** wheel spinning at **1,691 RPM**, heavy enough that it only slows by about **4%** with each shot.',
         ],
         side: 'left',
         media: {
@@ -231,40 +243,38 @@ export const projects: Project[] = [
       },
       {
         label: 'Iteration',
-        heading: 'Six versions of the linkage',
         body: [
-          'The aim comes from a four-bar crank-rocker. The crank turns continuously, driven from the feed motor through a gear train, and the rocker swings the flywheel arm from side to side. It had to sweep exactly the right angle, satisfy Grashof’s condition so the crank could turn fully, keep the transmission angle above 45° so it would not bind, and fit on the base plate without hitting anything.',
-          'The first sizing worked on paper. Then, every time the CAD showed one part fouling another, I changed the geometry and recalculated the whole linkage. The coupler hit the Geneva driver, so we added an idler gear. The corner of the crank bar caught the idler’s teeth, so we went up from 30T/60T to 40T/80T gears. The rocker then hit the bigger crank gear, so the crank was shortened and the links resized again. It took six versions to get there.',
-          'It taught me that kinematics is the starting point, not the finish line. The real work was making correct maths fit around real parts, clearances and tolerances.',
+          'The aim comes from a four-bar linkage: a crank turns continuously and swings the flywheel arm from side to side. It had to sweep exactly the right angle without jamming, and fit on the base plate without hitting anything.',
+          'The first version worked on paper. But each time the CAD showed one part hitting another, I changed the geometry and recalculated the whole linkage. It took **six versions** to get right.',
         ],
-        media: { kind: 'linkage' },
-        facts: [
-          { label: 'Grashof', value: '26 + 151.38 = 177.38 ≤ 95 + 107 = 202 mm ✓' },
-          { label: 'Sweep', value: '52.48° − 23.98° = 28.50°, i.e. ±14.25° (target ±14.3°)' },
-          { label: 'Landing', value: '930 × tan 14.25° = 236.2 mm (zone centre 237.5 mm)' },
-          { label: 'Transmission', value: 'worst case 57.3° (needs ≥ 45°)' },
-          { label: 'Idler clearance', value: '39 − 32.25 = 6.75 mm' },
-        ],
-        table: {
-          head: ['Version', 'What forced the change', 'Crank', 'Coupler', 'Rocker', 'Ground', 'Sweep'],
-          rows: [
-            ['v1', 'Initial sizing from the trajectory', '26', '85', '115', '115', '38°'],
-            ['v2', 'Improving the transmission angle', '26', '85', '115', '125', '32°'],
-            ['v3', 'Gear ratio reversed, rocker pivot moved back 20 mm', '28', '85', '115', '135', '28.2°'],
-            ['v4', 'Idler gear added; coupler rod hit the Geneva driver', '28', '85', '115', '120.4', '29.4°'],
-            ['v5', 'Crank gears upgraded from 30T/60T to 40T/80T', '28', '85', '115', '126.8', '28.7°'],
-            ['v6', 'Rocker hit the 80T gear; crank shortened for idler clearance', '26', '95', '107', '151.4', '28.5°'],
+        media: {
+          kind: 'panels',
+          panels: [
+            {
+              kind: 'table',
+              caption: 'All six versions, link lengths in mm',
+              table: {
+                head: ['Version', 'What forced the change', 'Crank', 'Coupler', 'Rocker', 'Ground', 'Sweep'],
+                rows: [
+                  ['v1', 'First sizing from the trajectory', '26', '85', '115', '115', '38°'],
+                  ['v2', 'Better transmission angle', '26', '85', '115', '125', '32°'],
+                  ['v3', 'Gear ratio reversed, rocker pivot moved back', '28', '85', '115', '135', '28.2°'],
+                  ['v4', 'Coupler hit the Geneva driver: idler gear added', '28', '85', '115', '120.4', '29.4°'],
+                  ['v5', 'Crank caught the idler: gears up to 40T/80T', '28', '85', '115', '126.8', '28.7°'],
+                  ['v6', 'Rocker hit the 80T gear: crank shortened', '26', '95', '107', '151.4', '28.5°'],
+                ],
+                highlight: 6,
+              },
+            },
+            { kind: 'linkage', caption: 'The final linkage, moving' },
           ],
-          highlight: 6,
-          caption: 'Link lengths in mm for each revision.',
         },
       },
       {
         label: 'Apr 2026',
-        heading: 'Choosing and ordering parts',
         body: [
-          'Once the sizes were fixed we picked the parts that fitted best and put together order spreadsheets for each supplier: University stores for steel bar, fasteners and the PVC ball tube; RS Components; and Technobots for the motors, couplings, bearings and shaft collars.',
-          'The bought-in parts from RS and Technobots came to under £35, well inside the £85 budget. We costed the 3D printing and laser cutting too.',
+          'With the sizes fixed, we chose the motors, bearings and other bought-in parts to match, and put together an order sheet for each supplier.',
+          'Everything we bought came to under **£35**, well inside the **£85** budget.',
         ],
         side: 'left',
         media: {
@@ -290,10 +300,10 @@ export const projects: Project[] = [
       },
       {
         label: 'CAD',
-        heading: 'The finished assembly',
         body: [
-          'I led the CAD in Autodesk Inventor, modelling every part and bringing them together into the full assembly. From the model we produced the assembly drawing with its parts list, dimensioned part drawings to BS 8888, STL files for printing, laser-cutting files and the order sheets, all ready for manufacture.',
+          'We built the full assembly in Autodesk Inventor as a team, and I modelled most of the parts. From the model we made the assembly drawing, part drawings to BS 8888, and the files for 3D printing and laser cutting, ready for manufacture.',
         ],
+        side: 'left',
         media: {
           kind: 'image',
           image: {
@@ -305,12 +315,9 @@ export const projects: Project[] = [
       },
       {
         label: 'Manufacture',
-        heading: 'Parts in hand',
         body: [
-          'The parts were made and delivered: 3D-printed flywheel, ramp and Geneva wheel, laser-cut acrylic gears, plates and links, and the two motors. We started the initial assembly.',
-          'That is where we found that not everything worked properly in real life, and the flywheel had to be redesigned.',
+          'Our parts were then made and delivered: a 3D-printed flywheel, ramp and Geneva wheel, laser-cut acrylic gears, plates and links, and the two motors. Then we started putting it together.',
         ],
-        side: 'left',
         media: {
           kind: 'image',
           image: {
@@ -322,11 +329,11 @@ export const projects: Project[] = [
       },
       {
         label: 'Redesign',
-        heading: 'A new flywheel',
         body: [
-          'The new flywheel is a solid printed hub with two grooves, each holding a 3 mm rubber O-ring. The O-rings give the grip on the ball, and spare groove sizes let us tune the speed later by changing which rings are fitted.',
-          'I re-ran the numbers for the new wheel. It is 45.8 mm across the O-rings and weighs about 47 g, so it loses around 4% of its speed per shot and recovers in under a second. On six AA batteries it should spin at about 3,480 RPM, sending the ball off at 3.3–3.5 m/s.',
+          'Once we had assembled the first parts and tested them together, we realised we had made a mistake: the flywheel didn’t work as we had designed it, so we redesigned it.',
+          'The new flywheel is a printed hub with two rubber O-rings that grip the ball, and changing the rings lets us tune its speed. I recalculated everything around the smaller wheel: on six AA batteries it should spin at about **3,480 RPM** and launch the ball at **3.3–3.5 m/s**. The ramp had to change to match it, so we reprinted that too.',
         ],
+        side: 'left',
         media: {
           kind: 'slides',
           images: [
@@ -351,42 +358,9 @@ export const projects: Project[] = [
         },
       },
       {
-        label: 'Recalculation',
-        heading: 'Fixing the ramp',
-        body: [
-          'A smaller wheel changed the geometry against the ramp, so I measured the real parts and recalculated. On the old ramp the ball met the wheel 16.5 mm up the face, and the squeeze kept rising to 6.6 mm by the top, when anything over about 2 mm jams or dents the ball. The closest point between the wheel and the ramp face was past the end of the ramp, so the gap just kept closing.',
-          'There were two ways to fix it: move the flywheel axle, which meant re-cutting both walls and moving the motor mount, or reprint only the ramp. We reprinted the ramp. Its toe now starts 10.9 mm in front of the wheel centre, with a 42.9 mm face at 35°, giving a steady 1.25 mm squeeze. Sliding it 1 mm towards the wheel adds 0.57 mm if we need more grip.',
-        ],
-        side: 'left',
-        facts: [
-          { label: 'Old ramp', value: 'squeeze rises to 6.6 mm (limit ~2 mm): jams' },
-          { label: 'New ramp', value: '1.25 mm squeeze, ball clears the wheel by 5.8 mm on the flat' },
-          { label: 'Launch', value: '~16 mm further forward, ~4 mm higher' },
-        ],
-        media: {
-          kind: 'slides',
-          ratio: 1650 / 1170,
-          images: [
-            {
-              src: '/images/launcher-ramp-jam.webp',
-              fit: 'contain',
-              alt: 'Side-view sheet showing the new flywheel over the old ramp, where the ball is squeezed too hard and jams',
-              caption: 'Why the old ramp jams with the new wheel',
-            },
-            {
-              src: '/images/launcher-ramp-fix.webp',
-              fit: 'contain',
-              alt: 'Side-view sheet of the new ramp profile with its pinch point and dimensions',
-              caption: 'The new ramp, recalculated around the new flywheel',
-            },
-          ],
-        },
-      },
-      {
         label: 'Next',
-        heading: 'Still to come',
         body: [
-          'The new flywheel and ramp are ready, but the finished launcher is yet to be assembled. I’ll update this page once it’s firing.',
+          'The new flywheel and ramp are ready, and we build the finished launcher on **23 October**. I’ll update this page once it’s firing.',
         ],
       },
     ],

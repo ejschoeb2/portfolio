@@ -136,10 +136,15 @@ export function Carousel({ startAt }: { startAt: string | null }) {
       const intro = easeInOutCubic(raw)
       const fold = 1 - intro
       const lag = (1 - raw) * window.innerHeight
+      // At the very top the stack waits just below the window, out of sight,
+      // and only rises into view once the page starts to move.
+      const hide = 1 - clamp(raw / 0.18, 0, 1)
+      const drop = hide * hide * window.innerHeight * 0.3
       track.current!.style.transform =
         raw < 1
-          ? `translate3d(0, ${fold * window.innerHeight * 0.1 - lag}px, 0) scale(${lerp(0.22, 1, intro)})`
+          ? `translate3d(0, ${fold * window.innerHeight * 0.1 - lag + drop}px, 0) scale(${lerp(0.22, 1, intro)})`
           : ''
+      track.current!.style.opacity = raw < 1 ? String(1 - hide) : ''
       dotsEl.current!.style.opacity = String(clamp((intro - 0.6) / 0.4, 0, 1))
 
       slides.current.forEach((el, i) => {

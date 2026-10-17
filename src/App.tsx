@@ -113,7 +113,7 @@ export default function App() {
   const project = route.name === 'project' ? projectBySlug(route.slug) : undefined
 
   useEffect(() => {
-    document.title = project ? `${project.title} · Ethan Schoeb` : 'Ethan Schoeb · Portfolio'
+    document.title = project ? `${project.title.replace(/​/g, '')} · Ethan Schoeb` : 'Ethan Schoeb · Portfolio'
   }, [project])
 
   const transitions = useMemo<Transitions>(

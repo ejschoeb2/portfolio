@@ -29,10 +29,13 @@ export type Step = {
 export type Chapter = { title: string; steps: Step[] }
 
 export const problem = {
-  intro: [
-    'Nine of us share one kitchen bin in our flat on the high street in Bath. It is a 50 L pedal bin, and it fills in less than a day.',
-    'It is left half-open about a fifth of the time, usually because it is too full, so fruit flies and maggots get in. The pedal only lifts the lid to 55°, so rubbish misses and lands on the floor. It is light and top-heavy, so it falls over, and the hinges work loose.',
-    'I set out to redesign it for the 870 mm high space under our worktop, and to measure whether it actually works better.',
+  intro: 'Nine of us share one 50 L pedal bin in our flat on Bath’s high street, and it lets us down every day.',
+  points: [
+    '**It fills in under a day.** There’s no recycling or food-waste collection on the high street, so everything goes in the one bin.',
+    '**The lid gets left open.** When the bin is too full, or the hinges have worked loose, it doesn’t shut, so fruit flies and maggots get in.',
+    '**It doesn’t open far enough.** The pedal only lifts the lid to 55°, so rubbish misses and lands on the floor.',
+    '**It falls over.** It’s light and top-heavy.',
+    '**It wastes the space.** It sits in a gap under the worktop that’s 870 mm high and 700 mm deep, and fills less than a third of it.',
   ],
   stats: [
     { value: '57 L', label: 'of rubbish a day (8 bags in a week)' },
@@ -40,7 +43,7 @@ export const problem = {
     { value: '55°', label: 'is as far as the pedal opens the lid' },
     { value: '5–10', label: 'fruit flies in the kitchen on a normal day' },
   ],
-  note: '57 L a day was counted over one week. The other figures are my own observations, to be firmed up with a tally sheet once the prototype is in.',
+  note: 'Bags counted over one week; the other figures are my own observations.',
 }
 
 export const specification: Table = {
@@ -57,7 +60,6 @@ export const specification: Table = {
     ['9. Hygienic', 'Smooth, wipe-clean materials; no wood', 'It is a kitchen bin'],
     ['10. Affordable', 'Whole project ≤ £200', 'A student budget'],
   ],
-  caption: 'The specification I designed to. Targets 1–4 come from measurements; 5–10 are my own limits.',
 }
 
 export const finalStep = {
@@ -66,7 +68,6 @@ export const finalStep = {
   text: 'Everything that survived the process. The lid pieces are printed, and the sheets, aluminium and electronics are bought, so the first prototype is next.',
 }
 
-export const aiNote =
-  'AI (Claude) helped me script parts of the CAD, run checks and do some calculations. The decisions and the build are mine, and I’m redoing the maths by hand.'
+export const aiNote = 'AI was used to help with research and calculations.'
 
 export { chapters } from './kitchenBinSteps'

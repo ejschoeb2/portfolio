@@ -18,6 +18,10 @@
   user-select: none;
 }
 
+.card[data-enabled='true'] {
+  cursor: pointer;
+}
+
 /* Ink edge (same as the round icon buttons), drawn on top so photos don't hide it. */
 .card::after {
   content: '';
@@ -104,7 +108,7 @@
   z-index: 2;
   left: var(--pad);
   right: var(--pad);
-  bottom: var(--pad);
+  bottom: calc(var(--pad) + 4.5cqh);
   display: flex;
   align-items: flex-end;
   justify-content: space-between;
@@ -113,7 +117,7 @@
 
 .card__title {
   max-width: 13em;
-  font-size: clamp(30px, 4.9cqw, 88px);
+  font-size: clamp(28px, 4.4cqw, 78px);
   font-family: var(--display);
   font-weight: 800;
   line-height: 0.96;

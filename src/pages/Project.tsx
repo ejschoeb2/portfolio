@@ -1,8 +1,8 @@
-import { lazy, Suspense, type CSSProperties, type MouseEvent } from 'react'
+import { Fragment, lazy, Suspense, type CSSProperties, type MouseEvent, type ReactNode } from 'react'
 import { Arrow } from '../components/Arrow'
 import { DrawingSheet } from '../components/DrawingSheet'
-import { Footer } from '../components/Footer'
 import { Linkage } from '../components/Linkage'
+import { Panels } from '../components/Panels'
 import { ProjectMedia } from '../components/ProjectMedia'
 import { Reveal } from '../components/Reveal'
 import { SiteViewer } from '../components/SiteViewer'
@@ -18,8 +18,15 @@ import { useTransitions } from '../transition'
 
 const order = (i: number) => ({ '--i': i }) as CSSProperties
 
+/** **figures** in story text, picked out in bold blue. */
+const rich = (text: string): ReactNode =>
+  text.split(/(\*\*[^*]+\*\*)/).map((bit, i) =>
+    bit.startsWith('**') ? <strong key={i}>{bit.slice(2, -2)}</strong> : <Fragment key={i}>{bit}</Fragment>,
+  )
+
 // The kitchen bin's page (and its 3D model) only loads when someone opens it.
 const KitchenBin = lazy(() => import('../components/bin/KitchenBin').then((m) => ({ default: m.KitchenBin })))
+const BinHero = lazy(() => import('../components/bin/BinHero').then((m) => ({ default: m.BinHero })))
 
 export function ProjectPage({ project }: { project: Project }) {
   const number = projectNumber(project)
@@ -69,7 +76,13 @@ export function ProjectPage({ project }: { project: Project }) {
           </div>
         ) : (
           <div className="project__media rise" style={order(2)}>
-            <ProjectMedia project={project} />
+            {project.slug === 'kitchen-bin' ? (
+              <Suspense fallback={<ProjectMedia project={project} />}>
+                <BinHero />
+              </Suspense>
+            ) : (
+              <ProjectMedia project={project} />
+            )}
             {project.open && (
               <a
                 className="project__open"
@@ -102,11 +115,8 @@ export function ProjectPage({ project }: { project: Project }) {
           </Suspense>
         ) : project.story ? (
           <section className="story" aria-label="The story">
-            <Reveal>
-              <h2 className="story__title">The story</h2>
-            </Reveal>
             {project.story.map((chapter, i) => (
-              <StoryChapter key={chapter.heading} chapter={chapter} number={i + 1} />
+              <StoryChapter key={chapter.label} chapter={chapter} number={i + 1} />
             ))}
           </section>
         ) : (
@@ -200,8 +210,6 @@ export function ProjectPage({ project }: { project: Project }) {
         )}
 
       </div>
-
-      <Footer />
     </main>
   )
 }
@@ -220,10 +228,10 @@ function StoryChapter({ chapter, number }: { chapter: Chapter; number: number })
           <span>{String(number).padStart(2, '0')}</span>
           {chapter.label}
         </p>
-        <h3 className="chapter__heading">{chapter.heading}</h3>
+        {chapter.heading && <h3 className="chapter__heading">{chapter.heading}</h3>}
         {chapter.body.map((paragraph) => (
           <p key={paragraph} className="chapter__body">
-            {paragraph}
+            {rich(paragraph)}
           </p>
         ))}
         {chapter.facts && (
@@ -260,6 +268,14 @@ function StoryChapter({ chapter, number }: { chapter: Chapter; number: number })
           {media.kind === 'table' && <DataTable table={media.table} />}
           {media.kind === 'stack' && <Stack images={media.images} />}
           {media.kind === 'linkage' && <Linkage />}
+          {media.kind === 'panels' && (
+            <Panels
+              panels={media.panels.map((panel) => ({
+                caption: panel.caption,
+                content: panel.kind === 'table' ? <DataTable table={panel.table} /> : <Linkage />,
+              }))}
+            />
+          )}
         </Reveal>
       )}
 

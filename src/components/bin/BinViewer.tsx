@@ -5,10 +5,12 @@ import type { SceneState } from './types'
 type Props = {
   scene: SceneState
   flash: string[]
+  /** Let the wheel scroll the page instead of zooming (for the model at the top of the page). */
+  pageScroll?: boolean
 }
 
 /** The 3D bin. three.js loads only when this mounts, so the rest of the site stays light. */
-export function BinViewer({ scene, flash }: Props) {
+export function BinViewer({ scene, flash, pageScroll }: Props) {
   const host = useRef<HTMLDivElement>(null)
   const overlay = useRef<HTMLDivElement>(null)
   const engine = useRef<BinEngine | null>(null)
@@ -32,6 +34,7 @@ export function BinViewer({ scene, flash }: Props) {
           return
         }
         engine.current = made
+        if (pageScroll) made.letPageScroll()
         made.setState(latest.current)
       })
       .catch(() => alive && setStatus('failed'))

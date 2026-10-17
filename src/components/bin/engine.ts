@@ -904,6 +904,12 @@ export class BinEngine {
     return this.userMoved
   }
 
+  /** For a model at the top of a page: the wheel and vertical swipes scroll the page, dragging still turns it. */
+  letPageScroll() {
+    this.controls.enableZoom = false
+    this.renderer.domElement.style.touchAction = 'pan-y'
+  }
+
   /** Set the camera goal, backing off on narrow viewers so the scene still fits across. */
   private aim([p, t]: [V3, V3]) {
     const w = this.host.clientWidth || 1

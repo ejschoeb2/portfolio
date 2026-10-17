@@ -260,9 +260,12 @@ export function KitchenBin() {
         </Reveal>
         <div className="kb__problem-grid">
           <Reveal className="kb__problem-text">
-            {problem.intro.map((p) => (
-              <p key={p}>{p}</p>
-            ))}
+            <p>{problem.intro}</p>
+            <ul className="kb__points">
+              {problem.points.map((p) => (
+                <li key={p}>{rich(p)}</li>
+              ))}
+            </ul>
             <p className="kb__note">{problem.note}</p>
           </Reveal>
           <Reveal delay={120}>
@@ -294,7 +297,13 @@ export function KitchenBin() {
           <h2 className="story__title" id="kb-design">
             The design process
           </h2>
-          <p className="tl__ai">{aiNote}</p>
+          <p className="tl__ai">
+            <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" aria-hidden="true">
+              <circle cx="12" cy="12" r="10" />
+              <path d="M12 11v6M12 7.5v.01" />
+            </svg>
+            {aiNote}
+          </p>
         </Reveal>
 
         <div className="tl__stage">
@@ -332,16 +341,6 @@ export function KitchenBin() {
 
         <div className="tl__scrub">
           <div className="tl__scrub-bar" style={{ '--p': `${(index / LAST) * 100}%` } as CSSProperties}>
-            <div className="tl__ticks" aria-hidden="true">
-              {[...steps, null].map((s, i) => (
-                <span
-                  key={s ? s.id : 'final'}
-                  style={{ left: `${(i / LAST) * 100}%` }}
-                  data-dead={s?.dead || undefined}
-                  data-done={i <= index || undefined}
-                />
-              ))}
-            </div>
             <input
               type="range"
               min={0}

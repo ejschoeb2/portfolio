@@ -14,20 +14,49 @@
   border-top: 1px solid var(--line);
 }
 
-.kb__problem-text p {
+/* The problem, the specification and the design process share one heading size. */
+.kb .story__title {
+  font-size: clamp(32px, 4vw, 60px);
+}
+
+.kb__problem-text p,
+.kb__points li {
   max-width: 36em;
   font-size: clamp(17px, 1.3vw, 20px);
-  line-height: 1.6;
+  line-height: 1.55;
   text-wrap: pretty;
 }
 
-.kb__problem-text p + p {
-  margin-top: 0.9em;
+.kb__points {
+  display: grid;
+  gap: 0.7em;
+  margin-top: 1.1em;
+}
+
+.kb__points li {
+  position: relative;
+  padding-left: 1.3em;
+}
+
+.kb__points li::before {
+  content: '';
+  position: absolute;
+  left: 0.15em;
+  top: 0.62em;
+  width: 0.42em;
+  height: 0.42em;
+  border-radius: 50%;
+  background: var(--red);
+}
+
+.kb__points strong {
+  font-weight: 700;
 }
 
 .kb__problem-text .kb__note {
+  margin-top: 1.4em;
   color: var(--ink-soft);
-  font-size: 15px;
+  font-size: 14px;
 }
 
 .kb__stats {
@@ -42,15 +71,17 @@
   min-width: 14em;
 }
 
-.kb__ai {
-  max-width: 52em;
-  margin-top: clamp(40px, 5vw, 72px);
-  padding: 18px 22px;
-  border-left: 3px solid var(--blue);
-  border-radius: 0 var(--radius-m) var(--radius-m) 0;
-  background: var(--blue-wash);
-  font-size: 15px;
-  line-height: 1.6;
+/* White, ruled in both directions. */
+.kb__spec .data table {
+  background: #fff;
+}
+
+.kb__spec .data :is(th, td) + :is(th, td) {
+  border-left: 1px solid var(--line);
+}
+
+.kb__spec .data thead :is(th, td) + :is(th, td) {
+  border-left-color: rgba(255, 255, 255, 0.22);
 }
 
 /* ---------- Timeline shell: breaks out to near the full page width ---------- */
@@ -77,10 +108,22 @@
 }
 
 .tl__ai {
-  max-width: 26em;
-  color: var(--ink-soft);
-  font-size: 14px;
-  line-height: 1.5;
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  max-width: 100%;
+  padding: 10px 18px 10px 14px;
+  border-radius: 999px;
+  background: var(--blue-wash);
+  color: var(--ink);
+  font-size: 15px;
+  font-weight: 500;
+  line-height: 1.4;
+}
+
+.tl__ai svg {
+  flex: none;
+  color: var(--blue);
 }
 
 /* ---------- Stage: model left, card right ---------- */
@@ -462,34 +505,6 @@
   height: 26px;
 }
 
-.tl__ticks {
-  position: absolute;
-  inset: 0 12px;
-  pointer-events: none;
-}
-
-.tl__ticks span {
-  position: absolute;
-  top: 50%;
-  width: 6px;
-  height: 6px;
-  border-radius: 50%;
-  translate: -50% -50%;
-  background: #c9d4ea;
-}
-
-.tl__ticks span[data-done] {
-  background: var(--blue);
-}
-
-.tl__ticks span[data-dead] {
-  background: #f1a593;
-}
-
-.tl__ticks span[data-dead][data-done] {
-  background: #e0452a;
-}
-
 .tl__scrub input {
   position: relative;
   width: 100%;
@@ -505,25 +520,25 @@
 }
 
 .tl__scrub input:focus-visible::-webkit-slider-thumb {
-  box-shadow: 0 0 0 4px rgba(42, 95, 224, 0.3);
+  box-shadow: 0 0 0 4px rgba(48, 118, 224, 0.3);
 }
 
 .tl__scrub input::-webkit-slider-runnable-track {
-  height: 4px;
-  border-radius: 2px;
-  background: linear-gradient(to right, rgba(42, 95, 224, 0.35) var(--p), rgba(42, 95, 224, 0.12) var(--p));
+  height: 7px;
+  border-radius: 4px;
+  background: linear-gradient(to right, rgba(48, 118, 224, 0.45) var(--p), rgba(48, 118, 224, 0.13) var(--p));
 }
 
 .tl__scrub input::-moz-range-track {
-  height: 4px;
-  border-radius: 2px;
-  background: linear-gradient(to right, rgba(42, 95, 224, 0.35) var(--p), rgba(42, 95, 224, 0.12) var(--p));
+  height: 7px;
+  border-radius: 4px;
+  background: linear-gradient(to right, rgba(48, 118, 224, 0.45) var(--p), rgba(48, 118, 224, 0.13) var(--p));
 }
 
 .tl__scrub input::-webkit-slider-thumb {
   width: 24px;
   height: 24px;
-  margin-top: -10px;
+  margin-top: -8.5px;
   border: 3px solid #fff;
   border-radius: 50%;
   background: var(--blue);
@@ -601,6 +616,21 @@
   font-size: 11.5px;
   letter-spacing: 0.04em;
   text-transform: uppercase;
+}
+
+/* On the page's main picture: says the model can be turned. */
+.bin3d__hint {
+  position: absolute;
+  left: 14px;
+  bottom: 14px;
+  padding: 9px 14px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.92);
+  box-shadow: inset 0 0 0 1.5px var(--line);
+  color: var(--ink-soft);
+  font-size: 13px;
+  font-weight: 500;
+  pointer-events: none;
 }
 
 .bin3d__reset:hover {

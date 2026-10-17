@@ -34,8 +34,15 @@ export function ProjectCard({ project, enabled = true, heading: Heading = 'h3' }
     if (e.pointerType === 'mouse') hoverEnd()
   }
   const onClick = (e: MouseEvent) => {
+    e.stopPropagation()
     if (e.metaKey || e.ctrlKey || e.shiftKey || e.button !== 0 || !root.current) return
     e.preventDefault()
+    open(project, root.current)
+  }
+  // The card in focus opens its project wherever it is clicked.
+  const onCardClick = (e: MouseEvent) => {
+    if (!root.current) return
+    if (e.metaKey || e.ctrlKey) return void window.open(projectPath(project.slug), '_blank')
     open(project, root.current)
   }
 
@@ -46,6 +53,7 @@ export function ProjectCard({ project, enabled = true, heading: Heading = 'h3' }
       data-card={project.slug}
       data-media={media?.kind ?? 'sheet'}
       data-enabled={enabled}
+      onClick={enabled ? onCardClick : undefined}
     >
       <div className="card__inner">
         {media?.kind === 'photo' && (

@@ -2,6 +2,7 @@
 
 .project {
   position: relative;
+  padding-bottom: clamp(80px, 10vw, 160px);
 }
 
 .project__back {
@@ -9,8 +10,12 @@
   top: var(--side);
   left: calc(var(--side) + 8px);
   z-index: 2;
-  height: 50px;
-  padding-block: 0;
+  height: 42px;
+  padding: 0 18px 0 16px;
+  gap: 8px;
+  color: var(--ink-soft);
+  font-size: 14px;
+  font-weight: 500;
 }
 
 /* Title and summary on the left, the main image pinned top right. */
@@ -139,8 +144,9 @@
 
 .chapter__label {
   display: flex;
-  gap: 12px;
-  margin-bottom: 16px;
+  gap: 14px;
+  margin-bottom: 18px;
+  font-size: 15px;
 }
 
 .chapter__label span {
@@ -166,6 +172,11 @@
 
 .chapter__body + .chapter__body {
   margin-top: 0.9em;
+}
+
+.chapter__body strong {
+  color: var(--blue);
+  font-weight: 700;
 }
 
 .chapter__stats {
@@ -590,6 +601,79 @@
   background: var(--blue);
 }
 
+/* ---------- Panels: tables or animations, switched like slides ---------- */
+
+.panels__frame {
+  overflow: hidden;
+  touch-action: pan-y;
+  transition: height 0.6s var(--ease-out);
+}
+
+/* Tables in a half-width column: let the words wrap so every column fits. */
+.panels .data tbody th {
+  min-width: 0;
+}
+
+.panels .data td.is-text {
+  min-width: 11em;
+}
+
+.panels .data th,
+.panels .data td {
+  padding: 10px 12px;
+}
+
+.panels__track {
+  display: flex;
+  align-items: flex-start;
+  transition: transform 0.8s var(--ease-out);
+}
+
+.panels__panel {
+  flex: none;
+  width: 100%;
+  min-width: 0;
+}
+
+.panels__foot {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 14px;
+  color: var(--ink-soft);
+  font-size: 15px;
+  line-height: 1.5;
+}
+
+.panels__caption {
+  margin-right: auto;
+}
+
+.panels__nav {
+  display: grid;
+  flex: none;
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  color: var(--ink);
+  box-shadow: inset 0 0 0 1.5px var(--ink);
+  transition:
+    background-color 0.3s,
+    color 0.3s,
+    box-shadow 0.3s;
+}
+
+.panels__nav:hover {
+  background: var(--blue);
+  box-shadow: inset 0 0 0 1.5px var(--blue);
+  color: #fff;
+}
+
+.panels .slides__dots {
+  margin-right: 6px;
+}
+
 /* ---------- Stats (projects without a story yet) ---------- */
 
 .stats {
@@ -867,6 +951,10 @@
     gap: 2px;
   }
 
+  .data td.is-text {
+    min-width: 10em;
+  }
+
   .stats,
   .gallery,
   .gallery[data-count='2'],
@@ -876,11 +964,7 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .project__back {
-  margin-bottom: clamp(22px, 3vw, 40px);
-}
-
-.rise {
+  .rise {
     animation: none;
   }
 }
