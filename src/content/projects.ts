@@ -93,10 +93,16 @@ export type Project = {
   stats?: { value: string; label: string }[]
   sections: { heading: string; body: string[] }[]
   site?: Site
+  /** A plain block of text under the opening, with an optional small heading. */
+  about?: { title?: string; body: string[] }
   /** A tour of a tool, page by page, under its own heading. */
-  walkthrough?: { title: string; intro?: string; pages: WalkPage[] }
-  /** How part of the work was developed, told as dated steps like a story. */
-  method?: { title: string; intro?: string; chapters: Chapter[] }
+  walkthrough?: { title: string; pages: WalkPage[] }
+  /** How part of the work works, as numbered steps (each label is the step's name). */
+  method?: { title: string; chapters: Chapter[] }
+  /** Set false to show a story's steps without their numbers. */
+  stepNumbers?: boolean
+  /** The page opens without the fade-in. */
+  still?: boolean
   /** Shown under a "What I've built" heading, each with its website. */
   builds?: Build[]
   /** The main image opens this in a new tab (a read-only workbook, a live site). */
@@ -447,38 +453,17 @@ export const projects: Project[] = [
       { label: 'Tools', value: 'PostgreSQL, Excel (Power Query, VBA)' },
     ],
     lede: 'A summer internship turning four overlapping public datasets into one database, and an Excel tool the client could run without me.',
-    stats: [
-      { value: '3.2M', label: 'records consolidated from 4 datasets' },
-      { value: '14,045', label: 'transactions screened and classified' },
-      { value: '5 of 21', label: 'automatic rules kept after blind testing' },
-    ],
-    sections: [
-      {
-        heading: 'One database',
-        body: [
-          'I built a PostgreSQL database consolidating 3.2 million records from four datasets (three OECD, one TOSSD) covering 2015 to 2024.',
-          'The same investment was often reported in both OECD and TOSSD, so the double-counting had to be resolved before any of it could be analysed.',
-        ],
-      },
-      {
-        heading: 'Screening method',
-        body: [
-          'I designed, tested and documented the screening method that decided which transactions count as wetland finance. It screened 14,045 transactions and counted 5,489 of them.',
-          'Every rule that decided rows automatically had to be right at least 94% of the time against hand-labelled projects, and keep that up on projects it hadn’t seen. Only 5 of the 21 I tried did. How it developed is below.',
-        ],
-      },
-      {
-        heading: 'Handover',
-        body: [
-          'The deliverable was a reusable Excel tool over about 2.35 million finance activities, built with Power Query and VBA, that lets a non-technical client run the same kind of search for any topic.',
-          'I wrote the methodology report and an illustrated user guide to go with it.',
-        ],
-      },
-    ],
+    about: {
+      title: 'What I built',
+      body: [
+        'In five weeks I built a PostgreSQL database of **3.2 million** finance records from four overlapping datasets, three from the OECD and one from TOSSD, with the double-counting between them resolved.',
+        'On top of it I built an automatic classification. It decides whether each candidate project counts for a topic like wetlands, and whether that topic is the point of the project or one aim among several. It screened **14,045** transactions, using only rules that held up in blind tests.',
+        'The client got it all as one Excel tool over about **2.35 million** activities, run by Power Query and VBA, so a non-technical team can do the same search for any topic. I wrote the methodology report and an illustrated user guide to go with it.',
+      ],
+    },
+    sections: [],
     walkthrough: {
       title: 'How it works',
-      intro:
-        'The Explorer is one Excel workbook and one data file of about 2.35 million finance activities, from 2015 to 2024. It needs no database or internet connection. You describe a topic in keywords, run the search, then screen what comes back. These are its pages, in the order you use them.',
       pages: [
         {
           name: 'Screening',
@@ -560,83 +545,52 @@ export const projects: Project[] = [
       ],
     },
     method: {
-      title: 'How I built the classification',
-      intro:
-        'There is no wetlands marker or purpose code in OECD data, so wetland finance hides inside biodiversity, water, fishing and farming projects. I built a method that finds it from each project’s text, tested every rule against projects labelled by hand, and kept only what held up. It took five weeks.',
+      title: 'How the auto classification works',
       chapters: [
         {
-          label: '25 June 2026',
+          label: 'Find the candidates',
           body: [
-            'I started from Stephanie’s idea of a keyword index: **222** terms in English, French and Spanish, split into Primary terms that mean wetlands on their own and General terms that only count together.',
-            'The first screen matched words inside other words: “pan” matched Japan, “bog” matched Bogotá and “dam” matched Amsterdam. Switching to whole-word matching cut the candidates from **1,947** projects to **864**.',
+            'There is no wetlands marker in OECD data, so wetland finance has to be found from each project’s text. Keyword lists catch the candidates: Primary terms count on their own, General terms only in numbers or with supporting evidence such as a biodiversity marker or an environmental funder.',
+            'Matching whole words mattered. Matching inside words, “pan” caught Japan and “bog” caught Bogotá; fixing it cut the candidates from **1,947** to **864**.',
           ],
           media: {
             kind: 'table',
             table: {
               head: ['Group', 'How it counts', 'Examples'],
               rows: [
-                ['Primary', 'On its own', 'wetland, Ramsar, mangrove, peatland, seagrass, saltmarsh, coral reef'],
+                ['Primary', 'On its own', 'wetland, Ramsar, mangrove, peatland, seagrass, coral reef'],
                 ['General', 'Two or more, or with other evidence', 'lagoon, marsh, floodplain, lake, oasis'],
                 ['Fauna', 'Only with a biodiversity marker', 'migratory birds, heron, plover, otter'],
                 ['Gated', 'Only with a conservation word', 'rice paddy, fish pond, salt pan'],
-                ['Exclude', 'Flags the row for a closer look', 'drinking water, sanitation, hydropower'],
               ],
-              caption: 'The keyword groups, with examples from the final list.',
             },
           },
         },
         {
-          label: '28 June 2026',
+          label: 'Clean out false friends',
           body: [
-            'Rows the rules couldn’t decide needed a person or a second opinion, so I wrote the instructions for an AI screener and tested each version against my own labels. The first agreed only **57.5%** of the time. Each version fixed the mistakes of the last, like counting river-basin water management as wetland work.',
-            'Version 8 matched all of Stephanie’s include and exclude calls on **39** held-out projects. On **9 July** I tested version 9 on **162** fresh projects it had never seen: **93%** of the projects it included were right.',
+            'A random audit found only **34** of **50** candidates were real wetland projects. Most of the rest came from a few words, so I checked each suspect term by how many rows it brought in and how many of those were real.',
           ],
           side: 'left',
           media: {
             kind: 'table',
             table: {
-              head: ['Version', 'Tested on', 'Agreement', 'What changed'],
+              head: ['Term', 'Change', 'Why'],
               rows: [
-                ['v1', '80 rows', '57.5%', 'First version, far too strict'],
-                ['v2', '63 rows', '74.6%', 'Three-way call; wetland components allowed'],
-                ['v3', '27 rows', '81.5%', 'River-basin water management excluded'],
-                ['v4', '86 rows', '84.9%', 'Duplicates removed before screening'],
-                ['v6', '52 fresh 2024 rows', '90.2%', 'Four rules for borderline cases'],
-                ['v8', '39 of Stephanie’s', '100%', 'Rebuilt on her test: is the wetland integral?'],
-                ['v9', '162 fresh projects', '89.5%', 'Four consistency fixes'],
+                ['pan', 'Removed', '216 of 367 hits were “Pan-African” or “Pan-American”'],
+                ['lagos', 'Removed', 'Mostly the city in Nigeria'],
+                ['lake', 'Kept as General', 'As Primary it added 641 rows in 2024, mostly places like “Great Lakes Region”'],
+                ['LAC', 'Capitals ignored', 'Latin America and the Caribbean, not the French “lac”'],
               ],
-              highlight: 2,
-              caption: 'Agreement with the hand labels on include or exclude.',
             },
           },
         },
         {
-          label: '30 June 2026',
+          label: 'Test every rule',
           body: [
-            'Keywords alone missed too much, so I widened the net. A row could also get in on one General term backed by strong evidence: an environmental funder such as the GEF, a biodiversity marker or a wetland purpose code. The 2024 candidates went from **857** to **1,560**.',
-            'Checking against the projects Stephanie had included showed the net’s limit: **142** of the **279** it missed had no wetland word at all. I tested a net built on markers and codes instead, but even the tightest version added **2,938** rows to find a handful, so I rejected it.',
+            'Rules that decide rows automatically were designed on **628** rows I labelled by hand, then tested on **280** fresh rows they had never seen. To be used, a rule had to be right at least **94%** of the time.',
+            'Only **5** of the **21** I tried passed. Most failures had memorised a few big programmes: “donor is Canada” scored **89%** on the design rows but **41%** on fresh ones.',
           ],
-          media: {
-            kind: 'table',
-            table: {
-              head: ['Path', 'What gets a row in'],
-              rows: [
-                ['A', 'A Primary term'],
-                ['B', 'Two General terms and any supporting signal'],
-                ['C', 'One General term and a strong signal'],
-                ['D', 'A fauna term and a biodiversity marker, with no land habitat word'],
-              ],
-              caption: 'The four ways into the net. Signals are Rio markers, SDGs, sector and purpose codes, and funders.',
-            },
-          },
-        },
-        {
-          label: '2 July 2026',
-          body: [
-            'A random audit of **50** candidates found only **34** were real wetland projects. So I tested every rule that could decide rows automatically. I designed the rules on **628** rows I had labelled by hand, then tested them on **280** fresh rows they had never seen. A rule that included rows had to be right at least **94%** of the time, and one that excluded them **95%**.',
-            'Only **5** of the **21** rules held up. Most that failed had memorised a few big programmes: “donor is Canada” was right **89%** of the time on the design rows but only **41%** on fresh ones.',
-          ],
-          side: 'left',
           media: {
             kind: 'panels',
             panels: [
@@ -662,9 +616,7 @@ export const projects: Project[] = [
                   head: ['Rule', 'Design rows', 'Fresh rows'],
                   rows: [
                     ['Primary term, biodiversity marker and an action verb in the title', '98%', '74%'],
-                    ['Primary term and a principal biodiversity marker', '94%', '84%'],
                     ['Primary term and the general environment sector', '89%', '78%'],
-                    ['Primary term and environmental policy purpose', '87%', '70%'],
                     ['Donor is Canada', '89%', '41%'],
                     ['Recipient is Iraq, Senegal or Honduras', '94%', '58%'],
                     ['Exclude: marine or ocean text', '18%', '49%'],
@@ -676,18 +628,18 @@ export const projects: Project[] = [
           },
         },
         {
-          label: '3 July 2026',
+          label: 'Grade what’s kept',
           body: [
-            'Each included row also needed a grade: Principal if wetlands are the point of the project, Significant if they are one aim among several. My first grading rules agreed with my own labels **80.5%** of the time but with Stephanie’s only **60%**: she judged by whether the wetland was integral to the project, not by where the word appeared.',
-            'Over-calling Principal inflates the wetland-specific total, which is the error to avoid. So I made Significant the default, and a row only becomes Principal on positive evidence: a wetland term with an action verb in the title, GEF funding, or a named Ramsar site. On Stephanie’s **73** blind labels, every row the confident rules included was one she had included too.',
+            'Each included project is Principal if wetlands are its point, or Significant if they are one aim among several. Over-calling Principal inflates the total, so Significant is the default and Principal needs positive evidence, like a wetland term with an action verb in the title. On the client’s **73** blind labels, every project the confident rules included, she had included too.',
           ],
         },
         {
-          label: '8 July 2026',
+          label: 'Finish by hand and AI',
           body: [
-            'The money was concentrated: the top **25** entries held half of it. So the biggest rows were screened by hand until **95%** of the value was decided, the AI screener took the next **4.5%**, and rules the last **0.5%**.',
-            'For the uncertain middle I added one more text rule: a wetland term with a conservation verb, or a conservation purpose code with a wetland term. Across **25** random splits it was right **95.9%** of the time by value on rows it hadn’t seen, and never below **90.9%**, recovering **$911m**. Every row then had a decision, each tagged so it could be undone.',
+            'The money is concentrated, so the biggest projects were screened by hand until **95%** of the value was decided. An AI screener, tested against my labels over nine versions, took the next **4.5%**, and rules the last **0.5%**.',
+            'In the end **14,045** transactions were screened and **5,489** counted as wetland finance.',
           ],
+          side: 'left',
           media: {
             kind: 'table',
             table: {
@@ -697,38 +649,9 @@ export const projects: Project[] = [
                 ['AI screener', 'about 710', 'about $0.63bn'],
                 ['Rules', 'about 9,939', 'about $0.13bn'],
               ],
-              caption: 'Who decided the 13,805 rows screened by 13 July.',
+              caption: 'Who decided the first 13,805 rows.',
             },
           },
-        },
-        {
-          label: '13 July 2026',
-          body: [
-            'Stephanie reviewed the keyword list. Estuary, swamp and shellfish reef became Primary terms, and river, stream and delta became General. The **4,174** new candidate rows were screened, adding **196** projects worth **$1.79bn**, mostly river restoration in China.',
-            'I also made the list English-first: non-English rows were translated before the search, which let me retire **189** French and Spanish terms and keep **22** as a backstop. Each keyword change was judged by how many rows it moved and how many of those were real.',
-          ],
-          side: 'left',
-          media: {
-            kind: 'table',
-            table: {
-              head: ['Term', 'Change', 'Why'],
-              rows: [
-                ['pan', 'Removed', '216 of 367 hits were “Pan-African” or “Pan-American”'],
-                ['lagos', 'Removed', 'Mostly the city in Nigeria'],
-                ['lake', 'Kept as General', 'As Primary it added 641 rows in 2024, mostly places like “Great Lakes Region”'],
-                ['delta', 'Kept out of Primary', '1,404 rows of Nile, Mekong and Niger Delta locations'],
-                ['LAC', 'Capitals ignored', 'Latin America and the Caribbean, not the French “lac”'],
-                ['HeRON', 'Capitals ignored', 'A health programme, not the bird'],
-              ],
-            },
-          },
-        },
-        {
-          label: '29 July 2026',
-          body: [
-            'The last gap was the second OECD dataset, TOSSD, which overlaps the main one. A claimed **$7.3bn** of missing finance was **96%** already counted, so I only took TOSSD for the **20** providers missing from the main data. The real gap was **240** rows worth **$174.3m**, all screened.',
-            'The final count: **14,045** transactions screened and **5,489** counted as wetland finance, worth **$6.96bn** wetland-related and **$3.83bn** wetland-specific. Made generic, the same paths and rules became the Explorer above.',
-          ],
         },
       ],
     },
@@ -745,16 +668,13 @@ export const projects: Project[] = [
       src: '/images/ctheworld-card.webp',
       alt: 'The Cruising the World homepage, with a cruise search bar over a photo of the Mediterranean coast',
     },
-    open: {
-      url: 'https://cruising-redesign.vercel.app/',
-      label: 'Open the Cruising the World website in a new tab',
-    },
     layout: 'web',
+    still: true,
     site: {
       url: 'https://cruising-redesign.vercel.app/',
-      label: 'the site',
+      label: 'the redesigned site',
       capture: '/images/ctheworld-full.webp',
-      embeddable: true,
+      embeddable: false,
     },
     facts: [
       { label: 'Role', value: 'Brand, design and full-stack build' },
@@ -764,22 +684,20 @@ export const projects: Project[] = [
     ],
     lede: 'I designed the brand and built the website for a cruise agency, so customers could search every cruise in one place.',
     intro:
-      'Cruising the World is a cruise agency. I designed its brand and built its website, so customers could search every cruise in one place. The agency’s site has since been taken down, so I’ve rebuilt it as a redesign you can explore below. The cruises in it are sample data.',
+      'Cruising the World is a cruise agency. I designed its brand and built its website, so customers could search every cruise in one place. The agency’s site has since been taken down, so I’ve rebuilt it as a redesign, shown below. The cruises in it are sample data.',
     stats: [
       { value: '26,000', label: 'cruise records' },
       { value: '15 min', label: 'between price refreshes' },
       { value: '200%', label: 'Instagram growth' },
     ],
-    sections: [
-      {
-        heading: 'The original site',
-        body: [
-          'I created the brand (logo, colour scheme and visual style) and designed a website that lets customers find holidays by region, country, cabin type, number of stops and price.',
-          'Behind it, a Node.js server, hosted on Render and deployed from GitHub, held 26,000 cruise records from the Widgety API in MongoDB. It merged the separate itinerary and pricing data and refreshed prices every 15 minutes, so listings stayed accurate without anyone updating them by hand.',
-          'I also ran the agency’s social media and grew its Instagram by 200%.',
-        ],
-      },
-    ],
+    about: {
+      body: [
+        'I created the brand, from the logo to the colours, and designed a site where customers can search holidays by region, country, cabin type, number of stops and price.',
+        'Behind it, a Node.js server held 26,000 cruises from the Widgety API in MongoDB. It merged the itineraries with their prices and refreshed them every 15 minutes, so listings stayed accurate without anyone updating them.',
+        'I also ran the agency’s social media and grew its Instagram by 200%.',
+      ],
+    },
+    sections: [],
   },
   {
     slug: 'schoebshop',
@@ -802,21 +720,13 @@ export const projects: Project[] = [
     lede: 'I ran an Etsy shop selling mirrors in custom shapes, each one laser cut from reflective acrylic.',
     intro:
       'SchoebShop was my small business making custom-shaped mirrors. I drew every design myself in CAD, laser cut it from 3 mm mirrored acrylic and sold the finished mirrors on Etsy, in a range of shapes and sizes.',
+    still: true,
+    stepNumbers: false,
     story: [
       {
-        label: 'Feb 2023',
-        heading: 'A material I’d never seen',
+        label: 'February 2023',
         body: [
-          'It all started in February 2023. I was in the design technology department at school, working on my coursework, when I noticed we had sheets of mirrored acrylic. I had never seen the material before.',
-          'It had the finish of a real mirror, but it was light, tough and could go straight into a laser cutter. The thought came to me almost straight away: if I could draw a shape, I could cut it into a mirror. I could design my own custom mirrors and make them right there in the school workshop.',
-        ],
-      },
-      {
-        label: 'Designing',
-        heading: 'Drawing the first designs',
-        body: [
-          'I started designing in 2D Design, the CAD software we used at school. I didn’t have much experience with it yet, so I went looking for ideas online and built up a board of inspiration on Pinterest.',
-          'From there I worked the shapes I liked into my own designs, drawing them as clean outlines that the laser cutter could follow.',
+          'In the design technology workshop at school I came across sheets of mirrored acrylic, a material I had never seen. It had the finish of a real mirror but was light, tough and could go straight into a laser cutter: if I could draw a shape, I could make it a mirror. I started drawing designs in 2D Design, the school’s CAD software, from a board of ideas I built on Pinterest.',
         ],
         side: 'left',
         media: {
@@ -830,28 +740,23 @@ export const projects: Project[] = [
         },
       },
       {
-        label: 'First cuts',
-        heading: 'Not quite right',
+        label: 'Spring 2023',
         body: [
-          'The first mirrors didn’t come out the way I had pictured them. Up close the edges were rough, and parts of the design had melted rather than cut.',
-          'It taught me something I still think about when I design: a part has to suit the machine and the material that will make it, not just look good on screen.',
+          'The first mirrors didn’t come out as I’d pictured. The cutter wasn’t calibrated and my designs were too fine, so the acrylic melted in places instead of cutting cleanly. It taught me that a part has to suit the machine and material that make it, not just look good on screen.',
         ],
         media: {
           kind: 'image',
           image: {
             src: '/images/etsy-first-cut.webp',
             alt: 'An early round mirror with a leafy cut-out design, its fine details partly melted',
-            caption:
-              'My first designs didn’t come out well. The laser cutter wasn’t calibrated properly, and the designs were too finely detailed, so the acrylic melted in places and didn’t cut along a clean, flush edge.',
+            caption: 'One of my first cuts, melted where the detail was too fine.',
           },
         },
       },
       {
-        label: 'Gifts',
-        heading: 'Getting better',
+        label: 'Late 2023',
         body: [
-          'As my CAD skills improved I went back to the drawing board and developed new designs, with bolder shapes, cleaner lines and details sized so the laser could actually cut them.',
-          'At this point it was just a hobby. I was making mirrors as custom gifts for people, which meant each one was a little different, and every design taught me more about what would cut cleanly.',
+          'As my CAD skills improved I redrew my designs with bolder shapes and details sized for the laser. It was still a hobby: I made mirrors as custom gifts, and each one taught me more about what would cut cleanly.',
         ],
         side: 'left',
         media: {
@@ -876,32 +781,248 @@ export const projects: Project[] = [
         },
       },
       {
-        label: 'Feb 2024',
-        heading: 'Opening the shop',
+        label: 'February 2024',
         body: [
-          'Once I had designs I was proud of, I opened an Etsy shop to sell them.',
-          'Online, the photo is the first thing a buyer sees, so I took more professional photos of the mirrors to help with sales. I styled them on real walls and shelves, in soft light, so the shapes and reflections stood out.',
+          'Once I had designs I was proud of, I opened an Etsy shop. The photo is the first thing a buyer sees, so I styled the mirrors on real walls and shelves, in soft light, for the listings.',
         ],
         media: {
           kind: 'image',
           image: {
             src: '/images/etsy-hummingbirds-shelf.webp',
             alt: 'Two hummingbird mirrors on a kitchen wall beside patterned mugs',
-            caption: 'One of the product photos I took for the shop listings.',
+            caption: 'One of the product photos I took for the shop.',
           },
         },
       },
       {
-        label: 'Looking back',
-        heading: 'What I took from it',
+        label: '2024',
         body: [
-          'Over time I built a catalogue of designs I was really proud of and sold them on Etsy in a range of sizes. In the end I only sold six mirrors, but it was a great experience. I took a product all the way from an idea in a school workshop to something people actually paid for.',
-          'Two things held the shop back. Getting the mirrors to customers safely was hard, because 3 mm acrylic is fragile, especially with so many cut-outs. And competition on Etsy is fierce, so standing out among other sellers was tough.',
+          'In the end I sold six mirrors, but I had taken a product from an idea in a school workshop to something people paid for. Two things held the shop back: 3 mm acrylic with lots of cut-outs is fragile to post, and standing out on Etsy is hard.',
         ],
-        stats: [
-          { value: '6', label: 'mirrors sold' },
-          { value: '3 mm', label: 'mirrored acrylic' },
+      },
+    ],
+    sections: [],
+  },
+  {
+    slug: 'desk-lamp',
+    title: 'Biomimicry desk lamp',
+    kind: 'GCSE Design and Technology',
+    period: '2021 – 2022',
+    blurb: 'A calming desk lamp for a friend with ADHD, with laser-cut acrylic fins shaped like octopus tentacles.',
+    media: {
+      kind: 'photo',
+      src: '/images/lamp-final.webp',
+      alt: 'The finished lamp lit up on a workshop bench: eight neon acrylic fins curving up around a bulb in a white 3D-printed base',
+      position: '50% 42%',
+    },
+    facts: [
+      { label: 'Role', value: 'Designer and maker' },
+      { label: 'When', value: '2021 – 2022' },
+      { label: 'CAD', value: 'SketchUp, Fusion 360, 2D Design' },
+      { label: 'Made with', value: 'Laser cutter and 3D printer' },
+    ],
+    lede: 'My GCSE Design and Technology project: a calming desk lamp for a friend with ADHD.',
+    intro:
+      'For my GCSE Design and Technology project I designed and made a desk lamp for a friend with ADHD, who found it hard to focus when revising at home. Eight laser-cut acrylic fins, shaped like octopus tentacles, glow around a bulb in a 3D-printed base. The whole process is below.',
+    story: [
+      {
+        label: 'The brief',
+        body: [
+          'My friend wanted something to help him focus while revising at home, where his phone and everything around him kept pulling him away. In an interview he told me lamps and relaxing light had helped him most, that nature helped him relax, and that he could spend **£10–20**.',
+          'I visited his desk to see where it would go: plenty of space and a socket close by, so a mains lamp made more sense than batteries. From the interview, a questionnaire and my research, I wrote the specification.',
         ],
+        media: {
+          kind: 'table',
+          table: {
+            head: ['Requirement', 'Target'],
+            rows: [
+              ['Form', 'Copies nature, and is relaxing to look at'],
+              ['Light', 'Lights a small area with calming light'],
+              ['Power', 'Draws less than 5 W'],
+              ['Cost', 'Under £20'],
+              ['Size', 'No bigger than 400 × 200 × 200 mm'],
+              ['Safety', 'A stable base, no hot filament bulb, survives small knocks'],
+              ['Materials', 'High quality, recyclable, parts that fit together seamlessly'],
+            ],
+          },
+        },
+      },
+      {
+        label: 'Research',
+        body: [
+          'In a questionnaire of people with ADHD, relaxing lighting came out as what helped most. Research into biomimicry, copying nature in design, backed up my friend’s wish: one study found people’s heart rates were lower walking in a forest than in a city.',
+          'I compared four materials for the parts. Acrylic suited the visible pieces best: it is cheap, cuts cleanly on a laser cutter and comes in bright colours.',
+        ],
+        side: 'left',
+        media: {
+          kind: 'table',
+          table: {
+            head: ['Material', 'For', 'Against'],
+            rows: [
+              ['Acrylic', 'Cheap, laser cuts cleanly, lots of colours', 'Scratches easily, low melting point'],
+              ['PLA', 'Biodegradable, easy to 3D print', 'Not flexible, shatters easily'],
+              ['ABS', 'Very cheap, tough, easy to 3D print', 'Weakened by sunlight, not biodegradable'],
+              ['Aluminium', 'Strong, light, recyclable', 'Expensive and hard to shape'],
+            ],
+          },
+        },
+      },
+      {
+        label: 'Ideas',
+        body: [
+          'I drew ten ideas by hand and modelled most of them in SketchUp. Nearly all copied something from nature: a tree, a honeycomb, a rainbow, a flower, stacking pyramids, and fins inspired by an octopus’s tentacles.',
+        ],
+        media: {
+          kind: 'slides',
+          ratio: 4 / 3,
+          images: [
+            {
+              src: '/images/lamp-ideas-sketch.webp',
+              alt: 'A sheet of hand-drawn initial ideas, including a tentacle lamp, a flower lamp and a lamp on a wooden block',
+              caption: 'A sheet of initial ideas',
+            },
+            {
+              src: '/images/lamp-ideas-pyramid.webp',
+              alt: 'A hand-drawn lamp made of coloured triangular pyramids, with annotations',
+              caption: 'Stacking pyramids',
+            },
+            {
+              src: '/images/lamp-ideas-honeycomb.webp',
+              fit: 'contain',
+              alt: 'SketchUp model of a cylindrical lamp with a honeycomb pattern of yellow panels on a wooden base',
+              caption: 'Honeycomb, modelled in SketchUp',
+            },
+            {
+              src: '/images/lamp-ideas-tree.webp',
+              fit: 'contain',
+              alt: 'SketchUp model of a yellow branching tree lamp on a grey base',
+              caption: 'Tree, modelled in SketchUp',
+            },
+            {
+              src: '/images/lamp-ideas-octopus.webp',
+              fit: 'contain',
+              alt: 'Hand-drawn sketch of a lamp with blue tentacle-like fins around a bulb, with annotations',
+              caption: 'The octopus fins',
+            },
+          ],
+        },
+      },
+      {
+        label: 'Choosing',
+        body: [
+          'I scored every idea against each point of the specification. The octopus fins came top with **18** points, two clear of the next, and my friend chose it too: “I think design 5 looks the best, I can see the biomimicry and it looks like it would be helpful.”',
+        ],
+        side: 'left',
+        media: {
+          kind: 'image',
+          image: {
+            src: '/images/lamp-scores.webp',
+            alt: 'The scoring table: each of the ten ideas rated green, amber or red against every point of the specification, with idea 5 scoring 18',
+            caption: 'Every idea scored against the specification: green 2, amber 1, red 0.',
+          },
+        },
+      },
+      {
+        label: 'Development',
+        body: [
+          'Models showed the problems. In cardboard the fins slumped sideways, acrylic test fins snapped, the lamp was too big and there was no way to wire the bulb.',
+          'So I shrank the base from **150 mm** to **100 mm** across and split it in two: a dome with eight slots for the fins and a **10 mm** hole for the wires, and an insert to hold a standard E27 bulb. The fins went from **8 mm** to **3 mm** thick, and their colours changed to green, red, orange and blue to look more natural. The developed design scored **92 out of 100** against the specification.',
+        ],
+        media: {
+          kind: 'slides',
+          ratio: 4 / 3,
+          images: [
+            {
+              src: '/images/lamp-cardboard.webp',
+              fit: 'contain',
+              alt: 'A cardboard model of the lamp on a workshop bench, its fins slumping sideways',
+              caption: 'The cardboard model',
+            },
+            {
+              src: '/images/lamp-dev-sketch.webp',
+              fit: 'contain',
+              alt: 'Drawing of the developed lamp from the side and from above, with coloured fins around the bulb',
+              caption: 'The developed design, from above and the side',
+            },
+            {
+              src: '/images/lamp-base-cad.webp',
+              fit: 'contain',
+              alt: 'Fusion 360 model of the domed base with eight curved slots for the fins and a hole for the wires',
+              caption: 'The base in Fusion 360',
+            },
+            {
+              src: '/images/lamp-dev-render.webp',
+              fit: 'contain',
+              alt: 'CAD model of the lamp with its fins, bulb and screw fitting',
+              caption: 'How the fins, bulb and base fit together',
+            },
+          ],
+        },
+      },
+      {
+        label: 'Making',
+        body: [
+          'I modelled the base in Fusion 360 and 3D printed it in white PLA, with the bulb fitting adapted from a design on Thingiverse. The fins were drawn in 2D Design and laser cut from 3 mm acrylic in four colours, two of each.',
+          'Then came the hand work: straightening fins that warped in the cutter on a line bender, drilling holes for the wires, sanding the holder to fit and gluing the fins into their slots. A **12 V**, **5 W** bulb on a variable power supply lights it.',
+        ],
+        side: 'left',
+        media: {
+          kind: 'slides',
+          images: [
+            {
+              src: '/images/lamp-printing.webp',
+              alt: 'The white domed base on the bed of a FlashForge 3D printer',
+              caption: 'Printing the base',
+            },
+            {
+              src: '/images/lamp-fin-cut.webp',
+              alt: 'An orange acrylic fin fresh from the laser cutter',
+              caption: 'A fin from the laser cutter',
+            },
+            {
+              src: '/images/lamp-line-bender.webp',
+              alt: 'An orange acrylic fin on a line bender, being straightened',
+              caption: 'Straightening a fin on the line bender',
+            },
+            {
+              src: '/images/lamp-wiring.webp',
+              alt: 'Hands feeding wires through the 3D-printed bulb holder',
+              caption: 'Wiring the bulb holder',
+            },
+            {
+              src: '/images/lamp-first-light.webp',
+              alt: 'The base with its bulb lit for the first time, before the fins went in',
+              caption: 'First light, before the fins went in',
+            },
+          ],
+        },
+      },
+      {
+        label: 'Testing',
+        body: [
+          'I tested the finished lamp against every point of the specification and it scored **208 out of 220**. It draws **5 W**, fits in **120 × 120 × 280 mm**, takes **5 N** to push over and survived a **1.5 m** drop with only small scratches. The parts cost **£19.25**, under budget.',
+          'My friend found it calming and said it helped him focus. If I made it again, I’d look for a warmer light: the colour was calming, but not the most relaxing it could be.',
+        ],
+        media: {
+          kind: 'slides',
+          images: [
+            {
+              src: '/images/lamp-lit-2.webp',
+              alt: 'The finished lamp lit on a workshop bench, its neon fins glowing',
+              caption: 'The finished lamp',
+            },
+            {
+              src: '/images/lamp-lit-1.webp',
+              alt: 'The finished lamp lit beside the variable power supply',
+              caption: 'Running at 12 V',
+            },
+            {
+              src: '/images/lamp-lit-3.webp',
+              alt: 'The lamp from above, with the fins curving over the bulb',
+              caption: 'From above',
+            },
+          ],
+        },
       },
     ],
     sections: [],

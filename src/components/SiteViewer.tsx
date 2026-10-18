@@ -1,9 +1,9 @@
 import type { Site } from '../content/projects'
 import { Arrow } from './Arrow'
 
-/** A window onto a project's website that scrolls without leaving the page.
- *  A site that can't be embedded is shown as a capture; clicking it opens the
- *  real site in a new tab. */
+/** A window onto a project's website. An embeddable site scrolls inside the
+ *  page; otherwise it is a still of the top of the site, greyed and blurred,
+ *  and clicking it opens the real site in a new tab. */
 export function SiteViewer({ site, title }: { site: Site; title: string }) {
   if (site.embeddable) {
     return (
@@ -14,7 +14,7 @@ export function SiteViewer({ site, title }: { site: Site; title: string }) {
   }
 
   return (
-    <div className="viewer">
+    <div className="viewer viewer--still">
       <a
         className="viewer__link"
         href={site.url}

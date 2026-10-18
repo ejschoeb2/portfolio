@@ -103,6 +103,11 @@
   animation-delay: calc(var(--i, 0) * 110ms + 120ms);
 }
 
+/* Some pages open without the fade-in. */
+.project[data-still] .rise {
+  animation: none;
+}
+
 .gallery figcaption {
   font-family: var(--mono);
   font-size: 12px;
@@ -729,6 +734,45 @@
   line-height: 1.3;
 }
 
+/* ---------- A plain block of text, under an optional small heading ---------- */
+
+.about {
+  display: grid;
+  grid-template-columns: minmax(0, 5fr) minmax(0, 6fr);
+  gap: 16px clamp(28px, 5vw, 96px);
+  padding: clamp(28px, 4vw, 56px) 0;
+  border-top: 1px solid var(--line);
+}
+
+.about__title {
+  font-family: var(--display);
+  font-size: clamp(24px, 2.4vw, 36px);
+  font-weight: 800;
+  line-height: 1.05;
+  letter-spacing: -0.015em;
+}
+
+.about__body p {
+  max-width: 36em;
+  font-size: clamp(17px, 1.3vw, 20px);
+  line-height: 1.6;
+  text-wrap: pretty;
+}
+
+.about__body p + p {
+  margin-top: 0.9em;
+}
+
+.about__body strong {
+  color: var(--blue);
+  font-weight: 700;
+}
+
+/* With no heading, the text runs from the left. */
+.about__body:only-child {
+  grid-column: 1 / -1;
+}
+
 /* ---------- Written sections ---------- */
 
 .block {
@@ -782,12 +826,18 @@
   border-top: 1px solid var(--line);
 }
 
-.walkthrough__intro {
-  max-width: 40em;
-  margin-bottom: clamp(28px, 4vw, 56px);
-  font-size: clamp(17px, 1.3vw, 20px);
-  line-height: 1.6;
-  text-wrap: pretty;
+.walkthrough .story__title,
+.method .story__title {
+  font-size: clamp(32px, 4vw, 60px);
+}
+
+.walkthrough .story__title {
+  padding-bottom: clamp(24px, 3vw, 44px);
+}
+
+.walk .chapter__body,
+.method .chapter__body {
+  font-size: clamp(15px, 1.1vw, 17px);
 }
 
 .walk {
@@ -797,14 +847,35 @@
   align-items: center;
 }
 
+.walk__media {
+  display: grid;
+  gap: 18px;
+}
+
 .walk__frame {
   position: relative;
   aspect-ratio: 16 / 10;
   overflow: hidden;
   border-radius: var(--radius-l);
   background: #fff;
-  box-shadow: var(--media-shadow);
+  box-shadow:
+    0 2px 6px rgba(26, 26, 26, 0.05),
+    0 18px 36px -22px rgba(26, 26, 26, 0.28);
   touch-action: pan-y;
+}
+
+.walk__dots {
+  justify-self: center;
+}
+
+.walk__name {
+  margin-bottom: 16px;
+  color: var(--blue);
+  font-family: var(--display);
+  font-size: clamp(20px, 1.6vw, 25px);
+  font-weight: 800;
+  line-height: 1.1;
+  letter-spacing: -0.01em;
 }
 
 .walk__frame::after {
@@ -877,7 +948,13 @@
   cursor: pointer;
 }
 
-/* One window's height, held in place as the capture scrolls, taking no room. */
+/* A still of the top of the site, not scrolled. */
+.viewer--still {
+  overflow: hidden;
+}
+
+/* One window's height laid over the capture, greyed and blurred a little so
+   the site reads as a preview (and the Prompt box stands out from it). */
 .viewer__veil {
   position: sticky;
   top: 0;
@@ -886,13 +963,14 @@
   place-items: center;
   height: var(--viewer-h);
   margin-bottom: calc(-1 * var(--viewer-h));
-  background: rgba(255, 255, 255, 0);
+  background: rgba(244, 244, 240, 0.4);
+  backdrop-filter: blur(3px);
   transition: background-color 0.4s var(--ease-out);
 }
 
 .viewer__link:hover .viewer__veil,
 .viewer__link:focus-visible .viewer__veil {
-  background: rgba(255, 255, 255, 0.62);
+  background: rgba(255, 255, 255, 0.65);
 }
 
 .viewer__link:hover .project__open-label,
@@ -930,19 +1008,6 @@
 
 .builds .viewer {
   --viewer-h: min(88svh, 960px);
-  /* A still: the top of the site, not scrolled. */
-  overflow: hidden;
-}
-
-/* Greyed and blurred a little, so the box stands out from the site behind it. */
-.builds .viewer__veil {
-  background: rgba(244, 244, 240, 0.4);
-  backdrop-filter: blur(3px);
-}
-
-.builds .viewer__link:hover .viewer__veil,
-.builds .viewer__link:focus-visible .viewer__veil {
-  background: rgba(255, 255, 255, 0.65);
 }
 
 .builds__box {
@@ -1158,7 +1223,8 @@
   .stats,
   .gallery,
   .gallery[data-count='2'],
-  .block {
+  .block,
+  .about {
     grid-template-columns: 1fr;
   }
 }

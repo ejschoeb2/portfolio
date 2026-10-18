@@ -37,6 +37,7 @@ export function ProjectPage({ project }: { project: Project }) {
     project.slug === 'kitchen-bin' ||
     project.story ||
     project.stats ||
+    project.about ||
     project.sections.length > 0 ||
     project.walkthrough ||
     (project.site && !web) ||
@@ -53,7 +54,7 @@ export function ProjectPage({ project }: { project: Project }) {
   }
 
   return (
-    <main className="project">
+    <main className="project" data-still={project.still || undefined}>
       <a className="pill project__back rise" href="/" onClick={back}>
         <Arrow direction="left" />
         All projects
@@ -134,7 +135,11 @@ export function ProjectPage({ project }: { project: Project }) {
           ) : project.story ? (
             <section className="story" aria-label="The story">
               {project.story.map((chapter, i) => (
-                <StoryChapter key={chapter.label} chapter={chapter} number={i + 1} />
+                <StoryChapter
+                  key={chapter.label}
+                  chapter={chapter}
+                  number={project.stepNumbers === false ? undefined : i + 1}
+                />
               ))}
             </section>
           ) : (
@@ -148,6 +153,17 @@ export function ProjectPage({ project }: { project: Project }) {
                     </li>
                   ))}
                 </ul>
+              )}
+
+              {project.about && (
+                <section className="about" aria-label={project.about.title ?? 'About'}>
+                  {project.about.title && <h2 className="about__title">{project.about.title}</h2>}
+                  <div className="about__body">
+                    {project.about.body.map((paragraph) => (
+                      <p key={paragraph}>{rich(paragraph)}</p>
+                    ))}
+                  </div>
+                </section>
               )}
 
               {project.sections.map((section, i) => (
@@ -169,7 +185,6 @@ export function ProjectPage({ project }: { project: Project }) {
                   <h2 className="story__title" id="walkthrough-title">
                     {project.walkthrough.title}
                   </h2>
-                  {project.walkthrough.intro && <p className="walkthrough__intro">{project.walkthrough.intro}</p>}
                   <Walkthrough pages={project.walkthrough.pages} />
                 </section>
               )}
@@ -179,7 +194,6 @@ export function ProjectPage({ project }: { project: Project }) {
                   <h2 className="story__title" id="method-title">
                     {project.method.title}
                   </h2>
-                  {project.method.intro && <p className="walkthrough__intro">{project.method.intro}</p>}
                   {project.method.chapters.map((chapter, i) => (
                     <StoryChapter key={i} chapter={chapter} number={i + 1} />
                   ))}
@@ -212,7 +226,7 @@ export function ProjectPage({ project }: { project: Project }) {
   )
 }
 
-function StoryChapter({ chapter, number }: { chapter: Chapter; number: number }) {
+function StoryChapter({ chapter, number }: { chapter: Chapter; number?: number }) {
   const { media } = chapter
 
   return (
@@ -223,7 +237,7 @@ function StoryChapter({ chapter, number }: { chapter: Chapter; number: number })
     >
       <div className="chapter__text">
         <p className="chapter__label">
-          <span className="chapter__number">{String(number).padStart(2, '0')}</span>
+          {number !== undefined && <span className="chapter__number">{String(number).padStart(2, '0')}</span>}
           <span className="chapter__date">{chapter.label}</span>
         </p>
         {chapter.heading && <h3 className="chapter__heading">{chapter.heading}</h3>}
