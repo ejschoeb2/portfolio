@@ -22,8 +22,8 @@ export function SiteViewer({ site, title }: { site: Site; title: string }) {
         rel="noreferrer"
         aria-label={`Visit ${site.label} (opens in a new tab)`}
       >
-        {/* Held in the middle of the window while the capture scrolls under it. */}
-        <span className="viewer__visit" aria-hidden="true">
+        {/* Laid over the window and held there while the capture scrolls under it. */}
+        <span className="viewer__veil" aria-hidden="true">
           <span className="project__open-label">
             Click to visit
             <Arrow direction="out" />

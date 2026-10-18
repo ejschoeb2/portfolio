@@ -76,7 +76,7 @@
   top: 11%;
   right: -3cqw;
   /* Capped by the width too, so on tall cards it can't reach the title. */
-  height: min(64%, 41cqw);
+  height: min(64%, 38cqw);
   aspect-ratio: 16 / 10;
   overflow: hidden;
   border-radius: 14px;
@@ -96,9 +96,9 @@
   color: var(--ink);
 }
 
-/* The title stops short of the picture's left edge (about 37cqw in). */
+/* The title stops short of the picture's left edge (at least 42cqw in). */
 .card[data-media='screen'] .card__title {
-  max-width: 33cqw;
+  max-width: 38cqw;
 }
 
 /* Keep the text clear of the sheet's zone marks along the bottom and right. */

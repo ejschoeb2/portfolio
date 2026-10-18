@@ -65,7 +65,14 @@
 }
 
 .project__site .viewer {
-  height: min(82svh, 900px);
+  --viewer-h: min(82svh, 900px);
+}
+
+/* The kitchen bin's 3D model, in place of a site. */
+.project__model {
+  height: min(80svh, 880px);
+  border-radius: var(--radius-l);
+  box-shadow: var(--media-shadow);
 }
 
 .project__title {
@@ -767,7 +774,8 @@
 
 /* Scroll inside it to look round the site. */
 .viewer {
-  height: min(80svh, 820px);
+  --viewer-h: min(80svh, 820px);
+  height: var(--viewer-h);
   overflow-y: auto;
   overscroll-behavior: auto;
   border-radius: var(--radius-l);
@@ -797,23 +805,22 @@
   cursor: pointer;
 }
 
-.viewer__link img {
-  transition: opacity 0.4s var(--ease-out);
-}
-
-.viewer__visit {
+/* One window's height, held in place as the capture scrolls, taking no room. */
+.viewer__veil {
   position: sticky;
-  top: calc(50% - 27px);
+  top: 0;
   z-index: 1;
-  display: flex;
-  align-items: flex-start;
-  justify-content: center;
-  height: 0;
+  display: grid;
+  place-items: center;
+  height: var(--viewer-h);
+  margin-bottom: calc(-1 * var(--viewer-h));
+  background: rgba(255, 255, 255, 0);
+  transition: background-color 0.4s var(--ease-out);
 }
 
-.viewer__link:hover img,
-.viewer__link:focus-visible img {
-  opacity: 0.35;
+.viewer__link:hover .viewer__veil,
+.viewer__link:focus-visible .viewer__veil {
+  background: rgba(255, 255, 255, 0.62);
 }
 
 .viewer__link:hover .project__open-label,
@@ -823,31 +830,70 @@
   scale: 1;
 }
 
-/* ---------- What I've built ---------- */
+/* ---------- What I've built: one site at a time, with a box in the corner ---------- */
 
 .builds {
-  padding: 0 calc(var(--side) + 8px);
+  padding: clamp(36px, 5vw, 72px) calc(var(--side) + 8px) 0;
 }
 
-.build {
-  padding-top: clamp(40px, 6vw, 90px);
-}
-
-.build + .build {
-  margin-top: clamp(40px, 6vw, 90px);
-  border-top: 1px solid var(--line);
-}
-
-/* Name on the left, what it is on the right, the site full width below. */
-.build__head {
+.builds__stage {
+  position: relative;
   display: grid;
-  grid-template-columns: minmax(0, 5fr) minmax(0, 6fr);
-  gap: 14px clamp(28px, 5vw, 96px);
-  align-items: baseline;
-  margin-bottom: clamp(24px, 3vw, 40px);
 }
 
-.build__name {
+.builds__site {
+  grid-area: 1 / 1;
+  opacity: 0;
+  visibility: hidden;
+  transition:
+    opacity 0.45s var(--ease-out),
+    visibility 0s 0.45s;
+}
+
+.builds__site[data-shown] {
+  opacity: 1;
+  visibility: visible;
+  transition: opacity 0.45s var(--ease-out);
+}
+
+.builds .viewer {
+  --viewer-h: min(88svh, 960px);
+}
+
+/* Greyed and blurred a little, so the box stands out from the site behind it. */
+.builds .viewer__veil {
+  background: rgba(244, 244, 240, 0.4);
+  backdrop-filter: blur(3px);
+}
+
+.builds .viewer__link:hover .viewer__veil,
+.builds .viewer__link:focus-visible .viewer__veil {
+  background: rgba(255, 255, 255, 0.65);
+}
+
+.builds__box {
+  position: absolute;
+  right: clamp(16px, 2vw, 30px);
+  bottom: clamp(16px, 2vw, 30px);
+  z-index: 2;
+  width: min(460px, 42%);
+  padding: clamp(20px, 2vw, 30px);
+  border-radius: var(--radius-m);
+  background: #fff;
+  box-shadow:
+    0 2px 6px rgba(26, 26, 26, 0.06),
+    0 30px 60px -24px rgba(26, 26, 26, 0.38);
+}
+
+.builds__count {
+  color: var(--ink-soft);
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+}
+
+.builds__name {
+  margin-top: 8px;
   font-family: var(--display);
   font-size: clamp(24px, 2.2vw, 34px);
   font-weight: 800;
@@ -856,17 +902,47 @@
   white-space: nowrap;
 }
 
-.build__about p {
-  max-width: 36em;
-  font-size: clamp(17px, 1.3vw, 20px);
-  line-height: 1.6;
+.builds__about {
+  margin-top: 0.7em;
+  font-size: clamp(15px, 1.1vw, 17px);
+  line-height: 1.55;
   text-wrap: pretty;
 }
 
-.build__about p + p {
-  margin-top: 0.8em;
+.builds__nav {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 22px;
 }
 
+.builds__next {
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+  height: 40px;
+  padding: 0 18px 0 20px;
+  border-radius: 999px;
+  background: var(--blue);
+  color: #fff;
+  font-size: 14px;
+  font-weight: 650;
+  transition: background-color 0.3s;
+}
+
+.builds__next:hover {
+  background: var(--blue-deep);
+}
+
+.builds__next .arrow {
+  transition: translate 0.35s var(--ease-out);
+}
+
+.builds__next:hover .arrow {
+  translate: 3px 0;
+}
+
+/* "Open in a new tab" beside a web project's opening paragraph. */
 .build__link {
   display: inline-flex;
   align-items: center;
@@ -944,10 +1020,9 @@
     font-size: 14px;
   }
 
-  .viewer__visit {
-    top: calc(100% - 60px);
-    justify-content: flex-end;
-    padding-right: 14px;
+  .viewer__veil {
+    place-items: end;
+    padding: 14px;
   }
 }
 
@@ -994,9 +1069,24 @@
   }
 
   .chapter,
-  .chapter[data-side='left'],
-  .build__head {
+  .chapter[data-side='left'] {
     grid-template-columns: minmax(0, 1fr);
+  }
+
+  .builds .viewer {
+    --viewer-h: 64svh;
+  }
+
+  /* The box goes under the site instead of over it. */
+  .builds__box {
+    position: static;
+    width: auto;
+    margin-top: 14px;
+    box-shadow: inset 0 0 0 1.5px var(--line);
+  }
+
+  .project__model {
+    height: 70svh;
   }
 
   .chapter[data-side='left'] .chapter__media {

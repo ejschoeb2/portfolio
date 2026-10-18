@@ -95,7 +95,7 @@ export type Project = {
   /** The main image opens this in a new tab (a read-only workbook, a live site). */
   open?: { url: string; label: string }
   /** 'web': no main image; title and opening paragraph side by side, then the
-   *  site (or each build's site) full width below. */
+   *  site (or each build's site, or the bin's 3D model) full width below. */
   layout?: 'web'
   gallery?: GalleryItem[]
 }
@@ -123,6 +123,8 @@ export const projects: Project[] = [
     lede: 'Our kitchen bin fills in under a day. I am redesigning it as one that rolls out from under the worktop, opens and closes itself, and seals against flies.',
     intro:
       'Nine of us share a kitchen bin that keeps letting us down. I’m designing a replacement that rolls out from under the worktop, opens by itself and keeps the flies out.',
+    // The 3D model runs full width under the title.
+    layout: 'web',
     sections: [],
   },
   {

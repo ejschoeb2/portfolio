@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useRef, useState, type ReactNode } from 'react'
 import type { BinEngine } from './engine'
 import type { SceneState } from './types'
 
@@ -7,10 +7,14 @@ type Props = {
   flash: string[]
   /** Let the wheel scroll the page instead of zooming (for the model at the top of the page). */
   pageScroll?: boolean
+  /** Hears the engine once it's made (and null when it goes), for extra controls. */
+  onEngine?: (engine: BinEngine | null) => void
+  /** More controls over the model. */
+  children?: ReactNode
 }
 
 /** The 3D bin. three.js loads only when this mounts, so the rest of the site stays light. */
-export function BinViewer({ scene, flash, pageScroll }: Props) {
+export function BinViewer({ scene, flash, pageScroll, onEngine, children }: Props) {
   const host = useRef<HTMLDivElement>(null)
   const overlay = useRef<HTMLDivElement>(null)
   const engine = useRef<BinEngine | null>(null)
@@ -36,12 +40,14 @@ export function BinViewer({ scene, flash, pageScroll }: Props) {
         engine.current = made
         if (pageScroll) made.letPageScroll()
         made.setState(latest.current)
+        onEngine?.(made)
       })
       .catch(() => alive && setStatus('failed'))
     return () => {
       alive = false
       made?.dispose()
       engine.current = null
+      onEngine?.(null)
     }
   }, [])
 
@@ -68,6 +74,7 @@ export function BinViewer({ scene, flash, pageScroll }: Props) {
           <path d="M3 4v5h5" />
         </svg>
       </button>
+      {children}
     </div>
   )
 }

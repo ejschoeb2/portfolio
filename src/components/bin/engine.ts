@@ -86,6 +86,16 @@ const DEG = Math.PI / 180
 // lever angles (deg) where it meets the tail tab with the lid open, and with the lid shut
 const LEVER_TOUCH = 35
 const LEVER_SHUT = 100
+// the run shown at the top of the page, in seconds
+const DEMO_END = 15
+const DEMO_PHASES: [number, string][] = [
+  [1.9, 'A hand over the sensor'],
+  [4.4, 'It rolls out'],
+  [5.4, 'The springs open the lid'],
+  [9.4, 'It waits for the rubbish'],
+  [12.2, 'The motor closes the lid'],
+  [DEMO_END, 'And it rolls back in'],
+]
 
 /** 0 → 1 → 0 over `period`, holding at each end. */
 function wave(t: number, period: number, rise = 0.3, hold = 0.2) {
@@ -127,6 +137,9 @@ export class BinEngine {
   private ro: ResizeObserver
   private io: IntersectionObserver
   private disposed = false
+  private demoStart: number | null = null
+  private demoPhase: string | null = null
+  private onPhase: ((phase: string | null) => void) | null = null
 
   constructor(host: HTMLElement, overlay: HTMLElement, ev: EngineEvents = {}) {
     this.host = host
@@ -566,21 +579,7 @@ export class BinEngine {
 
   private applyState(state: SceneState, instant: boolean) {
     this.resetAnimated()
-    const show = state.show
-    for (const p of this.parts.values()) {
-      const e: ShowEntry | undefined = show[p.key]
-      const look: Look | undefined = e === undefined ? undefined : typeof e === 'string' ? e : (e.look ?? 'base')
-      const off = e && typeof e === 'object' && e.off ? e.off : [0, 0, 0]
-      p.tgt.o = look ? 1 : 0
-      p.tgt.blue = look === 'new' ? 1 : 0
-      p.tgt.red = look === 'dead' ? 1 : 0
-      p.tgt.ghost = look === 'ghost' ? 1 : 0
-      p.tgt.off.set(off[0], off[1], off[2])
-      if (instant || this.reduced) {
-        Object.assign(p.cur, { o: p.tgt.o, blue: p.tgt.blue, red: p.tgt.red, ghost: p.tgt.ghost })
-        p.cur.off.copy(p.tgt.off)
-      }
-    }
+    this.applyShow(state.show, instant)
     this.camFrom.p.copy(this.camera.position)
     this.camFrom.t.copy(this.controls.target)
     this.aim(state.cam)
@@ -604,6 +603,24 @@ export class BinEngine {
       this.overlay.appendChild(el)
       this.labels.push({ el, anchor: this.anchor('top', state.anim === 'bagSection' ? [-200, 20, -220] : [-200, 70, -220]) })
       this.sectionLabel = el
+    }
+  }
+
+  /** Fade, tint and move each part towards how `show` wants it. */
+  private applyShow(show: Record<string, ShowEntry>, instant: boolean) {
+    for (const p of this.parts.values()) {
+      const e: ShowEntry | undefined = show[p.key]
+      const look: Look | undefined = e === undefined ? undefined : typeof e === 'string' ? e : (e.look ?? 'base')
+      const off = e && typeof e === 'object' && e.off ? e.off : [0, 0, 0]
+      p.tgt.o = look ? 1 : 0
+      p.tgt.blue = look === 'new' ? 1 : 0
+      p.tgt.red = look === 'dead' ? 1 : 0
+      p.tgt.ghost = look === 'ghost' ? 1 : 0
+      p.tgt.off.set(off[0], off[1], off[2])
+      if (instant || this.reduced) {
+        Object.assign(p.cur, { o: p.tgt.o, blue: p.tgt.blue, red: p.tgt.red, ghost: p.tgt.ghost })
+        p.cur.off.copy(p.tgt.off)
+      }
     }
   }
 
@@ -713,7 +730,10 @@ export class BinEngine {
       pose.boxBottom += ((st.box?.bottom ?? 0) - pose.boxBottom) * k
       pose.boxTop += ((st.box?.top ?? 0) - pose.boxTop) * k
       this.animBlend = Math.min(1, this.animBlend + dt / 0.6)
-      const a = this.animate(st.anim ?? 'none', Math.max(0, now - this.stepStart), now)
+      const a =
+        this.demoStart !== null
+          ? this.demo(now - this.demoStart)
+          : this.animate(st.anim ?? 'none', Math.max(0, now - this.stepStart), now)
       const blend = (key: 'roll' | 'lid' | 'tilt' | 'spin', still: number) => {
         const want = a[key] !== undefined ? still + (a[key]! - still) * this.animBlend : still
         pose[key] += (want - pose[key]) * (a[key] !== undefined ? Math.max(k, this.animBlend) : k)
@@ -870,6 +890,81 @@ export class BinEngine {
     }
   }
 
+  // ---------------------------------------------------------------- the model at the top of the page
+
+  /** Change which parts show, without starting a new step or moving the camera. */
+  setShow(show: Record<string, ShowEntry>) {
+    if (!this.state) return
+    this.state = { ...this.state, show }
+    this.applyShow(show, false)
+  }
+
+  /** Change the still roll-out and lid angle. */
+  setPose(pose: { roll?: number; lid?: number }) {
+    if (this.state) this.state = { ...this.state, ...pose }
+  }
+
+  setNotes(list: Hotspot[]) {
+    if (this.state) this.state = { ...this.state, hotspots: list }
+    this.setHotspots(list)
+  }
+
+  /** Glide to a new view, which Reset view then comes back to. */
+  view(cam: [V3, V3]) {
+    if (this.state) this.state = { ...this.state, cam }
+    this.applyCamera(cam)
+  }
+
+  /** One run of the finished bin: a hand over the sensor, it rolls out, opens, waits,
+   *  closes and rolls back. `onPhase` hears what it's doing, then null at the end. */
+  playDemo(onPhase: (phase: string | null) => void) {
+    this.stopDemo()
+    this.demoStart = performance.now() / 1000
+    this.onPhase = onPhase
+  }
+
+  stopDemo() {
+    if (this.demoStart === null) return
+    this.demoStart = null
+    this.demoPhase = null
+    this.groups.leverPivot.rotation.z = 0
+    const show = this.state?.show ?? {}
+    for (const key of ['hand', 'lidBeam']) {
+      const part = this.parts.get(key)
+      if (part) part.tgt.o = show[key] ? 1 : 0
+    }
+    this.parts.get('hand')?.obj.getObjectByName('handInner')?.position.set(-330, 140, -220)
+    const done = this.onPhase
+    this.onPhase = null
+    done?.(null)
+  }
+
+  private demo(t: number): Partial<Record<'roll' | 'lid' | 'tilt' | 'spin', number>> {
+    if (t >= DEMO_END) {
+      this.stopDemo()
+      return {}
+    }
+    const phase = DEMO_PHASES.find(([end]) => t < end)![1]
+    if (phase !== this.demoPhase) {
+      this.demoPhase = phase
+      this.onPhase?.(phase)
+    }
+    const roll = 440 * (smooth(2, 4.4, t) - smooth(12.4, 14.8, t))
+    // the hand comes in under the worktop to just above the sensor, then away again
+    const hand = this.parts.get('hand')
+    const inner = hand?.obj.getObjectByName('handInner')
+    if (hand && inner) {
+      hand.tgt.o = t < 2.5 ? 1 : 0
+      inner.position.x = -760 + 430 * (smooth(0, 1.1, t) - smooth(1.8, 2.7, t)) + roll
+    }
+    const beam = this.parts.get('lidBeam')
+    if (beam) beam.tgt.o = t > 0.9 && t < 1.9 ? 1 : 0
+    // springs open it; after the wait the lever pushes the tail tab to close it, then parks
+    const lever = LEVER_TOUCH * smooth(9.4, 10, t) + (LEVER_SHUT - LEVER_TOUCH) * smooth(10, 12, t) - LEVER_SHUT * smooth(12, 12.6, t)
+    this.groups.leverPivot.rotation.z = lever * DEG
+    return { roll, lid: 78 * (smooth(4.4, 5.4, t) - smooth(10, 12, t)) }
+  }
+
   private placeOverlay() {
     const w = this.host.clientWidth
     const h = this.host.clientHeight
@@ -931,6 +1026,7 @@ export class BinEngine {
 
   dispose() {
     this.disposed = true
+    this.onPhase = null
     this.running = false
     cancelAnimationFrame(this.raf)
     this.ro.disconnect()

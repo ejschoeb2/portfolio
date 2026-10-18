@@ -1,5 +1,6 @@
 import { Fragment, lazy, Suspense, type CSSProperties, type MouseEvent, type ReactNode } from 'react'
 import { Arrow } from '../components/Arrow'
+import { Builds } from '../components/Builds'
 import { DrawingSheet } from '../components/DrawingSheet'
 import { Linkage } from '../components/Linkage'
 import { Panels } from '../components/Panels'
@@ -82,13 +83,7 @@ export function ProjectPage({ project }: { project: Project }) {
           </div>
         ) : (
           <div className="project__media rise" style={order(2)}>
-            {project.slug === 'kitchen-bin' ? (
-              <Suspense fallback={<ProjectMedia project={project} />}>
-                <BinHero />
-              </Suspense>
-            ) : (
-              <ProjectMedia project={project} />
-            )}
+            <ProjectMedia project={project} />
             {project.open && (
               <a
                 className="project__open"
@@ -114,24 +109,19 @@ export function ProjectPage({ project }: { project: Project }) {
         </div>
       )}
 
-      {/* Or each thing built, with its site full width under it. */}
-      {project.builds && (
-        <section className="builds" aria-label="What I’ve built">
-          {project.builds.map((build) => (
-            <article key={build.name} className="build">
-              <div className="build__head">
-                <h2 className="build__name">{build.name}</h2>
-                <div className="build__about">
-                  {build.summary.map((paragraph) => (
-                    <p key={paragraph}>{paragraph}</p>
-                  ))}
-                </div>
-              </div>
-              <SiteViewer site={build.site} title={build.name} />
-            </article>
-          ))}
-        </section>
+      {/* The kitchen bin's 3D model, full width. */}
+      {project.slug === 'kitchen-bin' && (
+        <div className="project__site rise" style={order(3)}>
+          <div className="project__model">
+            <Suspense fallback={<ProjectMedia project={project} />}>
+              <BinHero />
+            </Suspense>
+          </div>
+        </div>
       )}
+
+      {/* Or each thing built, one site at a time, full width. */}
+      {project.builds && <Builds builds={project.builds} />}
 
       {hasBody && (
         <div className="project__body">
