@@ -48,7 +48,7 @@ export type Panel = { caption: string } & ({ kind: 'table'; table: Table } | { k
 
 /** One step of a project's story: text on one side, a picture or slideshow on the other. */
 export type Chapter = {
-  /** The date or stage, shown above the text. */
+  /** The date, shown under the step number. */
   label: string
   heading?: string
   /** **Figures** in a paragraph are picked out in bold blue. */
@@ -148,9 +148,9 @@ export const projects: Project[] = [
       'I designed a fully mechanical launcher in a team of five for a University of Bath project. It fires table-tennis balls across the table and over the net, to alternating left and right zones in quick succession. The design is complete, and we build the finished launcher on 23 October. The whole process is below.',
     story: [
       {
-        label: 'Feb 2026',
+        label: '9 February 2026',
         body: [
-          'In February we received the brief: build a prototype that fires four table-tennis balls, one at a time, into two target zones at the far end of a 1400 × 750 mm table, in the order A, C, A, C. Once the battery motors are switched on, everything else has to happen mechanically.',
+          'We received the brief: build a prototype that fires four table-tennis balls, one at a time, into two target zones at the far end of a 1400 × 750 mm table, in the order A, C, A, C. Once the battery motors are switched on, everything else has to happen mechanically.',
           'As a team, we turned the brief into a product design specification of everything the launcher had to do.',
         ],
         media: {
@@ -170,7 +170,7 @@ export const projects: Project[] = [
         },
       },
       {
-        label: 'Concepts',
+        label: '16 February 2026',
         body: [
           'With the specification set, we mapped out the different ways each part of the job could be done, from feeding the balls to aiming them. Then each of us drew up our own concept for the whole launcher.',
           'Use the arrows to look through three of them, starting with mine.',
@@ -200,7 +200,7 @@ export const projects: Project[] = [
         },
       },
       {
-        label: 'Mar 2026',
+        label: '2 March 2026',
         body: [
           'To choose between our concepts, we scored each one against eight criteria from the specification in a weighted decision matrix. Louis’s came out on top, thanks to its Geneva mechanism, which turns one motor’s steady rotation into four clean steps.',
           'We then combined it with the best ideas from the others, including the cam-driven swivel from mine and Zak’s, so a single Geneva wheel drives both the feed and the aim. The combined design scored **135 out of 145**.',
@@ -226,7 +226,7 @@ export const projects: Project[] = [
         },
       },
       {
-        label: 'Calculations',
+        label: '9 March 2026',
         body: [
           'To size the parts, we worked backwards from the target. I modelled the ball’s flight, including drag and the topspin from the flywheel. It set the launch at **3.35 m/s** and **35°**, landing **930 mm** away, with the aim swinging **±14.3°** between the two zones.',
           'From that we sized the flywheel: a **64 mm** wheel spinning at **1,691 RPM**, heavy enough that it only slows by about **4%** with each shot.',
@@ -242,7 +242,7 @@ export const projects: Project[] = [
         },
       },
       {
-        label: 'Iteration',
+        label: '23 March 2026',
         body: [
           'The aim comes from a four-bar linkage: a crank turns continuously and swings the flywheel arm from side to side. It had to sweep exactly the right angle without jamming, and fit on the base plate without hitting anything.',
           'The first version worked on paper. But each time the CAD showed one part hitting another, I changed the geometry and recalculated the whole linkage. It took **six versions** to get right.',
@@ -271,7 +271,7 @@ export const projects: Project[] = [
         },
       },
       {
-        label: 'Apr 2026',
+        label: '20 April 2026',
         body: [
           'With the sizes fixed, we chose the motors, bearings and other bought-in parts to match, and put together an order sheet for each supplier.',
           'Everything we bought came to under **£35**, well inside the **£85** budget.',
@@ -299,7 +299,7 @@ export const projects: Project[] = [
         },
       },
       {
-        label: 'CAD',
+        label: '4 May 2026',
         body: [
           'We built the full assembly in Autodesk Inventor as a team, and I modelled most of the parts. From the model we made the assembly drawing, part drawings to BS 8888, and the files for 3D printing and laser cutting, ready for manufacture.',
         ],
@@ -314,7 +314,7 @@ export const projects: Project[] = [
         },
       },
       {
-        label: 'Manufacture',
+        label: '28 September 2026',
         body: [
           'Our parts were then made and delivered: a 3D-printed flywheel, ramp and Geneva wheel, laser-cut acrylic gears, plates and links, and the two motors. Then we started putting it together.',
         ],
@@ -328,7 +328,7 @@ export const projects: Project[] = [
         },
       },
       {
-        label: 'Redesign',
+        label: '9 October 2026',
         body: [
           'Once we had assembled the first parts and tested them together, we realised we had made a mistake: the flywheel didn’t work as we had designed it, so we redesigned it.',
           'The new flywheel is a printed hub with two rubber O-rings that grip the ball, and changing the rings lets us tune its speed. I recalculated everything around the smaller wheel: on six AA batteries it should spin at about **3,480 RPM** and launch the ball at **3.3–3.5 m/s**. The ramp had to change to match it, so we reprinted that too.',
@@ -358,7 +358,7 @@ export const projects: Project[] = [
         },
       },
       {
-        label: 'Next',
+        label: '23 October 2026',
         body: [
           'The new flywheel and ramp are ready, and we build the finished launcher on **23 October**. I’ll update this page once it’s firing.',
         ],

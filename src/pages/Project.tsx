@@ -4,7 +4,6 @@ import { DrawingSheet } from '../components/DrawingSheet'
 import { Linkage } from '../components/Linkage'
 import { Panels } from '../components/Panels'
 import { ProjectMedia } from '../components/ProjectMedia'
-import { Reveal } from '../components/Reveal'
 import { SiteViewer } from '../components/SiteViewer'
 import { Slides } from '../components/Slides'
 import {
@@ -32,6 +31,13 @@ export function ProjectPage({ project }: { project: Project }) {
   const number = projectNumber(project)
   const { goHome } = useTransitions()
   const web = project.layout === 'web'
+  const hasBody =
+    project.slug === 'kitchen-bin' ||
+    project.story ||
+    project.stats ||
+    project.sections.length > 0 ||
+    (project.site && !web) ||
+    project.gallery
   const summary = (
     <p className="project__summary rise" style={order(2)}>
       {project.intro ?? project.lede}
@@ -108,21 +114,40 @@ export function ProjectPage({ project }: { project: Project }) {
         </div>
       )}
 
-      <div className="project__body">
-        {project.slug === 'kitchen-bin' ? (
-          <Suspense fallback={<div style={{ minHeight: '100svh' }} />}>
-            <KitchenBin />
-          </Suspense>
-        ) : project.story ? (
-          <section className="story" aria-label="The story">
-            {project.story.map((chapter, i) => (
-              <StoryChapter key={chapter.label} chapter={chapter} number={i + 1} />
-            ))}
-          </section>
-        ) : (
-          <>
-            {project.stats && (
-              <Reveal>
+      {/* Or each thing built, with its site full width under it. */}
+      {project.builds && (
+        <section className="builds" aria-label="What I’ve built">
+          {project.builds.map((build) => (
+            <article key={build.name} className="build">
+              <div className="build__head">
+                <h2 className="build__name">{build.name}</h2>
+                <div className="build__about">
+                  {build.summary.map((paragraph) => (
+                    <p key={paragraph}>{paragraph}</p>
+                  ))}
+                </div>
+              </div>
+              <SiteViewer site={build.site} title={build.name} />
+            </article>
+          ))}
+        </section>
+      )}
+
+      {hasBody && (
+        <div className="project__body">
+          {project.slug === 'kitchen-bin' ? (
+            <Suspense fallback={<div style={{ minHeight: '100svh' }} />}>
+              <KitchenBin />
+            </Suspense>
+          ) : project.story ? (
+            <section className="story" aria-label="The story">
+              {project.story.map((chapter, i) => (
+                <StoryChapter key={chapter.label} chapter={chapter} number={i + 1} />
+              ))}
+            </section>
+          ) : (
+            <>
+              {project.stats && (
                 <ul className="stats">
                   {project.stats.map((stat) => (
                     <li key={stat.label}>
@@ -131,12 +156,10 @@ export function ProjectPage({ project }: { project: Project }) {
                     </li>
                   ))}
                 </ul>
-              </Reveal>
-            )}
+              )}
 
-            {project.sections.map((section, i) => (
-              <Reveal key={section.heading}>
-                <section className="block">
+              {project.sections.map((section, i) => (
+                <section key={section.heading} className="block">
                   <h2>
                     <span>{String(i + 1).padStart(2, '0')}</span>
                     {section.heading}
@@ -147,52 +170,14 @@ export function ProjectPage({ project }: { project: Project }) {
                     ))}
                   </div>
                 </section>
-              </Reveal>
-            ))}
+              ))}
 
-            {project.site && !web && (
-              <Reveal>
-                <SiteViewer site={project.site} title={project.title} />
-              </Reveal>
-            )}
+              {project.site && !web && <SiteViewer site={project.site} title={project.title} />}
 
-            {project.builds && (
-              <section className="builds">
-                <Reveal>
-                  <h2 className="story__title">What I’ve built</h2>
-                </Reveal>
-                {project.builds.map((build) => (
-                  <article key={build.name} className="build">
-                    <Reveal className="build__head">
-                      <h3 className="build__name">{build.name}</h3>
-                      <div className="build__about">
-                        {build.summary.map((paragraph) => (
-                          <p key={paragraph}>{paragraph}</p>
-                        ))}
-                        <a
-                          className="build__link"
-                          href={build.site.url}
-                          target="_blank"
-                          rel="noreferrer"
-                        >
-                          Visit {build.site.label}
-                          <Arrow direction="out" />
-                        </a>
-                      </div>
-                    </Reveal>
-                    <Reveal>
-                      <SiteViewer site={build.site} title={build.name} />
-                    </Reveal>
-                  </article>
-                ))}
-              </section>
-            )}
-
-            {project.gallery && (
-              <div className="gallery" data-count={project.gallery.length}>
-                {project.gallery.map((item, i) => (
-                  <Reveal key={item.label} delay={i * 90}>
-                    <figure>
+              {project.gallery && (
+                <div className="gallery" data-count={project.gallery.length}>
+                  {project.gallery.map((item, i) => (
+                    <figure key={item.label}>
                       <div className="gallery__tile">
                         {item.src ? (
                           <img src={item.src} alt={item.alt ?? item.label} loading="lazy" />
@@ -202,14 +187,13 @@ export function ProjectPage({ project }: { project: Project }) {
                       </div>
                       <figcaption>{item.label}</figcaption>
                     </figure>
-                  </Reveal>
-                ))}
-              </div>
-            )}
-          </>
-        )}
-
-      </div>
+                  ))}
+                </div>
+              )}
+            </>
+          )}
+        </div>
+      )}
     </main>
   )
 }
@@ -223,10 +207,10 @@ function StoryChapter({ chapter, number }: { chapter: Chapter; number: number })
       data-side={media ? (chapter.side ?? 'right') : undefined}
       data-plain={media ? undefined : true}
     >
-      <Reveal className="chapter__text">
+      <div className="chapter__text">
         <p className="chapter__label">
-          <span>{String(number).padStart(2, '0')}</span>
-          {chapter.label}
+          <span className="chapter__number">{String(number).padStart(2, '0')}</span>
+          <span className="chapter__date">{chapter.label}</span>
         </p>
         {chapter.heading && <h3 className="chapter__heading">{chapter.heading}</h3>}
         {chapter.body.map((paragraph) => (
@@ -254,10 +238,10 @@ function StoryChapter({ chapter, number }: { chapter: Chapter; number: number })
             ))}
           </ul>
         )}
-      </Reveal>
+      </div>
 
       {media && (
-        <Reveal className="chapter__media" delay={120}>
+        <div className="chapter__media">
           {media.kind === 'image' && (
             <figure className="shot" data-small={media.small || undefined}>
               <img src={media.image.src} alt={media.image.alt} loading="lazy" />
@@ -276,13 +260,13 @@ function StoryChapter({ chapter, number }: { chapter: Chapter; number: number })
               }))}
             />
           )}
-        </Reveal>
+        </div>
       )}
 
       {chapter.table && (
-        <Reveal className="chapter__wide">
+        <div className="chapter__wide">
           <DataTable table={chapter.table} />
-        </Reveal>
+        </div>
       )}
     </article>
   )

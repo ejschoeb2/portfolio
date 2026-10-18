@@ -3,7 +3,6 @@ import { aiNote, chapters, finalStep, problem, specification, type Block, type C
 import type { Table } from '../../content/projects'
 import '../../styles/timeline.css'
 import { lenis } from '../../lib/scroll'
-import { Reveal } from '../Reveal'
 import { BinViewer } from './BinViewer'
 import { BRAINSTORM_PARTS, SCENES } from './scenes'
 import { Brainstorm, Dovetail, LatchTrack, SealSection, SpringChart } from './Widgets'
@@ -253,13 +252,13 @@ export function KitchenBin() {
   return (
     <div className="kb">
       <section className="kb__problem" aria-labelledby="kb-problem">
-        <Reveal>
+        <div>
           <h2 className="story__title" id="kb-problem">
             The problem
           </h2>
-        </Reveal>
+        </div>
         <div className="kb__problem-grid">
-          <Reveal className="kb__problem-text">
+          <div className="kb__problem-text">
             <p>{problem.intro}</p>
             <ul className="kb__points">
               {problem.points.map((p) => (
@@ -267,8 +266,8 @@ export function KitchenBin() {
               ))}
             </ul>
             <p className="kb__note">{problem.note}</p>
-          </Reveal>
-          <Reveal delay={120}>
+          </div>
+          <div>
             <ul className="chapter__stats kb__stats">
               {problem.stats.map((s) => (
                 <li key={s.label}>
@@ -277,23 +276,23 @@ export function KitchenBin() {
                 </li>
               ))}
             </ul>
-          </Reveal>
+          </div>
         </div>
       </section>
 
       <section className="kb__spec" aria-labelledby="kb-spec">
-        <Reveal>
+        <div>
           <h2 className="story__title" id="kb-spec">
             The specification
           </h2>
-        </Reveal>
-        <Reveal>
+        </div>
+        <div>
           <SmallTable table={specification} />
-        </Reveal>
+        </div>
       </section>
 
       <section className="tl" ref={section} aria-labelledby="kb-design">
-        <Reveal className="tl__head">
+        <div className="tl__head">
           <h2 className="story__title" id="kb-design">
             The design process
           </h2>
@@ -304,7 +303,7 @@ export function KitchenBin() {
             </svg>
             {aiNote}
           </p>
-        </Reveal>
+        </div>
 
         <div className="tl__stage">
           <div className="tl__viewer">

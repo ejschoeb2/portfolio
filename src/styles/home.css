@@ -20,8 +20,8 @@
   aspect-ratio: 4 / 5;
   overflow: hidden;
   border-radius: var(--radius-l);
-  background: var(--blue-wash);
-  animation: portrait-in 1.3s var(--ease-out) both;
+  box-shadow: var(--media-shadow);
+  animation: portrait-shadow 1.3s 0.35s var(--ease-out) both;
 }
 
 .hero__portrait img {
@@ -32,7 +32,9 @@
   max-width: none;
   object-fit: cover;
   object-position: 50% 40%;
-  animation: portrait-settle 1.8s var(--ease-out) both;
+  animation:
+    portrait-in 1.3s var(--ease-out) both,
+    portrait-settle 1.8s var(--ease-out) both;
 }
 
 @keyframes portrait-in {
@@ -41,6 +43,16 @@
   }
   to {
     clip-path: inset(0 0 0 0 round var(--radius-l));
+  }
+}
+
+/* The shadow comes in as the photo finishes unrolling. */
+@keyframes portrait-shadow {
+  from {
+    box-shadow:
+      0 0 0 transparent,
+      0 0 0 transparent,
+      0 0 0 transparent;
   }
 }
 

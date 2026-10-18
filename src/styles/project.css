@@ -13,9 +13,14 @@
   height: 42px;
   padding: 0 18px 0 16px;
   gap: 8px;
+  box-shadow: inset 0 0 0 1.5px var(--ink-soft);
   color: var(--ink-soft);
   font-size: 14px;
   font-weight: 500;
+}
+
+.project__back:hover {
+  box-shadow: inset 0 0 0 1.5px var(--ink);
 }
 
 /* Title and summary on the left, the main image pinned top right. */
@@ -91,19 +96,13 @@
   animation-delay: calc(var(--i, 0) * 110ms + 120ms);
 }
 
-.gallery figcaption,
-.chapter__label {
+.gallery figcaption {
   font-family: var(--mono);
   font-size: 12px;
   font-weight: 600;
   letter-spacing: 0.08em;
   text-transform: uppercase;
   color: var(--ink-soft);
-}
-
-/* Chapter eyebrows are red, as section labels are on PhaseTwo. */
-.chapter__label {
-  color: var(--red);
 }
 
 /* ---------- Story ---------- */
@@ -142,15 +141,29 @@
   max-width: 46em;
 }
 
+/* The step number in red, as section labels are on PhaseTwo, with the date
+   under it set like the figures. */
 .chapter__label {
   display: flex;
-  gap: 14px;
-  margin-bottom: 18px;
-  font-size: 15px;
+  flex-direction: column;
+  gap: 10px;
+  margin-bottom: 20px;
+  font-family: var(--display);
+  font-weight: 800;
+  line-height: 1;
 }
 
-.chapter__label span {
-  font-weight: 700;
+.chapter__number {
+  color: var(--red);
+  font-size: clamp(34px, 3vw, 46px);
+  letter-spacing: -0.02em;
+  font-variant-numeric: tabular-nums;
+}
+
+.chapter__date {
+  color: var(--blue);
+  font-size: clamp(20px, 1.6vw, 25px);
+  letter-spacing: -0.01em;
 }
 
 .chapter__heading {
@@ -757,9 +770,10 @@
   height: min(80svh, 820px);
   overflow-y: auto;
   overscroll-behavior: auto;
-  border-radius: var(--radius-m);
-  outline: 1.5px solid var(--ink);
-  outline-offset: -1.5px;
+  border-radius: var(--radius-l);
+  /* The same ink edge as the cards on the home page. */
+  outline: 2px solid var(--ink);
+  outline-offset: -2px;
   background: #fff;
   box-shadow:
     0 26px 50px -22px rgba(26, 26, 26, 0.28),
@@ -777,10 +791,50 @@
   border: 0;
 }
 
+/* A capture links to the real site: hovering fades it and asks for a click. */
+.viewer__link {
+  display: block;
+  cursor: pointer;
+}
+
+.viewer__link img {
+  transition: opacity 0.4s var(--ease-out);
+}
+
+.viewer__visit {
+  position: sticky;
+  top: calc(50% - 27px);
+  z-index: 1;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  height: 0;
+}
+
+.viewer__link:hover img,
+.viewer__link:focus-visible img {
+  opacity: 0.35;
+}
+
+.viewer__link:hover .project__open-label,
+.viewer__link:focus-visible .project__open-label {
+  opacity: 1;
+  translate: 0 0;
+  scale: 1;
+}
+
 /* ---------- What I've built ---------- */
 
+.builds {
+  padding: 0 calc(var(--side) + 8px);
+}
+
 .build {
-  padding: clamp(40px, 6vw, 90px) 0;
+  padding-top: clamp(40px, 6vw, 90px);
+}
+
+.build + .build {
+  margin-top: clamp(40px, 6vw, 90px);
   border-top: 1px solid var(--line);
 }
 
@@ -788,17 +842,18 @@
 .build__head {
   display: grid;
   grid-template-columns: minmax(0, 5fr) minmax(0, 6fr);
-  gap: 18px clamp(28px, 5vw, 96px);
-  align-items: start;
-  margin-bottom: clamp(28px, 4vw, 52px);
+  gap: 14px clamp(28px, 5vw, 96px);
+  align-items: baseline;
+  margin-bottom: clamp(24px, 3vw, 40px);
 }
 
 .build__name {
   font-family: var(--display);
-  font-size: clamp(32px, 4vw, 64px);
+  font-size: clamp(24px, 2.2vw, 34px);
   font-weight: 800;
-  line-height: 0.98;
-  letter-spacing: -0.02em;
+  line-height: 1.1;
+  letter-spacing: -0.015em;
+  white-space: nowrap;
 }
 
 .build__about p {
@@ -887,6 +942,12 @@
     scale: 1;
     padding: 12px 18px;
     font-size: 14px;
+  }
+
+  .viewer__visit {
+    top: calc(100% - 60px);
+    justify-content: flex-end;
+    padding-right: 14px;
   }
 }
 

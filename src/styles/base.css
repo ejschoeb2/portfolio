@@ -201,29 +201,9 @@ button {
   translate: 2px -2px;
 }
 
-.reveal {
-  opacity: 0;
-  transform: translateY(26px);
-  transition:
-    opacity 0.9s var(--ease-out),
-    transform 0.9s var(--ease-out);
-}
-
-.reveal.is-shown {
-  opacity: 1;
-  transform: none;
-}
-
 @media (max-width: 760px) {
   :root {
     --media-w: calc(100vw - 2 * var(--side));
     --media-h: 46svh;
-  }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .reveal {
-    transform: none;
-    transition-duration: 0.01s;
   }
 }
