@@ -7,6 +7,7 @@ import { Panels } from '../components/Panels'
 import { ProjectMedia } from '../components/ProjectMedia'
 import { SiteViewer } from '../components/SiteViewer'
 import { Slides } from '../components/Slides'
+import { Walkthrough } from '../components/Walkthrough'
 import {
   projectNumber,
   type Chapter,
@@ -37,6 +38,7 @@ export function ProjectPage({ project }: { project: Project }) {
     project.story ||
     project.stats ||
     project.sections.length > 0 ||
+    project.walkthrough ||
     (project.site && !web) ||
     project.gallery
   const summary = (
@@ -161,6 +163,28 @@ export function ProjectPage({ project }: { project: Project }) {
                   </div>
                 </section>
               ))}
+
+              {project.walkthrough && (
+                <section className="walkthrough" aria-labelledby="walkthrough-title">
+                  <h2 className="story__title" id="walkthrough-title">
+                    {project.walkthrough.title}
+                  </h2>
+                  {project.walkthrough.intro && <p className="walkthrough__intro">{project.walkthrough.intro}</p>}
+                  <Walkthrough pages={project.walkthrough.pages} />
+                </section>
+              )}
+
+              {project.method && (
+                <section className="story method" aria-labelledby="method-title">
+                  <h2 className="story__title" id="method-title">
+                    {project.method.title}
+                  </h2>
+                  {project.method.intro && <p className="walkthrough__intro">{project.method.intro}</p>}
+                  {project.method.chapters.map((chapter, i) => (
+                    <StoryChapter key={i} chapter={chapter} number={i + 1} />
+                  ))}
+                </section>
+              )}
 
               {project.site && !web && <SiteViewer site={project.site} title={project.title} />}
 

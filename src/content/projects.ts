@@ -43,6 +43,9 @@ export type Table = {
   caption?: string
 }
 
+/** One page of a tool's walkthrough: its screenshot and what that page does. */
+export type WalkPage = { name: string; image: StoryImage; body: string[] }
+
 /** A panel in a chapter's switcher: a table, or the launcher's linkage animation. */
 export type Panel = { caption: string } & ({ kind: 'table'; table: Table } | { kind: 'linkage' })
 
@@ -90,6 +93,10 @@ export type Project = {
   stats?: { value: string; label: string }[]
   sections: { heading: string; body: string[] }[]
   site?: Site
+  /** A tour of a tool, page by page, under its own heading. */
+  walkthrough?: { title: string; intro?: string; pages: WalkPage[] }
+  /** How part of the work was developed, told as dated steps like a story. */
+  method?: { title: string; intro?: string; chapters: Chapter[] }
   /** Shown under a "What I've built" heading, each with its website. */
   builds?: Build[]
   /** The main image opens this in a new tab (a read-only workbook, a live site). */
@@ -433,14 +440,6 @@ export const projects: Project[] = [
       url: 'https://1drv.ms/x/c/4ff5cc4c886a91e0/IQCBPt4D10jqQ4kk7UZ6n3odAYZeX42RA9S3l3Fq7gkwtXo?e=2RKIcD',
       label: 'Open a read-only copy of the workbook in a new tab',
     },
-    layout: 'web',
-    // The same read-only link, opened by Excel for the web inside the page.
-    site: {
-      url: 'https://1drv.ms/x/c/4ff5cc4c886a91e0/IQCBPt4D10jqQ4kk7UZ6n3odAYZeX42RA9S3l3Fq7gkwtXo?e=2RKIcD&action=embedview',
-      label: 'the workbook',
-      capture: '/images/finance-explorer-card.webp',
-      embeddable: true,
-    },
     facts: [
       { label: 'Role', value: 'Data analyst' },
       { label: 'Client', value: 'Stephanie Ockenden Ltd, environmental finance consultancy' },
@@ -450,8 +449,8 @@ export const projects: Project[] = [
     lede: 'A summer internship turning four overlapping public datasets into one database, and an Excel tool the client could run without me.',
     stats: [
       { value: '3.2M', label: 'records consolidated from 4 datasets' },
-      { value: '13,805', label: 'transactions classified' },
-      { value: '94%', label: 'precision against manual review' },
+      { value: '14,045', label: 'transactions screened and classified' },
+      { value: '5 of 21', label: 'automatic rules kept after blind testing' },
     ],
     sections: [
       {
@@ -464,19 +463,275 @@ export const projects: Project[] = [
       {
         heading: 'Screening method',
         body: [
-          'I designed, tested and documented a screening methodology that classified 13,805 transactions.',
-          'The automated classification was validated against manual review on held-out samples, reaching 94% precision. Any rule that failed validation was discarded.',
+          'I designed, tested and documented the screening method that decided which transactions count as wetland finance. It screened 14,045 transactions and counted 5,489 of them.',
+          'Every rule that decided rows automatically had to be right at least 94% of the time against hand-labelled projects, and keep that up on projects it hadn’t seen. Only 5 of the 21 I tried did. How it developed is below.',
         ],
       },
       {
         heading: 'Handover',
         body: [
-          'The deliverable was a reusable Excel tool over a 1.73 million-row dataset, built with Power Query and VBA, that lets a non-technical client run their own analyses.',
+          'The deliverable was a reusable Excel tool over about 2.35 million finance activities, built with Power Query and VBA, that lets a non-technical client run the same kind of search for any topic.',
           'I wrote the methodology report and an illustrated user guide to go with it.',
         ],
       },
     ],
-    gallery: [{ label: 'Excel tool' }, { label: 'Method diagram' }],
+    walkthrough: {
+      title: 'How it works',
+      intro:
+        'The Explorer is one Excel workbook and one data file of about 2.35 million finance activities, from 2015 to 2024. It needs no database or internet connection. You describe a topic in keywords, run the search, then screen what comes back. These are its pages, in the order you use them.',
+      pages: [
+        {
+          name: 'Screening',
+          image: {
+            src: '/images/finance-guide-1-screening.webp',
+            alt: 'The Screening page: six buttons (choose, add and remove a topic, undo, back up, export), the current topic, and totals of saved screenings per topic',
+          },
+          body: [
+            'Everything is organised by topic. You start here by choosing a topic, or adding a new one, and its keywords and search settings come with it.',
+            'Every judgement you save is tagged with that topic, so a project can be Principal for one topic and excluded from another. The totals at the bottom keep only your latest judgement per project, so saving twice can never double-count.',
+          ],
+        },
+        {
+          name: 'Keywords',
+          image: {
+            src: '/images/finance-guide-2-keywords.webp',
+            alt: 'The Keywords page with four columns of desertification terms: Primary, General, Indicator and Context blocker, each with a count of matching rows',
+          },
+          body: [
+            'The topic is defined in four keyword lists. Primary terms mean the topic on their own. General terms are relevant but ambiguous, so they only count in numbers or alongside other evidence. Indicator terms are weaker still, and context blockers rule out confusable settings, like coastal terms for desertification.',
+            'Matching is whole-word and ignores case. The count beside each term shows how many results it brought in, so you can see which words are doing the work.',
+          ],
+        },
+        {
+          name: 'Search settings',
+          image: {
+            src: '/images/finance-guide-3-search.webp',
+            alt: 'The Search settings page: four netting paths with on/off switches and row counts, the year filter, and the list of corroborating signals',
+          },
+          body: [
+            'This page sets what counts as a match. A row is caught by any of four paths: a Primary keyword (A); two or more General keywords plus any corroborating signal (B); one General keyword plus a strong signal (C); or an Indicator keyword plus a strong signal, with no context blocker (D).',
+            'The signals are independent evidence that a project is about the topic: its Rio markers, SDG goals, sector and purpose codes, and named funders. Changes here need a refresh, which re-scans the whole dataset.',
+          ],
+        },
+        {
+          name: 'Initial Report',
+          image: {
+            src: '/images/finance-guide-4-initial.webp',
+            alt: 'The Initial Report: matching activities, total commitment and amount mobilised, above slicers for year, source, provider, region, sector, income group and Rio markers',
+          },
+          body: [
+            'A first look at everything the search caught, before any screening: how many activities, how much money committed and mobilised, and charts of where it goes.',
+            'The slicers filter the page instantly by year, source, provider, region, sector, income group or Rio marker. These are scoping figures, not audited ones, because the net always catches some false positives.',
+          ],
+        },
+        {
+          name: 'All Results',
+          image: {
+            src: '/images/finance-guide-5-results.webp',
+            alt: 'The reading pane above All Results, showing a translated project description with the matched keyword picked out in red',
+          },
+          body: [
+            'Screening happens here. Every row the search caught is listed biggest first, so the money is at the top, and each already has a decision from the rules.',
+            'Click a row and the reading pane shows its full description, in English where it was translated, with the matched keywords in red. Keyboard shortcuts mark rows as Principal, Significant, Unsure or Exclude, and Save my screenings records them against the topic.',
+          ],
+        },
+        {
+          name: 'Classification methods',
+          image: {
+            src: '/images/finance-guide-6-rules.webp',
+            alt: 'The Classification methods page: the rules that set each row to Include or Unsure and Principal, each with an on/off switch and the number of rows it reaches',
+          },
+          body: [
+            'The rules that classify each row: whether it is in scope, and whether the topic is the point of the project (Principal) or one aim among several (Significant).',
+            'Each rule can be switched on or off and shows how many rows it reaches. The results recalculate instantly, and an override typed on any row always wins.',
+          ],
+        },
+        {
+          name: 'Marked Report',
+          image: {
+            src: '/images/finance-guide-7-marked.webp',
+            alt: 'A Marked Report section: included finance by provider type over time, as a table and a stacked bar chart',
+          },
+          body: [
+            'The final report, built only from rows kept as Include. Nine tables, each with a chart, break the finance down by provider type over time, share of each provider’s portfolio, sector, region, income group, instrument, flow type, SDG and Rio marker.',
+            'It updates the moment a decision or rule changes, with no refresh, and each table has space for your own commentary.',
+          ],
+        },
+      ],
+    },
+    method: {
+      title: 'How I built the classification',
+      intro:
+        'There is no wetlands marker or purpose code in OECD data, so wetland finance hides inside biodiversity, water, fishing and farming projects. I built a method that finds it from each project’s text, tested every rule against projects labelled by hand, and kept only what held up. It took five weeks.',
+      chapters: [
+        {
+          label: '25 June 2026',
+          body: [
+            'I started from Stephanie’s idea of a keyword index: **222** terms in English, French and Spanish, split into Primary terms that mean wetlands on their own and General terms that only count together.',
+            'The first screen matched words inside other words: “pan” matched Japan, “bog” matched Bogotá and “dam” matched Amsterdam. Switching to whole-word matching cut the candidates from **1,947** projects to **864**.',
+          ],
+          media: {
+            kind: 'table',
+            table: {
+              head: ['Group', 'How it counts', 'Examples'],
+              rows: [
+                ['Primary', 'On its own', 'wetland, Ramsar, mangrove, peatland, seagrass, saltmarsh, coral reef'],
+                ['General', 'Two or more, or with other evidence', 'lagoon, marsh, floodplain, lake, oasis'],
+                ['Fauna', 'Only with a biodiversity marker', 'migratory birds, heron, plover, otter'],
+                ['Gated', 'Only with a conservation word', 'rice paddy, fish pond, salt pan'],
+                ['Exclude', 'Flags the row for a closer look', 'drinking water, sanitation, hydropower'],
+              ],
+              caption: 'The keyword groups, with examples from the final list.',
+            },
+          },
+        },
+        {
+          label: '28 June 2026',
+          body: [
+            'Rows the rules couldn’t decide needed a person or a second opinion, so I wrote the instructions for an AI screener and tested each version against my own labels. The first agreed only **57.5%** of the time. Each version fixed the mistakes of the last, like counting river-basin water management as wetland work.',
+            'Version 8 matched all of Stephanie’s include and exclude calls on **39** held-out projects. On **9 July** I tested version 9 on **162** fresh projects it had never seen: **93%** of the projects it included were right.',
+          ],
+          side: 'left',
+          media: {
+            kind: 'table',
+            table: {
+              head: ['Version', 'Tested on', 'Agreement', 'What changed'],
+              rows: [
+                ['v1', '80 rows', '57.5%', 'First version, far too strict'],
+                ['v2', '63 rows', '74.6%', 'Three-way call; wetland components allowed'],
+                ['v3', '27 rows', '81.5%', 'River-basin water management excluded'],
+                ['v4', '86 rows', '84.9%', 'Duplicates removed before screening'],
+                ['v6', '52 fresh 2024 rows', '90.2%', 'Four rules for borderline cases'],
+                ['v8', '39 of Stephanie’s', '100%', 'Rebuilt on her test: is the wetland integral?'],
+                ['v9', '162 fresh projects', '89.5%', 'Four consistency fixes'],
+              ],
+              highlight: 2,
+              caption: 'Agreement with the hand labels on include or exclude.',
+            },
+          },
+        },
+        {
+          label: '30 June 2026',
+          body: [
+            'Keywords alone missed too much, so I widened the net. A row could also get in on one General term backed by strong evidence: an environmental funder such as the GEF, a biodiversity marker or a wetland purpose code. The 2024 candidates went from **857** to **1,560**.',
+            'Checking against the projects Stephanie had included showed the net’s limit: **142** of the **279** it missed had no wetland word at all. I tested a net built on markers and codes instead, but even the tightest version added **2,938** rows to find a handful, so I rejected it.',
+          ],
+          media: {
+            kind: 'table',
+            table: {
+              head: ['Path', 'What gets a row in'],
+              rows: [
+                ['A', 'A Primary term'],
+                ['B', 'Two General terms and any supporting signal'],
+                ['C', 'One General term and a strong signal'],
+                ['D', 'A fauna term and a biodiversity marker, with no land habitat word'],
+              ],
+              caption: 'The four ways into the net. Signals are Rio markers, SDGs, sector and purpose codes, and funders.',
+            },
+          },
+        },
+        {
+          label: '2 July 2026',
+          body: [
+            'A random audit of **50** candidates found only **34** were real wetland projects. So I tested every rule that could decide rows automatically. I designed the rules on **628** rows I had labelled by hand, then tested them on **280** fresh rows they had never seen. A rule that included rows had to be right at least **94%** of the time, and one that excluded them **95%**.',
+            'Only **5** of the **21** rules held up. Most that failed had memorised a few big programmes: “donor is Canada” was right **89%** of the time on the design rows but only **41%** on fresh ones.',
+          ],
+          side: 'left',
+          media: {
+            kind: 'panels',
+            panels: [
+              {
+                kind: 'table',
+                caption: 'The 5 rules kept (rows tested in brackets)',
+                table: {
+                  head: ['Rule', 'Design rows', 'Fresh rows', 'Overall'],
+                  rows: [
+                    ['Primary term in the title', '96% (216)', '100% (14)', '96% (230)'],
+                    ['Two or more different Primary terms', '93% (223)', '100% (20)', '94% (243)'],
+                    ['Primary term and an environmental funder', '99% (115)', '100% (6)', '99% (121)'],
+                    ['Primary term and a conservation purpose code', '99% (70)', '100% (4)', '99% (74)'],
+                    ['Exclude: no wetland term or marker, and a water-supply purpose', '–', '–', '100% (3)'],
+                  ],
+                  highlight: 3,
+                },
+              },
+              {
+                kind: 'table',
+                caption: 'Some of the 16 rules rejected',
+                table: {
+                  head: ['Rule', 'Design rows', 'Fresh rows'],
+                  rows: [
+                    ['Primary term, biodiversity marker and an action verb in the title', '98%', '74%'],
+                    ['Primary term and a principal biodiversity marker', '94%', '84%'],
+                    ['Primary term and the general environment sector', '89%', '78%'],
+                    ['Primary term and environmental policy purpose', '87%', '70%'],
+                    ['Donor is Canada', '89%', '41%'],
+                    ['Recipient is Iraq, Senegal or Honduras', '94%', '58%'],
+                    ['Exclude: marine or ocean text', '18%', '49%'],
+                  ],
+                  highlight: 2,
+                },
+              },
+            ],
+          },
+        },
+        {
+          label: '3 July 2026',
+          body: [
+            'Each included row also needed a grade: Principal if wetlands are the point of the project, Significant if they are one aim among several. My first grading rules agreed with my own labels **80.5%** of the time but with Stephanie’s only **60%**: she judged by whether the wetland was integral to the project, not by where the word appeared.',
+            'Over-calling Principal inflates the wetland-specific total, which is the error to avoid. So I made Significant the default, and a row only becomes Principal on positive evidence: a wetland term with an action verb in the title, GEF funding, or a named Ramsar site. On Stephanie’s **73** blind labels, every row the confident rules included was one she had included too.',
+          ],
+        },
+        {
+          label: '8 July 2026',
+          body: [
+            'The money was concentrated: the top **25** entries held half of it. So the biggest rows were screened by hand until **95%** of the value was decided, the AI screener took the next **4.5%**, and rules the last **0.5%**.',
+            'For the uncertain middle I added one more text rule: a wetland term with a conservation verb, or a conservation purpose code with a wetland term. Across **25** random splits it was right **95.9%** of the time by value on rows it hadn’t seen, and never below **90.9%**, recovering **$911m**. Every row then had a decision, each tagged so it could be undone.',
+          ],
+          media: {
+            kind: 'table',
+            table: {
+              head: ['Decided by', 'Rows', 'Value'],
+              rows: [
+                ['Hand', 'about 3,156', 'about $11.9bn'],
+                ['AI screener', 'about 710', 'about $0.63bn'],
+                ['Rules', 'about 9,939', 'about $0.13bn'],
+              ],
+              caption: 'Who decided the 13,805 rows screened by 13 July.',
+            },
+          },
+        },
+        {
+          label: '13 July 2026',
+          body: [
+            'Stephanie reviewed the keyword list. Estuary, swamp and shellfish reef became Primary terms, and river, stream and delta became General. The **4,174** new candidate rows were screened, adding **196** projects worth **$1.79bn**, mostly river restoration in China.',
+            'I also made the list English-first: non-English rows were translated before the search, which let me retire **189** French and Spanish terms and keep **22** as a backstop. Each keyword change was judged by how many rows it moved and how many of those were real.',
+          ],
+          side: 'left',
+          media: {
+            kind: 'table',
+            table: {
+              head: ['Term', 'Change', 'Why'],
+              rows: [
+                ['pan', 'Removed', '216 of 367 hits were “Pan-African” or “Pan-American”'],
+                ['lagos', 'Removed', 'Mostly the city in Nigeria'],
+                ['lake', 'Kept as General', 'As Primary it added 641 rows in 2024, mostly places like “Great Lakes Region”'],
+                ['delta', 'Kept out of Primary', '1,404 rows of Nile, Mekong and Niger Delta locations'],
+                ['LAC', 'Capitals ignored', 'Latin America and the Caribbean, not the French “lac”'],
+                ['HeRON', 'Capitals ignored', 'A health programme, not the bird'],
+              ],
+            },
+          },
+        },
+        {
+          label: '29 July 2026',
+          body: [
+            'The last gap was the second OECD dataset, TOSSD, which overlaps the main one. A claimed **$7.3bn** of missing finance was **96%** already counted, so I only took TOSSD for the **20** providers missing from the main data. The real gap was **240** rows worth **$174.3m**, all screened.',
+            'The final count: **14,045** transactions screened and **5,489** counted as wetland finance, worth **$6.96bn** wetland-related and **$3.83bn** wetland-specific. Made generic, the same paths and rules became the Explorer above.',
+          ],
+        },
+      ],
+    },
   },
   {
     slug: 'cruisingtheworld',

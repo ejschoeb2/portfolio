@@ -770,6 +770,78 @@
   margin-top: 0.9em;
 }
 
+/* ---------- Walkthrough: a tool's pages, screenshot left, what it does right ---------- */
+
+.walkthrough {
+  padding: clamp(40px, 6vw, 90px) 0;
+  border-top: 1px solid var(--line);
+}
+
+.method {
+  padding-top: clamp(40px, 6vw, 90px);
+  border-top: 1px solid var(--line);
+}
+
+.walkthrough__intro {
+  max-width: 40em;
+  margin-bottom: clamp(28px, 4vw, 56px);
+  font-size: clamp(17px, 1.3vw, 20px);
+  line-height: 1.6;
+  text-wrap: pretty;
+}
+
+.walk {
+  display: grid;
+  grid-template-columns: minmax(0, 7fr) minmax(0, 5fr);
+  gap: clamp(28px, 4vw, 72px);
+  align-items: center;
+}
+
+.walk__frame {
+  position: relative;
+  aspect-ratio: 16 / 10;
+  overflow: hidden;
+  border-radius: var(--radius-l);
+  background: #fff;
+  box-shadow: var(--media-shadow);
+  touch-action: pan-y;
+}
+
+.walk__frame::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 4;
+  border-radius: inherit;
+  box-shadow: inset 0 0 0 2px var(--ink);
+  pointer-events: none;
+}
+
+.walk__track {
+  display: flex;
+  height: 100%;
+  transition: transform 0.6s var(--ease-out);
+}
+
+.walk__shot {
+  flex: 0 0 100%;
+  height: 100%;
+  padding: clamp(14px, 2vw, 30px);
+}
+
+.walk__shot img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.walk__nav {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-top: clamp(22px, 2.6vw, 34px);
+}
+
 /* ---------- Website viewer ---------- */
 
 /* Scroll inside it to look round the site. */
@@ -858,6 +930,8 @@
 
 .builds .viewer {
   --viewer-h: min(88svh, 960px);
+  /* A still: the top of the site, not scrolled. */
+  overflow: hidden;
 }
 
 /* Greyed and blurred a little, so the box stands out from the site behind it. */
@@ -885,6 +959,13 @@
     0 30px 60px -24px rgba(26, 26, 26, 0.38);
 }
 
+.builds__top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
 .builds__count {
   color: var(--ink-soft);
   font-size: 12px;
@@ -893,7 +974,7 @@
 }
 
 .builds__name {
-  margin-top: 8px;
+  margin-top: 4px;
   font-family: var(--display);
   font-size: clamp(24px, 2.2vw, 34px);
   font-weight: 800;
@@ -907,39 +988,6 @@
   font-size: clamp(15px, 1.1vw, 17px);
   line-height: 1.55;
   text-wrap: pretty;
-}
-
-.builds__nav {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  margin-top: 22px;
-}
-
-.builds__next {
-  display: inline-flex;
-  align-items: center;
-  gap: 9px;
-  height: 40px;
-  padding: 0 18px 0 20px;
-  border-radius: 999px;
-  background: var(--blue);
-  color: #fff;
-  font-size: 14px;
-  font-weight: 650;
-  transition: background-color 0.3s;
-}
-
-.builds__next:hover {
-  background: var(--blue-deep);
-}
-
-.builds__next .arrow {
-  transition: translate 0.35s var(--ease-out);
-}
-
-.builds__next:hover .arrow {
-  translate: 3px 0;
 }
 
 /* "Open in a new tab" beside a web project's opening paragraph. */
@@ -1069,7 +1117,8 @@
   }
 
   .chapter,
-  .chapter[data-side='left'] {
+  .chapter[data-side='left'],
+  .walk {
     grid-template-columns: minmax(0, 1fr);
   }
 
