@@ -160,7 +160,7 @@ export const chapters: Chapter[] = [
         blocks: [
           {
             kind: 'text', lead: true,
-            text: 'Next, how the lid opens and closes. Every small motor I could find was [[too weak]] to hold the lid up on its own.',
+            text: 'Next I looked at how the lid opens and closes, and found every small motor was [[too weak]] to hold the lid up on its own.',
             calc: c('Torque to hold the lid', [
               'Lid: 0.400 × 0.440 × 0.009 m plywood × 600 kg/m³ + 0.2 kg fittings ≈ 1.15 kg (est.)',
               'Centre of mass ≈ 0.20 m from the hinge',
@@ -230,7 +230,7 @@ export const chapters: Chapter[] = [
         blocks: [
           {
             kind: 'text', lead: true,
-            text: 'The lid needed a seal all round, as flies get through about 1 mm. But to click, the push-pen latch pushes the lid past where it rests, so the seal at the front is squashed [[about 3 mm more than at the back]]. Off-the-shelf seals needed [[far too much force]] to squash that far.',
+            text: 'I realised the lid needed a seal all round, as flies get through about 1 mm. But to click, the push-pen latch pushes the lid past where it rests, so the seal at the front is squashed [[about 3 mm more than at the back]]. Off-the-shelf seals needed [[far too much force]] to squash that far.',
             calcs: [c('The gap is a wedge', [
               'Latched, the lid sits flat with a 6 mm gap',
               'To latch, the front goes ≈ 3 mm further onto the stops: ≈ 2.8 mm gap',
@@ -272,7 +272,7 @@ export const chapters: Chapter[] = [
         blocks: [
           {
             kind: 'text', lead: true,
-            text: 'To make the bin open by itself, something had to pull the latch pin out of its track. A pull solenoid would need [[about 10.5 N]].',
+            text: 'To make the bin open by itself, I needed something to pull the latch pin out of its track. A pull solenoid would need [[about 10.5 N]].',
             calc: c('Solenoid force needed', [
               'Pin friction + slide friction + return spring ≈ 3.9 N (est.)',
               '× 1.5 safety factor ≈ 5.9 N',
@@ -293,9 +293,8 @@ export const chapters: Chapter[] = [
       {
         id: 's25', date: '9–13 Oct', title: 'Lid sensor', pointer: '',
         blocks: [
-          { kind: 'text', lead: true, text: 'The bin had to know when the lid was shut, so it never rolls home with the lid open.' },
-          { kind: 'text', text: 'A Hall sensor in the back of the rim reads six small magnets in the lid above it.' },
-          { kind: 'outcome', text: 'My first sensor was the wrong type, so I swapped it for a linear SS49E. The magnet hole was lost in a CAD change, so I’ll drill it.' },
+          { kind: 'text', lead: true, text: 'I realised the bin had to know when the lid was shut, so it would never roll home with the lid open.' },
+          { kind: 'outcome', text: 'So I decided to install a Hall probe in the back of the rim that reads six small magnets in the lid above it.' },
         ],
       },
     ],
@@ -304,20 +303,22 @@ export const chapters: Chapter[] = [
     title: 'Rolling out',
     steps: [
       {
-        id: 's26', date: '7 Oct', title: 'Following bin', dead: true, pointer: '',
+        id: 's27', date: '7 Oct', title: 'Rolling out', pointer: '',
         blocks: [
-          { kind: 'text', lead: true, text: 'I wanted the bin to turn and follow you round the kitchen.' },
-          { kind: 'list', items: ['Two motors on sprung wheels.', 'Sensing to track a person.', 'About £140–155 in parts.'] },
-          { kind: 'outcome', dropped: 'Dropped the following bin.', text: 'It wasn’t in my specification and didn’t fix anything I’d measured.' },
+          { kind: 'text', lead: true, text: 'Next I designed how the bin rolls out. It only ever goes straight in and out of its slot, so it didn’t need steering.' },
+          {
+            kind: 'outcome',
+            text: 'So one motor drives a solid rear axle through a belt, turning both back wheels together so it can’t veer, with swivel castors at the front and an encoder counting how far it has rolled.',
+          },
         ],
       },
       {
-        id: 's27', date: '7 Oct', title: 'Drive', pointer: '',
+        id: 's28', date: '7 Oct', title: 'Parts', pointer: '',
         blocks: [
-          { kind: 'text', lead: true, text: 'The bin only needs to go straight in and out of its slot.' },
+          { kind: 'text', lead: true, text: 'Then I chose parts to suit, keeping them cheap and the base low.' },
           {
             kind: 'text',
-            text: 'One motor drives a solid rear axle through a belt, so it can’t veer. It works at [[about 20 % of its stall torque]].',
+            text: 'A DFRobot FIT0403 gearmotor, which has the encoder built in, works at [[about 20 % of its stall torque]]. Screwfix swivel castors at £2.19 each are only 49.4 mm tall, which dropped the base 20 mm, and printed TPU wheels at the back are driven through metal couplers.',
             calc: c('Sizing the motor', [
               'Full bin 33 kg (est.), rolling resistance 0.03, 1° floor slope, starts at 0.3 m/s²',
               'F = 9.7 + 5.7 + 9.9 ≈ 25 N; × 1.5 ≈ 38 N',
@@ -325,15 +326,7 @@ export const chapters: Chapter[] = [
               'Motor: 1.04 ÷ (1.5 × 0.95) ≈ 0.73 N·m, of 3.7 N·m stall',
             ], '≈ 20 % of stall, ≈ 0.2 m/s'),
           },
-          { kind: 'outcome', text: 'I chose a DFRobot FIT0403 motor, with an encoder to count how far the bin has rolled.' },
-        ],
-      },
-      {
-        id: 's28', date: '7 Oct', title: 'Wheels', pointer: '',
-        blocks: [
-          { kind: 'text', lead: true, text: 'I needed cheap wheels that kept the base low.' },
-          { kind: 'text', text: 'Screwfix swivel castors at £2.19 each are only 49.4 mm tall, so the base dropped 20 mm. Printed TPU wheels at the back are driven through metal couplers.' },
-          { kind: 'outcome', text: 'Low cost, and more height for the bin.' },
+          { kind: 'outcome', text: 'Cheap parts that left more of the height for the bin.' },
         ],
       },
     ],
@@ -344,7 +337,7 @@ export const chapters: Chapter[] = [
       {
         id: 's30', date: '8 Oct', title: 'Sheet lid', pointer: '',
         blocks: [
-          { kind: 'text', lead: true, text: 'Printing the whole lid as a shell would cost too much, and it wouldn’t fit any printer I can use.' },
+          { kind: 'text', lead: true, text: 'I realised printing the whole lid as a shell would cost too much, and it wouldn’t fit any printer I could use.' },
           {
             kind: 'table',
             table: {
@@ -362,18 +355,15 @@ export const chapters: Chapter[] = [
       {
         id: 's31', date: '8–9 Oct', title: 'Flush top', pointer: '',
         blocks: [
-          { kind: 'text', lead: true, text: 'I didn’t want bolts showing on top.' },
-          { kind: 'text', text: 'The sheet now sits flush in a recess on VHB tape. I rebuilt the lid as one part in Inventor, and the checks found two clashes: hinge bores with no clearance, and the back wall hitting the spring pads.' },
-          { kind: 'outcome', text: 'I fixed both, keeping the lid walls clean.' },
+          { kind: 'text', lead: true, text: 'I didn’t want bolts showing on top, so I decided to use VHB tape to attach the acrylic panel to the lid body. The tape lets it sit flush in a recess.' },
         ],
       },
       {
         id: 's33', date: '9–12 Oct', title: 'Lid pieces', pointer: '',
         blocks: [
-          { kind: 'text', lead: true, text: 'The lid is too big for any print bed I can use.' },
+          { kind: 'text', lead: true, text: 'After checking which printers were available in the Makerspace, I realised the lid was too big for any of them.' },
+          { kind: 'outcome', text: 'So I split it into five pieces and joined them with glued dovetails.' },
           { kind: 'widget', name: 'dovetail' },
-          { kind: 'text', text: 'The joints went from bolts and dowels, to bolts, to printed pins, to printed dovetails.' },
-          { kind: 'outcome', text: 'I split it into five pieces with glued dovetails, since the taped-on top holds everything together anyway.' },
         ],
       },
       {
@@ -397,8 +387,7 @@ export const chapters: Chapter[] = [
       {
         id: 's35', date: '11–15 Oct', title: 'Lid weight', pointer: '',
         blocks: [
-          { kind: 'text', lead: true, text: 'Weighing the model showed a 4 mm acrylic top made the lid too heavy for the springs.' },
-          { kind: 'widget', name: 'springs' },
+          { kind: 'text', lead: true, text: 'After doing further calculations, it became clear a 4 mm acrylic top would make the lid too heavy for the springs.' },
           {
             kind: 'table',
             table: {
@@ -417,7 +406,7 @@ export const chapters: Chapter[] = [
               '5 mm, 1.58 kg: W ≈ 2.57 → net ≈ −0.28 N·m',
             ], 'Only 3 mm opens with the springs as drawn', 'The net torque must stay above ≈ 0.25 N·m all the way to 80°.'),
           },
-          { kind: 'outcome', text: '4 mm wasn’t available anyway, so I went with 3 mm. 5 mm would also have stood 1 mm proud.' },
+          { kind: 'outcome', text: 'Instead I went with 3 mm, as it gave the lid a snappy opening, which is what I was going for.' },
         ],
       },
     ],
@@ -428,10 +417,10 @@ export const chapters: Chapter[] = [
       {
         id: 's36', date: '8–11 Oct', title: 'Tilt-up top', pointer: '',
         blocks: [
-          { kind: 'text', lead: true, text: 'Changing the bag was hard with the lid, motor and latch all on the top.' },
+          { kind: 'text', lead: true, text: 'I realised the bin bag would stop the silicone seal working properly if it was folded over the rim, and changing it would be difficult with the electronics attached to the top.' },
           {
-            kind: 'text',
-            text: 'I made the whole top tilt back on a second hinge. [[Sweeping every part]] through the tilt showed where the hinge could go.',
+            kind: 'outcome',
+            text: 'So I made the whole top tilt back on a second hinge, so nothing needs unplugging and it rests open on its own for a bag change. [[Sweeping every part]] through the tilt showed where the hinge could go.',
             calc: c('What the sweep showed', [
               'Under the worktop the top only tips ≈ 36° before the lid hits the edge',
               'So for a bag change the bin rolls out a further 150 mm',
@@ -439,14 +428,6 @@ export const chapters: Chapter[] = [
               'Past ≈ 78° the top would fall back, so a stop holds it at ≈ 90°',
             ], 'Hinge at 16 mm behind the back, stop at ≈ 90°'),
           },
-          { kind: 'outcome', text: 'Now nothing needs unplugging, and the top rests open on its own for a bag change.' },
-        ],
-      },
-      {
-        id: 's37', date: '8–13 Oct', title: 'Rim pieces', pointer: '',
-        blocks: [
-          { kind: 'text', lead: true, text: 'The rim layers are too big to print whole.' },
-          { kind: 'outcome', text: 'I split each into four pieces. After four joint designs, I settled on glued dovetails like the lid.' },
         ],
       },
     ],
@@ -455,43 +436,23 @@ export const chapters: Chapter[] = [
     title: 'The body',
     steps: [
       {
-        id: 's38', date: '10 Oct', title: 'Body material', dead: true, pointer: '',
+        id: 's38', date: '10–12 Oct', title: 'Body material', pointer: '',
         blocks: [
-          { kind: 'text', lead: true, text: 'I looked again at what the body should be made of.' },
+          { kind: 'text', lead: true, text: 'I looked again at what the body should be made of. It had to be wipe-clean, fit the budget, and stay flat when someone leans on the bin.' },
           {
             kind: 'table',
             table: {
-              head: ['Option', 'Problem'],
+              head: ['Option', 'Verdict'],
               rows: [
                 ['Plywood', 'Soaks up spills and smells'],
                 ['A bought bin', 'None fit; the closest (≈ £76–96) is 70 mm too tall'],
-                ['One folded aluminium composite sheet', '≈ £150–180'],
                 ['A curved skin', 'Too much work for a curved front'],
+                ['One folded composite sheet', '≈ £150–180, most of the budget'],
+                ['Solid aluminium panels', 'Stiff, but heavier and dearer than composite'],
+                ['Flat aluminium composite (ACM) panels', 'Light, stiff and wipe-clean'],
               ],
             },
           },
-          { kind: 'outcome', dropped: 'Dropped the plywood body.', text: 'With a £200 budget it had to be flat panels, which meant square corners.' },
-        ],
-      },
-      {
-        id: 's40a', date: '11 Oct', title: 'Square corners', pointer: '',
-        blocks: [
-          {
-            kind: 'text', lead: true,
-            text: 'Flat walls needed square corners, so the rim and lid became a rounded rectangle. The walls sit inside the rim’s seal line, which cut the capacity to [[about 81 L]].',
-            calc: c('Capacity and bag', [
-              'Inside the walls: 330 × 410 mm; height 596 mm',
-              'V = 0.330 × 0.410 × 0.596 ≈ 0.081 m³',
-              'Bag loop needed: 2 × (330 + 410) ÷ 0.95 ≈ 1560 mm; the 100 L sack is 1640',
-            ], '≈ 81 L, and a 100 L sack fits'),
-          },
-          { kind: 'outcome', text: 'Still 1.6 times our current bin, and the bag lifts straight out.' },
-        ],
-      },
-      {
-        id: 's40b', date: '10–12 Oct', title: 'Walls', pointer: '',
-        blocks: [
-          { kind: 'text', lead: true, text: 'The walls must stay flat when someone leans on the bin.' },
           {
             kind: 'table',
             table: {
@@ -511,20 +472,35 @@ export const chapters: Chapter[] = [
               'w = 0.0151 × 50 × 416² ÷ 86 000 ≈ 1.5 mm',
             ], 'ACM is ≈ 37 times stiffer than PVC foam'),
           },
-          { kind: 'outcome', text: 'PVC foam would have felt flimsy, so I chose 3 mm brushed aluminium composite.' },
+          { kind: 'outcome', text: 'So I chose flat 3 mm brushed aluminium composite (ACM) panels: they fit the £200 budget and bend only about 1.5 mm under a lean, where PVC foam board would have felt flimsy.' },
+        ],
+      },
+      {
+        id: 's40a', date: '11 Oct', title: 'Square corners', pointer: '',
+        blocks: [
+          {
+            kind: 'text', lead: true,
+            text: 'I realised flat walls needed square corners, so the rim and lid became a rounded rectangle. The walls sit inside the rim’s seal line, which cut the capacity to [[about 81 L]].',
+            calc: c('Capacity and bag', [
+              'Inside the walls: 330 × 410 mm; height 596 mm',
+              'V = 0.330 × 0.410 × 0.596 ≈ 0.081 m³',
+              'Bag loop needed: 2 × (330 + 410) ÷ 0.95 ≈ 1560 mm; the 100 L sack is 1640',
+            ], '≈ 81 L, and a 100 L sack fits'),
+          },
+          { kind: 'outcome', text: 'Still 1.6 times our current bin, and the bag lifts straight out.' },
         ],
       },
       {
         id: 's40c', date: '11–13 Oct', title: 'Corners', pointer: '',
         blocks: [
-          { kind: 'text', lead: true, text: 'The flat walls needed joining at the corners.' },
+          { kind: 'text', lead: true, text: 'Next I had to join the flat walls at the corners.' },
           { kind: 'outcome', text: 'Aluminium angle up the corners and round the floor was cheaper and stronger than printed posts. The walls slot 10 mm into the rim, gripped by small printed ribs.' },
         ],
       },
       {
         id: 's41', date: '11 Oct', title: 'Floor', pointer: '',
         blocks: [
-          { kind: 'text', lead: true, text: 'The floor carries a full bag of about 27 kg, and the drive bolts to it.' },
+          { kind: 'text', lead: true, text: 'I realised the floor would carry a full bag of about 27 kg, with the drive bolted underneath.' },
           {
             kind: 'table',
             table: { head: ['Acrylic floor', 'Sag under a full bag'], rows: [['4 mm', '≈ 7.1 mm'], ['6 mm', '≈ 2.1 mm'], ['8 mm', '≈ 0.9 mm']] },
@@ -541,7 +517,7 @@ export const chapters: Chapter[] = [
       {
         id: 's43', date: '11 Oct', title: 'Height', pointer: '',
         blocks: [
-          { kind: 'text', lead: true, text: 'The tall 835 mm rim no longer fitted under the worktop with the real lid on, and I wanted room for a hand above the lid.' },
+          { kind: 'text', lead: true, text: 'I realised the tall 835 mm rim no longer fitted under the worktop with the real lid on, and I wanted room for a hand above the lid.' },
           {
             kind: 'table',
             table: {
@@ -560,21 +536,21 @@ export const chapters: Chapter[] = [
       {
         id: 's44', date: '11 Oct', title: 'Hand sensor', pointer: '',
         blocks: [
-          { kind: 'text', lead: true, text: 'My foot sensor near the floor sat right in the bin’s own path.' },
+          { kind: 'text', lead: true, text: 'I realised my foot sensor near the floor sat right in the bin’s own path.' },
           { kind: 'outcome', text: 'I moved the sensor into the lid, facing up: you hold a hand over the bin and it rolls out to you. When stowed it sees the worktop, so it also knows it’s home.' },
         ],
       },
       {
         id: 's45', date: '11–12 Oct', title: 'Laser sensor', dead: true, pointer: '',
         blocks: [
-          { kind: 'text', lead: true, text: 'The ultrasonic sensor couldn’t see through the acrylic, so it would need holes in the lid, and mine was faulty anyway.' },
+          { kind: 'text', lead: true, text: 'I found the ultrasonic sensor couldn’t see through the acrylic, so it would need holes in the lid, and mine was faulty anyway.' },
           { kind: 'outcome', dropped: 'Dropped the ultrasonic sensor.', text: 'A laser time-of-flight sensor now sits under a black, infrared-clear panel: flush, with nothing to clean round.' },
         ],
       },
       {
         id: 's46', date: '12–13 Oct', title: 'Battery', pointer: '',
         blocks: [
-          { kind: 'text', lead: true, text: 'A trailing mains cable didn’t suit a bin that drives in and out.' },
+          { kind: 'text', lead: true, text: 'I decided a trailing mains cable didn’t suit a bin that drives in and out.' },
           {
             kind: 'text',
             text: 'It runs on a slide-out battery and the Arduino Uno I already had, lasting [[about 2.5–3.5 days]] a charge.',
@@ -585,18 +561,6 @@ export const chapters: Chapter[] = [
             ], '≈ 2.5–3.5 days'),
           },
           { kind: 'outcome', text: 'I cut the electronics to the minimum: no converter, fuse, switch or extras I don’t need to prove it works.' },
-        ],
-      },
-    ],
-  },
-  {
-    title: 'Extras',
-    steps: [
-      {
-        id: 's47', date: '13 Oct', title: 'Rota dial', dead: true, pointer: '',
-        blocks: [
-          { kind: 'text', lead: true, text: 'Nobody wants to take the bin out, so I designed a dial showing whose turn it is.' },
-          { kind: 'outcome', dropped: 'Dropped the dial.', text: 'To be easy to see it would sit where it stops the lid sealing, and anywhere else it would be hidden.' },
         ],
       },
     ],

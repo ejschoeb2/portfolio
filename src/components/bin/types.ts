@@ -29,6 +29,7 @@ export type AnimName =
   | 'latch'
   | 'motorRelease'
   | 'solenoid'
+  | 'handRoll'
   | 'hallPulse'
   | 'tiltCycle'
   | 'lidSensor'

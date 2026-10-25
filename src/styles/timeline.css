@@ -1089,6 +1089,10 @@
   max-height: 260px;
 }
 
+.dove svg {
+  max-height: 340px;
+}
+
 .seal__rim {
   fill: #dfe5ef;
   stroke: var(--ink);
@@ -1148,6 +1152,37 @@
   fill: rgba(42, 95, 224, 0.75);
   stroke: var(--blue-deep);
   stroke-width: 1;
+}
+
+.dove__dim,
+.dove__ext {
+  stroke: var(--ink);
+  stroke-width: 1.2;
+}
+
+.dove__ext {
+  stroke: var(--ink-soft);
+  stroke-dasharray: 3 3;
+}
+
+.dove__head {
+  fill: var(--ink);
+}
+
+.dove svg .dove__text {
+  font-family: var(--font);
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.dove__text--blue {
+  fill: var(--blue);
+}
+
+.dove__label {
+  fill: var(--ink-soft);
+  font-size: 13px;
+  font-weight: 500;
 }
 
 /* ---------- Small screens ---------- */

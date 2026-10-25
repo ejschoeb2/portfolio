@@ -229,14 +229,7 @@ export const SCENES: Record<string, SceneState> = {
       { at: [-15, 28, -352], text: '6 magnets in the lid' },
     ],
   },
-  s26: {
-    show: { ...D_BODY, ...D_MECH, lidHollow: 'base', sealLipD: 'base', drive2d: 'dead', footSensor: 'base' },
-    rim: TALL,
-    box: { bottom: 100, top: -50 },
-    roll: 470,
-    cam: [[-1900, 380, 1000], [-200, -260, -220]],
-    anim: 'spin2d',
-  },
+
   s27: {
     show: { ...D_BODY, box: 'ghost', ...D_MECH, lidHollow: 'base', sealLipD: 'base', ...DRIVE, fit0403: 'new', axleHw: 'new', axle: 'new', wheels: 'new', footSensor: 'base' },
     rim: TALL,
@@ -249,7 +242,7 @@ export const SCENES: Record<string, SceneState> = {
     ],
   },
   s28: {
-    show: { ...D_BODY, box: 'ghost', ...D_MECH, lidHollow: 'base', sealLipD: 'base', ...DRIVE, castors: 'new', castorPads: 'new', wheels: 'new', footSensor: 'base' },
+    show: { ...D_BODY, box: 'ghost', ...D_MECH, lidHollow: 'base', sealLipD: 'base', ...DRIVE, fit0403: 'new', castors: 'new', castorPads: 'new', wheels: 'new', footSensor: 'base' },
     rim: TALL,
     box: D_BOX,
     cam: cams.under(),
@@ -307,28 +300,13 @@ export const SCENES: Record<string, SceneState> = {
     anim: 'tiltCycle',
     labels: [{ at: [36, -40, -60], text: 'Second hinge' }],
   },
-  s37: {
-    show: {
-      box: 'base', ...DRIVE, footSensor: 'base',
-      rimD_s2_FrontZ0: { look: 'new', off: [-50, 120, 50] },
-      rimD_s2_FrontZ440: { look: 'new', off: [-50, 120, -50] },
-      rimD_s2_BackZ0: { look: 'new', off: [50, 120, 50] },
-      rimD_s2_BackZ440: { look: 'new', off: [50, 120, -50] },
-      rimD_s3_FrontZ0: { look: 'base', off: [-40, 40, 40] },
-      rimD_s3_FrontZ440: { look: 'base', off: [-40, 40, -40] },
-      rimD_s3_BackZ0: { look: 'base', off: [40, 40, 40] },
-      rimD_s3_BackZ440: { look: 'base', off: [40, 40, -40] },
-    },
-    rim: TALL,
-    box: D_BOX,
-    cam: cams.lid(TALL),
-  },
+
   s38: {
-    show: { ...D_ALL, box: 'dead' },
+    show: { ...ENV, ...NOW_TOP, ...DRIVE, footSensor: 'base', wallFront: 'new', wallBack: 'new', wallLeft: 'new', wallRight: 'new' },
     roll: 440,
     rim: TALL,
-    box: D_BOX,
     cam: cams.iso(TALL),
+    labels: [{ at: [-400, -350, -220], text: '3 mm ACM' }],
   },
   s40a: {
     show: { ...ENV, ...NOW_TOP, ...DRIVE, s2: 'new', s3: 'new', lid: 'new', lidTop: 'new', tof: 'base', irPanel: 'base', footSensor: 'base',
@@ -338,13 +316,7 @@ export const SCENES: Record<string, SceneState> = {
     cam: cams.iso(TALL),
     labels: [{ at: [-190, -40, -220], text: 'Inside 330 × 410 → ≈ 81 L' }],
   },
-  s40b: {
-    show: { ...ENV, ...NOW_TOP, ...DRIVE, footSensor: 'base', wallFront: 'new', wallBack: 'new', wallLeft: 'new', wallRight: 'new' },
-    roll: 440,
-    rim: TALL,
-    cam: cams.iso(TALL),
-    labels: [{ at: [-400, -350, -220], text: '3 mm ACM' }],
-  },
+
   s40c: {
     show: { ...ENV, ...NOW_TOP, ...DRIVE, footSensor: 'base', wallFront: 'base', wallBack: 'base', wallLeft: 'base', wallRight: 'base', angles: 'new', innerBars: 'new' },
     roll: 440,
@@ -373,8 +345,8 @@ export const SCENES: Record<string, SceneState> = {
   s44: {
     show: { ...ENV, ...NOW_TOP_NO_SENSOR, ...NOW_BODY, hcsr04: 'new', footSensor: 'dead', hand: 'base', lidBeam: 'new' },
     rim: FINAL,
-    cam: cams.sensor(FINAL),
-    anim: 'lidSensor',
+    cam: [[-1900, 260, 1000], [-420, -260, -220]],
+    anim: 'handRoll',
     labels: [{ at: [-380, 60, -220], text: 'Ultrasonic sensor in the lid' }],
   },
   s45: {
@@ -393,11 +365,7 @@ export const SCENES: Record<string, SceneState> = {
       { at: [-300, -712, -110], text: 'Slide-out battery', frame: 'bin' },
     ],
   },
-  s47: {
-    show: { ...NOW, dial: 'dead' },
-    rim: FINAL,
-    cam: cams.dial(),
-  },
+
   final: {
     show: NOW,
     rim: FINAL,

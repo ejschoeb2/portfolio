@@ -250,26 +250,55 @@ export function SealSection() {
 
 export function Dovetail() {
   const s = 14
-  const P = (x: number, y: number) => `${(x + 10) * s} ${(y + 2) * s}`
-  // tongue: 6 wide at the seam (y 0), 10 wide 10 mm in; the socket is 0.15 bigger a side and 0.3 deeper
-  const tongue = [[-3, 0], [3, 0], [5, 10], [-5, 10]]
+  // mm on the plan → SVG units; the seam between the two pieces is y 0
+  const X = (x: number) => (x + 20) * s
+  const Y = (y: number) => (y + 9) * s
+  const path = (pts: number[][]) => 'M' + pts.map(([x, y]) => `${X(x)} ${Y(y)}`).join('L') + 'Z'
+  // tongue: 6 wide at the seam, 10 wide 10 mm in; the socket is 0.15 bigger a side and 0.3 deeper
+  const tongue = [[-3, -4], [3, -4], [3, 0], [5, 10], [-5, 10], [-3, 0]]
   const sock = [[-3.15, 0], [3.15, 0], [5.15, 10.3], [-5.15, 10.3]]
-  const path = (pts: number[][]) => 'M' + pts.map(([x, y]) => P(x, y)).join('L') + 'Z'
+  const dimH = (x0: number, x1: number, y: number, label: string, ty: number) => (
+    <g>
+      <line className="dove__dim" x1={X(x0)} x2={X(x1)} y1={Y(y)} y2={Y(y)} markerStart="url(#dove-a)" markerEnd="url(#dove-a)" />
+      <text className="dove__text" x={X((x0 + x1) / 2)} y={Y(ty)} textAnchor="middle">
+        {label}
+      </text>
+    </g>
+  )
   return (
     <figure className="dove">
-      <svg viewBox={`0 0 ${20 * s} ${15 * s}`} role="img" aria-label="Plan view of a printed dovetail joint">
-        <rect className="dove__piece" x={0} y={0} width={20 * s} height={2 * s} />
-        <path className="dove__piece" d={`M${P(-10, 0)}L${P(10, 0)}L${P(10, 13)}L${P(-10, 13)}Z`} />
+      <svg viewBox={`0 0 ${40 * s} ${27 * s}`} role="img" aria-label="Plan view of a printed dovetail joint: the tongue is 6 mm wide at the seam, 10 mm wide at its end and 10 mm long; the socket is 0.15 mm bigger each side and 0.3 mm deeper">
+        <defs>
+          <marker id="dove-a" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+            <path d="M 0 1 L 9 5 L 0 9 z" className="dove__head" />
+          </marker>
+        </defs>
+        <rect className="dove__piece" x={X(-20)} y={Y(-9)} width={40 * s} height={9 * s} />
+        <path className="dove__piece" d={path([[-20, 0], [20, 0], [20, 18], [-20, 18]])} />
         <path className="dove__socket" d={path(sock)} />
         <path className="dove__tongue" d={path(tongue)} />
-        <text className="dove__text" x={P(5.6, 5).split(' ')[0]} y={P(5.6, 5).split(' ')[1]}>
-          10 wide
+        <text className="dove__label" x={X(-19)} y={Y(-1.2)}>
+          Piece A
         </text>
-        <text className="dove__text" x={P(-9.5, -0.6).split(' ')[0]} y={P(-9.5, -0.6).split(' ')[1]}>
-          Seam · 6 mm neck
+        <text className="dove__label" x={X(-19)} y={Y(16.6)}>
+          Piece B
+        </text>
+        <line className="dove__ext" x1={X(-3)} x2={X(-3)} y1={Y(-4)} y2={Y(-6)} />
+        <line className="dove__ext" x1={X(3)} x2={X(3)} y1={Y(-4)} y2={Y(-6)} />
+        {dimH(-3, 3, -5.4, '6 mm neck', -6.5)}
+        {dimH(-5, 5, 12.4, '10 mm', 14.6)}
+        <line className="dove__dim" x1={X(8)} x2={X(8)} y1={Y(0)} y2={Y(10)} markerStart="url(#dove-a)" markerEnd="url(#dove-a)" />
+        <line className="dove__ext" x1={X(5.6)} x2={X(9)} y1={Y(10)} y2={Y(10)} />
+        <text className="dove__text" x={X(8.8)} y={Y(5.6)}>
+          10 mm
+        </text>
+        <text className="dove__text dove__text--blue" x={X(7)} y={Y(13.4)}>
+          Socket: +0.15 a side,
+        </text>
+        <text className="dove__text dove__text--blue" x={X(7)} y={Y(15.6)}>
+          +0.3 deep
         </text>
       </svg>
-      <figcaption>Plan view. The tongue (blue) slides down into the socket; the socket is 0.15 mm bigger each side and 0.3 mm deeper, then glued.</figcaption>
     </figure>
   )
 }

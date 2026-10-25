@@ -504,22 +504,24 @@ export class BinEngine {
       cone.userData.noEdges = true
       g.add(cone)
     }, MATS.beam)
-    // a hand held over the lid, and the sensor's beam up to it
+    // a right hand held palm-down over the lid, reaching in from the front (fingers towards
+    // the back, thumb on the left), and the sensor's beam up to it
     this.shape('hand', 'top', (g) => {
       const skin = { color: '#f0d2bd', rough: 0.8 }
       const palm = new THREE.Mesh(new RoundedBoxGeometry(95, 22, 85, 3, 10))
       palm.userData.spec = skin
       g.add(palm)
       for (let i = 0; i < 4; i++) {
-        const f = new THREE.Mesh(new THREE.CapsuleGeometry(8, 60, 4, 10))
+        const f = new THREE.Mesh(new THREE.CapsuleGeometry(8, 60 - Math.abs(i - 1.5) * 8, 4, 10))
         f.rotation.z = Math.PI / 2
-        f.position.set(-80, 0, -30 + i * 20)
+        f.position.set(78 - Math.abs(i - 1.5) * 4, 0, -30 + i * 20)
         f.userData.spec = skin
         g.add(f)
       }
       const th = new THREE.Mesh(new THREE.CapsuleGeometry(9, 40, 4, 10))
-      th.rotation.x = Math.PI / 2.6
-      th.position.set(-10, -2, 60)
+      th.rotation.y = -Math.PI / 4
+      th.rotation.z = Math.PI / 2
+      th.position.set(30, -4, 52)
       th.userData.spec = skin
       g.add(th)
       g.position.set(-330, 140, -220)
@@ -632,6 +634,7 @@ export class BinEngine {
     G.cuffPivot.rotation.x = 0
     G.leverPivot.rotation.z = LEVER_PARK * DEG
     this.parts.get('b22')?.mats.forEach(({ m }) => m.emissive.setRGB(0, 0, 0))
+    this.parts.get('hand')?.obj.getObjectByName('handInner')?.position.set(-330, 140, -220)
     const old = G.oldBin.getObjectByName('oldLidPivot')
     if (old) old.rotation.z = 0
     const ped = this.parts.get('pedal')?.obj.getObjectByName('pedalPivot')
@@ -1014,6 +1017,9 @@ export class BinEngine {
         if (this.sectionLabel) this.sectionLabel.textContent = s.t
         return {}
       }
+      case 'handRoll':
+        // the whole run, as at the top of the page, over and over
+        return this.runAt(r ? 7 : t % (DEMO_END + 1.5))
       case 'spin2d':
         return { roll: 470, spin: r ? 0.5 : 0.6 * Math.sin(t * 0.9) }
       default:
@@ -1080,6 +1086,11 @@ export class BinEngine {
       this.demoPhase = phase
       this.onPhase?.(phase)
     }
+    return this.runAt(t)
+  }
+
+  /** The finished bin's run at `t` seconds: the hand, the roll-out, the lid and the lever. */
+  private runAt(t: number): Partial<Record<'roll' | 'lid' | 'tilt' | 'spin', number>> {
     const roll = 440 * (smooth(2, 4.4, t) - smooth(12.4, 14.8, t))
     // the hand comes in under the worktop to just above the sensor, then away again
     const hand = this.parts.get('hand')
