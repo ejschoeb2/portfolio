@@ -267,16 +267,6 @@ export function KitchenBin() {
             </ul>
             <p className="kb__note">{problem.note}</p>
           </div>
-          <div>
-            <ul className="chapter__stats kb__stats">
-              {problem.stats.map((s) => (
-                <li key={s.label}>
-                  <strong>{s.value}</strong>
-                  <span>{s.label}</span>
-                </li>
-              ))}
-            </ul>
-          </div>
         </div>
       </section>
 

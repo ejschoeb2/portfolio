@@ -60,7 +60,8 @@ export function BinViewer({ scene, flash, pageScroll, onEngine, children }: Prop
   }, [flash])
 
   return (
-    <div className="bin3d" data-status={status}>
+    // With zoom on, the wheel belongs to the model, not the page's smooth scroll.
+    <div className="bin3d" data-status={status} data-lenis-prevent={pageScroll ? undefined : true}>
       <div className="bin3d__canvas" ref={host} />
       <div className="bin3d__overlay" ref={overlay} aria-hidden="true" />
       {status !== 'ready' && (

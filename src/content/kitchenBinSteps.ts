@@ -95,8 +95,7 @@ export const chapters: Chapter[] = [
         id: 's10', date: '3 Oct', title: 'Electronic', pointer: '',
         blocks: [
           { kind: 'text', lead: true, text: 'I decided to switch to an electronic bin, so motors would roll the bin out instead. A foot sensor near the floor would detect movement and move the bin accordingly.' },
-          { kind: 'list', title: 'Rules I set', items: ['Works by hand with the power off.', 'Only rolls home with the lid shut.', 'Closes slowly, so it can’t trap a hand.'] },
-          { kind: 'outcome', text: 'With a motor doing the work there was no force limit, so a big bag was possible again.' },
+          { kind: 'outcome', text: 'With a motor doing the work there was no force limit, so a big bag was possible again. I set three rules for it: it had to work by hand with the power off, only roll home with the lid shut, and close slowly so it couldn’t trap a hand.' },
         ],
       },
     ],
@@ -172,7 +171,7 @@ export const chapters: Chapter[] = [
           },
           {
             kind: 'outcome',
-            text: 'So I decided to use springs to carry most of the lid’s weight. Gas struts were a bad fit, with only about 10 mm spare each side, but two torsion springs on the hinge rod take almost no room, and their [[torque]] falls as the lid opens, just like its weight.',
+            text: 'So I decided to use springs to carry most of the lid’s weight. Gas struts were a bad fit, with only about 10 mm spare each side. But two torsion springs on the hinge rod take almost no room, and their [[torque]] falls as the lid opens, just like its weight.',
             calc: c('Spring torque', [
               'Lee Spring LTL/LTR095G10M: 16.6 N·mm per degree each',
               'Wound 100° when shut: T = 16.6 × 100 = 1660 N·mm ≈ 1.66 N·m each',
@@ -231,7 +230,7 @@ export const chapters: Chapter[] = [
         blocks: [
           {
             kind: 'text', lead: true,
-            text: 'The lid needed a seal all round, as flies get through about 1 mm. But latching moves the front [[about 3 mm more than the back]], and off-the-shelf seals needed [[far too much force]] to squash that far.',
+            text: 'The lid needed a seal all round, as flies get through about 1 mm. But to click, the push-pen latch pushes the lid past where it rests, so the seal at the front is squashed [[about 3 mm more than at the back]]. Off-the-shelf seals needed [[far too much force]] to squash that far.',
             calcs: [c('The gap is a wedge', [
               'Latched, the lid sits flat with a 6 mm gap',
               'To latch, the front goes ≈ 3 mm further onto the stops: ≈ 2.8 mm gap',
@@ -243,7 +242,7 @@ export const chapters: Chapter[] = [
               'A squashed U-channel is still 3–4.5 mm tall, more than 2.8 mm',
             ], 'Nothing off the shelf fits')],
           },
-          { kind: 'outcome', text: 'I needed a seal that bends out of the way instead of squashing.' },
+          { kind: 'outcome', text: 'So I needed a way of sealing it that allowed for that much variation in compression: a seal that bends out of the way instead of squashing.' },
         ],
       },
       {
@@ -280,16 +279,15 @@ export const chapters: Chapter[] = [
               'Force ∝ voltage²; to work from a part-flat 9 V battery: 5.9 ÷ (9 ÷ 12)²',
             ], '≈ 10.5 N at 12 V'),
           },
-          { kind: 'text', text: 'The only one strong enough, a Ledex B22, cost about £24 and drew 3.3 A, so it needed extra electronics at the front of the bin.' },
-          { kind: 'outcome', dropped: 'Dropped the solenoid.', text: 'It was the most expensive part and put power electronics at the front.' },
+          { kind: 'text', text: 'The only one strong enough, a Ledex B22, cost about £24 and drew 3.3 A, so it needed its own driver electronics.' },
+          { kind: 'outcome', dropped: 'Therefore I dropped the solenoid,', text: 'since it was the most expensive part in the bin and added unnecessary extra complexity.' },
         ],
       },
       {
         id: 's24', date: '10 Oct', title: 'Motor release', pointer: '',
         blocks: [
-          { kind: 'text', lead: true, text: 'I realised the closing motor could release the latch itself. The latch lets go on a second push, and the motor already pushes the lid onto the stops.' },
-          { kind: 'text', text: 'So to open, the motor pushes once more and backs off, and the springs open the lid.' },
-          { kind: 'outcome', text: 'That removed the solenoid and its electronics for nothing, at the cost of opening about half a second slower.' },
+          { kind: 'text', lead: true, text: 'I realised the closing motor could be used to give a secondary push, releasing the lid from the latch so the springs could open it.' },
+          { kind: 'outcome', text: 'This removed the solenoid and its electronics, saving money and making the design much simpler.' },
         ],
       },
       {

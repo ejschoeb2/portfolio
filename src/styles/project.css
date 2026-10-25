@@ -68,9 +68,11 @@
   --viewer-h: min(82svh, 900px);
 }
 
-/* The kitchen bin's 3D model, in place of a site. */
+/* The kitchen bin's 3D model, in place of a site, a little in from the page edges. */
 .project__model {
+  width: min(100%, max(92%, 100% - 120px));
   height: min(80svh, 880px);
+  margin-inline: auto;
   border-radius: var(--radius-l);
   box-shadow: var(--media-shadow);
 }

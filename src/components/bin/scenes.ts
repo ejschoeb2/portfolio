@@ -31,19 +31,22 @@ const cams = {
 
 const ENV: Show = { space: 'base', worktop: 'base' }
 const CONCEPT: Show = { ...ENV, box: 'base', conceptLid: 'base' }
-// the D-shaped top of 4–10 Oct, on the plywood box
-const D_BODY: Show = { ...ENV, box: 'base', rimD_s2: 'base', rimD_s3: 'base' }
+// the D-shaped top of 4–10 Oct, on the plywood box: one rim until the tilt-up top split it (S36)
+const D_BODY: Show = { ...ENV, box: 'base', rimD: 'base' }
+const D_BODY_SPLIT: Show = { ...ENV, box: 'base', rimD_s2: 'base', rimD_s3: 'base' }
 // close-ups of the top hide the room: in this era the tall rim met the worktop (found 8 Oct, fixed at step 34)
-const D_TOP: Show = { box: 'base', rimD_s2: 'base', rimD_s3: 'base' }
+const D_TOP: Show = { box: 'base', rimD: 'base' }
 const D_MECH: Show = {
   hingeRod: 'base', lidCollars: 'base', motor: 'base', lever: 'base', coupler: 'base', motorBeam: 'base',
-  springs: 'base', latch: 'base', cuff: 'base', latchRod: 'base',
+  springs: 'base', latch: 'base', cuff: 'base', latchPin: 'base', latchRod: 'base',
 }
+// the mechanism before the latch arm was strengthened (S15)
+const D_MECH_OLD_ARM: Show = Object.fromEntries(Object.entries(D_MECH).filter(([k]) => k !== 'cuff' && k !== 'latchPin'))
 const DRIVE: Show = {
   fit0403: 'base', axleHw: 'base', wheels: 'base', axle: 'base', driveBracket: 'base', kp08Spacers: 'base',
   castors: 'base', castorPads: 'base', basePanel: 'base',
 }
-const D_ALL: Show = { ...D_BODY, ...D_MECH, ...DRIVE, lidV3: 'base', sheetD: 'base', sealLipD: 'base', footSensor: 'base', hall: 'base', magnets: 'base' }
+const D_ALL: Show = { ...D_BODY_SPLIT, ...D_MECH, ...DRIVE, lidV3: 'base', sheetD: 'base', sealLipD: 'base', footSensor: 'base', hall: 'base', magnets: 'base' }
 // the current design
 const NOW_TOP: Show = {
   s2: 'base', s3: 'base', lid: 'base', lidTop: 'base', sealLipR: 'base', tiltPins: 'base', tiltCollars: 'base',
@@ -138,7 +141,7 @@ export const SCENES: Record<string, SceneState> = {
     ],
   },
   s14: {
-    show: { ...D_TOP, lidHollow: 'ghost', hingeRod: 'new', motor: 'new', lever: 'new', rimD_s2: 'ghost', rimD_s3: 'ghost', coupler: 'base', motorBeam: 'base', driveC: 'base', footSensor: 'base' },
+    show: { ...D_TOP, lidHollow: 'ghost', hingeRod: 'new', motor: 'new', lever: 'new', rimD: 'ghost', coupler: 'base', motorBeam: 'base', driveC: 'base', footSensor: 'base' },
     rim: TALL,
     box: D_BOX,
     cam: [[120, off(TALL) + 90, 330], [10, off(TALL) + 10, -222]],
@@ -149,14 +152,14 @@ export const SCENES: Record<string, SceneState> = {
     ],
   },
   s15: {
-    show: { box: 'base', ...D_MECH, lidHollow: 'ghost', latch: 'new', cuff: 'new', driveC: 'base' },
+    show: { box: 'base', rimD: 'ghost', ...D_MECH_OLD_ARM, lidHollow: 'ghost', latch: 'new', cuffOld: 'new', driveC: 'base' },
     rim: TALL,
     box: D_BOX,
     cam: cams.latch(TALL),
     anim: 'latch',
     labels: [
       { at: [-372, 40, -228], text: 'Track plate (on the lid)' },
-      { at: [-378, -14, -212], text: 'Swinging arm + steel pin (on the rim)' },
+      { at: [-378, -14, -212], text: 'Swinging arm with a printed pin (on the rim)' },
     ],
   },
   s16: {
@@ -168,7 +171,7 @@ export const SCENES: Record<string, SceneState> = {
     labels: [{ at: [10, 30, -178], text: 'Torsion spring (one each side of the tab)' }],
   },
   s18: {
-    show: { box: 'base', ...D_MECH, lidHollow: 'ghost', latch: 'base', cuff: 'new', driveC: 'base' },
+    show: { box: 'base', rimD: 'ghost', ...D_MECH, lidHollow: 'ghost', latch: 'base', cuff: 'new', latchPin: 'new', driveC: 'base' },
     rim: TALL,
     box: D_BOX,
     cam: cams.latch(TALL),
@@ -181,7 +184,7 @@ export const SCENES: Record<string, SceneState> = {
     show: { ...D_TOP, ...D_MECH, lidHollow: 'base', driveC: 'base', footSensor: 'base' },
     rim: TALL,
     box: D_BOX,
-    lid: -1.6,
+    lid: -0.7,
     cam: cams.side(TALL),
     labels: [
       { at: [5, 10, 0], text: 'Back: ≈ 6 mm' },
@@ -197,11 +200,15 @@ export const SCENES: Record<string, SceneState> = {
     labels: [{ at: [-330, 12, -40], text: '1 mm silicone lip' }],
   },
   s23: {
-    show: { box: 'base', ...D_MECH, lidHollow: 'ghost', sealLipD: 'base', b22: 'dead', driveC: 'base' },
+    show: { box: 'base', rimD: 'ghost', ...D_MECH, lidHollow: 'ghost', sealLipD: 'base', b22: 'dead', driveC: 'base' },
     rim: TALL,
     box: D_BOX,
     cam: [[-720, off(TALL) + 200, 20], [-350, off(TALL) - 15, -205]],
-    labels: [{ at: [-350, -10, -180], text: 'Ledex B22 pull solenoid' }],
+    anim: 'solenoid',
+    labels: [
+      { at: [-350, -10, -180], text: 'Ledex B22 pull solenoid' },
+      { at: [-378, 30, -205], text: 'Pulls the pin out of the track' },
+    ],
   },
   s24: {
     show: { ...D_TOP, ...D_MECH, lidHollow: 'base', sealLipD: 'base', motor: 'new', lever: 'new', driveC: 'base', footSensor: 'base' },

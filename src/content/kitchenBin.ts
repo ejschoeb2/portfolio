@@ -28,22 +28,17 @@ export type Step = {
 
 export type Chapter = { title: string; steps: Step[] }
 
+/** **Figures** in the points are picked out in bold blue. */
 export const problem = {
   intro: 'Nine of us share one 50 L pedal bin in our flat on Bath’s high street, and it lets us down every day.',
   points: [
-    '**It fills in under a day.** There’s no recycling or food-waste collection on the high street, so everything goes in the one bin.',
-    '**The lid gets left open.** When the bin is too full, or the hinges have worked loose, it doesn’t shut, so fruit flies and maggots get in.',
-    '**It doesn’t open far enough.** The pedal only lifts the lid to 55°, so rubbish misses and lands on the floor.',
-    '**It falls over.** It’s light and top-heavy.',
-    '**It wastes the space.** It sits in a gap under the worktop that’s 870 mm high and 700 mm deep, and fills less than a third of it.',
+    'It fills in under a day: we throw away about **57 L** of rubbish a day, and there’s no recycling collection on the high street.',
+    'The lid is left open about **20 %** of the time, so there are **5–10** fruit flies in the kitchen on a normal day.',
+    'The pedal only opens the lid to **55°**, so rubbish misses and lands on the floor.',
+    'It’s light and top-heavy, so it falls over.',
+    'It fills less than **a third** of the space under the worktop.',
   ],
-  stats: [
-    { value: '57 L', label: 'of rubbish a day (8 bags in a week)' },
-    { value: '≈ 20 %', label: 'of the time the lid is left open' },
-    { value: '55°', label: 'is as far as the pedal opens the lid' },
-    { value: '5–10', label: 'fruit flies in the kitchen on a normal day' },
-  ],
-  note: 'Bags counted over one week; the other figures are my own observations.',
+  note: 'Bags counted over a week; the other figures are my own observations.',
 }
 
 export const specification: Table = {

@@ -52,7 +52,7 @@ const LID_KEYS = new Set(['lid', 'lidTop', 'latch', 'tof', 'irPanel', 'lidHollow
   'acrSpine', 'acrLatchHolder', 'hcsr04', 'conceptLid', 'magnets', 'torque'])
 const TILT_KEYS = new Set(['s2', 'motor', 'lever', 'coupler', 'motorBeam', 'hingeRod', 'lidCollars', 'springs', 'latchRod',
   'b22', 'rimD_s2', 'sealLipD', 'sealLipR', 'hall'])
-const FIXED_KEYS = new Set(['s3', 'tiltPins', 'tiltCollars', 'dial', 'rimD_s3'])
+const FIXED_KEYS = new Set(['s3', 'tiltPins', 'tiltCollars', 'dial', 'rimD_s3', 'rimD'])
 const STRETCH_KEYS = new Set(['wallFront', 'wallBack', 'wallLeft', 'wallRight', 'angles'])
 
 function parentOf(key: string) {
@@ -68,6 +68,7 @@ function parentOf(key: string) {
 type Part = {
   key: string
   obj: THREE.Object3D
+  meshes: THREE.Mesh[]
   mats: { m: THREE.MeshStandardMaterial; spec: MatSpec; base: THREE.Color }[]
   edges: THREE.LineBasicMaterial[]
   home: THREE.Vector3
@@ -83,15 +84,38 @@ const smooth = (a: number, b: number, t: number) => {
   return x * x * (3 - 2 * x)
 }
 const DEG = Math.PI / 180
-// lever angles (deg) where it meets the tail tab with the lid open, and with the lid shut
-const LEVER_TOUCH = 35
-const LEVER_SHUT = 100
+// Closing lever angles (deg, from the CAD pose). Parked, it is clear of the tail tab even
+// with the lid wide open; pushed to LEVER_PRESS it holds the lid just past shut, onto the latch.
+const LEVER_PARK = -50
+const LEVER_PRESS = 47.1
+// How far the lid can be open (deg) before its tail tab meets the lever, for each lever
+// angle. Found by sweeping the two CAD sections past each other.
+const TAB_CONTACT: [number, number][] = [
+  [-45, 80], [-40, 76.9], [-35, 73.6], [-30, 70.3], [-25, 66.9], [-20, 63.4], [-15, 59.9], [-10, 56.3], [-5, 52.6],
+  [0, 48.7], [5, 44.8], [10, 40.6], [15, 36.3], [20, 31.7], [25, 26.8], [30, 21.6], [35, 15.9], [40, 9.6], [45, 2.7],
+  [47.1, -0.45],
+]
+/** The furthest the lid can be open with the lever at `lever` degrees. */
+function lidLimit(lever: number) {
+  if (lever <= TAB_CONTACT[0][0]) return 90
+  for (let i = 1; i < TAB_CONTACT.length; i++) {
+    const [a1, l1] = TAB_CONTACT[i]
+    if (lever <= a1) {
+      const [a0, l0] = TAB_CONTACT[i - 1]
+      return l0 + ((l1 - l0) * (lever - a0)) / (a1 - a0)
+    }
+  }
+  return TAB_CONTACT[TAB_CONTACT.length - 1][1]
+}
+/** Lever angle for a push that is 0 (parked) → 1 (pressing the lid onto the latch). */
+const leverAt = (push: number) => LEVER_PARK + (LEVER_PRESS - LEVER_PARK) * push
 // the run shown at the top of the page, in seconds
 const DEMO_END = 15
 const DEMO_PHASES: [number, string][] = [
   [1.9, 'A hand over the sensor'],
-  [4.4, 'It rolls out'],
-  [5.4, 'The springs open the lid'],
+  [4.0, 'It rolls out'],
+  [4.6, 'The motor pushes to release the latch'],
+  [5.8, 'The springs open the lid'],
   [9.4, 'It waits for the rubbish'],
   [12.2, 'The motor closes the lid'],
   [DEMO_END, 'And it rolls back in'],
@@ -140,6 +164,12 @@ export class BinEngine {
   private demoStart: number | null = null
   private demoPhase: string | null = null
   private onPhase: ((phase: string | null) => void) | null = null
+  private names: Record<string, string> | null = null
+  private pointer: THREE.Vector2 | null = null
+  private pointerMoved = false
+  private hoverKey: string | null = null
+  private tip: HTMLElement | null = null
+  private raycaster = new THREE.Raycaster()
 
   constructor(host: HTMLElement, overlay: HTMLElement, ev: EngineEvents = {}) {
     this.host = host
@@ -177,6 +207,12 @@ export class BinEngine {
     this.buildEnvironment()
     this.buildConcepts()
 
+    const canvas = this.renderer.domElement
+    canvas.addEventListener('pointermove', this.onPointerMove)
+    canvas.addEventListener('pointerleave', this.onPointerLeave)
+    // a zoom or turn moves the parts under a still pointer
+    this.controls.addEventListener('change', () => (this.pointerMoved = true))
+
     this.ro = new ResizeObserver(() => this.resize())
     this.ro.observe(host)
     this.io = new IntersectionObserver(([e]) => (this.visible = e.isIntersecting))
@@ -190,6 +226,10 @@ export class BinEngine {
         gltf.scene.traverse((o) => {
           if ((o as THREE.Mesh).isMesh && o.name) this.addMesh(o.name, (o as THREE.Mesh).geometry)
         })
+        // Before the tilt-up top (step 26) the D-shaped rim was one part: the upper layer,
+        // stretched down over the lower one (its top face stays at y 0).
+        const upper = this.parts.get('rimD_s2')?.meshes[0]
+        if (upper) this.addMesh('rimD', upper.geometry.clone().scale(1, 2, 1))
         if (this.state) this.applyState(this.state, true)
         ev.onReady?.()
       },
@@ -244,6 +284,7 @@ export class BinEngine {
     })
     for (const mesh of meshes) {
       const s = (mesh.userData.spec as MatSpec) ?? spec
+      mesh.userData.part = key
       const m = new THREE.MeshStandardMaterial({
         color: s.color,
         metalness: s.metal ?? 0,
@@ -270,6 +311,7 @@ export class BinEngine {
     const part: Part = {
       key,
       obj,
+      meshes,
       mats,
       edges,
       home: obj.position.clone(),
@@ -490,6 +532,30 @@ export class BinEngine {
       cone.userData.noEdges = true
       g.add(cone)
     }, MATS.beam)
+    // the latch arm as first drawn: a 2 × 2 mm stem with the pin printed on (S15); it swings with the arm
+    this.shape('cuffOld', 'cuff', (g) => {
+      const hub = new THREE.Mesh(new THREE.CylinderGeometry(4.4, 4.4, 9.8, 20))
+      hub.rotation.z = Math.PI / 2
+      hub.position.set(-379.7, -21.05, -220)
+      g.add(hub)
+      const stem = new THREE.Mesh(new THREE.BoxGeometry(2, 40, 2))
+      stem.position.set(-380.1, 1, -219.3)
+      g.add(stem)
+      const head = new THREE.Mesh(new THREE.BoxGeometry(4, 4, 3))
+      head.position.set(-380.1, 21.8, -219.3)
+      g.add(head)
+      const pin = new THREE.Mesh(new THREE.CylinderGeometry(1, 1, 10, 12))
+      pin.rotation.z = Math.PI / 2
+      pin.position.set(-374.5, 21.8, -219.3)
+      g.add(pin)
+    }, MATS.printDark)
+    // the Ø 2 mm steel pin through the top of the arm, which rides in the track (S18 on)
+    this.shape('latchPin', 'cuff', (g) => {
+      const pin = new THREE.Mesh(new THREE.CylinderGeometry(1, 1, 8, 12))
+      pin.rotation.z = Math.PI / 2
+      pin.position.set(-373.5, 21.8, -219.3)
+      g.add(pin)
+    }, MATS.steel)
     // lid-shut Hall sensor in the back rail, and the magnets in the lid above it
     this.shape('hall', 'tilt', (g) => {
       const m = new THREE.Mesh(new THREE.BoxGeometry(4.4, 2, 4.8))
@@ -564,7 +630,8 @@ export class BinEngine {
     G.flapLPivot.rotation.x = 0
     G.flapRPivot.rotation.x = 0
     G.cuffPivot.rotation.x = 0
-    G.leverPivot.rotation.z = 0
+    G.leverPivot.rotation.z = LEVER_PARK * DEG
+    this.parts.get('b22')?.mats.forEach(({ m }) => m.emissive.setRGB(0, 0, 0))
     const old = G.oldBin.getObjectByName('oldLidPivot')
     if (old) old.rotation.z = 0
     const ped = this.parts.get('pedal')?.obj.getObjectByName('pedalPivot')
@@ -713,8 +780,9 @@ export class BinEngine {
       if (!vis) continue
       p.obj.position.copy(p.home).add(c.off)
       for (const { m, spec, base } of p.mats) {
-        m.color.copy(base).lerp(BLUE, Math.min(1, c.blue * 0.5 + flash * 0.8)).lerp(RED, c.red * 0.8)
-        m.emissive.copy(BLUE).multiplyScalar(0.06 * c.blue + 0.25 * flash)
+        const hover = p.key === this.hoverKey ? 1 : 0
+        m.color.copy(base).lerp(BLUE, Math.min(1, c.blue * 0.5 + flash * 0.8 + hover * 0.35)).lerp(RED, c.red * 0.8)
+        m.emissive.copy(BLUE).multiplyScalar(0.06 * c.blue + 0.25 * flash + 0.12 * hover)
         const op = c.o * (spec.opacity ?? 1) * (1 - 0.86 * c.ghost) * (1 - 0.35 * c.red)
         m.opacity = op
         m.transparent = op < 0.995
@@ -775,8 +843,58 @@ export class BinEngine {
       this.controls.target.lerpVectors(this.camFrom.t, this.camTo.t, e)
     }
     this.controls.update()
+    if (this.names && this.pointerMoved) this.pick()
     this.renderer.render(this.scene, this.camera)
     this.placeOverlay()
+  }
+
+  // ---------------------------------------------------------------- naming parts
+
+  /** Name the part under the pointer (null turns it off). */
+  setHoverNames(names: Record<string, string> | null) {
+    this.names = names
+    if (!names) this.setHover(null)
+    else this.pointerMoved = true
+  }
+
+  private onPointerMove = (e: PointerEvent) => {
+    const r = this.renderer.domElement.getBoundingClientRect()
+    this.pointer = new THREE.Vector2(e.clientX - r.left, e.clientY - r.top)
+    this.pointerMoved = true
+  }
+
+  private onPointerLeave = () => {
+    this.pointer = null
+    this.pointerMoved = true
+  }
+
+  private pick() {
+    this.pointerMoved = false
+    if (!this.pointer || !this.names) return this.setHover(null)
+    const w = this.host.clientWidth
+    const h = this.host.clientHeight
+    this.raycaster.setFromCamera(new THREE.Vector2((this.pointer.x / w) * 2 - 1, -(this.pointer.y / h) * 2 + 1), this.camera)
+    const meshes: THREE.Mesh[] = []
+    for (const p of this.parts.values()) if (p.obj.visible && p.cur.o > 0.5) meshes.push(...p.meshes)
+    const hit = this.raycaster.intersectObjects(meshes, false)[0]
+    const key = hit ? (hit.object.userData.part as string) : null
+    this.setHover(key && this.names[key] ? key : null)
+  }
+
+  private setHover(key: string | null) {
+    this.hoverKey = key
+    if (!key || !this.names) {
+      this.tip?.remove()
+      this.tip = null
+      return
+    }
+    if (!this.tip) {
+      this.tip = document.createElement('div')
+      this.tip.className = 'bin3d__tip'
+      this.overlay.appendChild(this.tip)
+    }
+    this.tip.textContent = this.names[key]
+    if (this.pointer) this.tip.style.transform = `translate(${this.pointer.x + 14}px, ${this.pointer.y + 14}px)`
   }
 
   /** Animated values for this moment; undefined = use the step's still pose. */
@@ -819,23 +937,36 @@ export class BinEngine {
         return {}
       }
       case 'leverClose': {
-        // springs open the lid; then the lever swings up, pushes the tail tab to close it, and parks
+        // the springs open the lid with the lever parked; the lever swings up into the tail tab,
+        // pushes the lid shut onto the latch, and parks again
         if (r) return { lid: 0 }
         const p = t % 8
-        const open = smooth(1, 2.2, p) - smooth(3.6, 5.8, p)
-        const lever = LEVER_TOUCH * smooth(3, 3.6, p) + (LEVER_SHUT - LEVER_TOUCH) * smooth(3.6, 5.8, p) - LEVER_SHUT * smooth(5.8, 6.8, p)
+        const lever = leverAt(smooth(3, 5.6, p) - smooth(5.9, 6.8, p))
         G.leverPivot.rotation.z = lever * DEG
-        return { lid: 78 * open }
+        const springs = p < 5.75 ? 78 * smooth(1, 2.2, p) : 0 // latched once it has been pushed shut
+        return { lid: Math.min(springs, lidLimit(lever)) }
       }
       case 'lidCycle':
         return { lid: r ? 75 : 78 * wave(t, 5.5, 0.22, 0.35) }
       case 'motorRelease': {
         if (r) return { lid: 40 }
-        const p = t % 8
-        // shut → pushed 3 mm onto the stops → let go: opens, paced by the arm → closes again
-        const press = smooth(0.6, 1.1, p) - smooth(1.4, 1.6, p)
-        const open = smooth(1.6, 3.8, p) - smooth(5.6, 7.4, p)
-        return { lid: -0.45 * press + 78 * open }
+        const p = t % 9
+        // latched → the lever pushes once more and the latch lets go → it backs off and the
+        // springs open the lid behind it → later it pushes the lid shut again
+        const lever = leverAt(smooth(0.6, 1.3, p) - smooth(1.5, 2.6, p) + smooth(5, 7.2, p) - smooth(7.5, 8.4, p))
+        G.leverPivot.rotation.z = lever * DEG
+        const released = p > 1.4 && p < 7.3
+        return { lid: Math.min(released ? 78 : 0, lidLimit(lever)) }
+      }
+      case 'solenoid': {
+        // the solenoid pulls the arm sideways, swinging the pin out of the track; the springs
+        // open the lid, and it is shut again by hand
+        if (r) return { lid: 0 }
+        const p = t % 7
+        const pull = smooth(0.8, 1.05, p) - smooth(1.7, 2.1, p)
+        G.cuffPivot.rotation.x = pull * 14 * DEG
+        this.parts.get('b22')?.mats.forEach(({ m }) => m.emissive.copy(RED).multiplyScalar(0.45 * pull))
+        return { lid: 78 * (smooth(1.05, 2.3, p) - smooth(4.6, 6.2, p)) }
       }
       case 'latch': {
         if (r) return { lid: 0 }
@@ -927,7 +1058,7 @@ export class BinEngine {
     if (this.demoStart === null) return
     this.demoStart = null
     this.demoPhase = null
-    this.groups.leverPivot.rotation.z = 0
+    this.groups.leverPivot.rotation.z = LEVER_PARK * DEG
     const show = this.state?.show ?? {}
     for (const key of ['hand', 'lidBeam']) {
       const part = this.parts.get(key)
@@ -959,10 +1090,12 @@ export class BinEngine {
     }
     const beam = this.parts.get('lidBeam')
     if (beam) beam.tgt.o = t > 0.9 && t < 1.9 ? 1 : 0
-    // springs open it; after the wait the lever pushes the tail tab to close it, then parks
-    const lever = LEVER_TOUCH * smooth(9.4, 10, t) + (LEVER_SHUT - LEVER_TOUCH) * smooth(10, 12, t) - LEVER_SHUT * smooth(12, 12.6, t)
+    // the lever pushes once to release the latch and the springs open the lid behind it; after
+    // the wait it pushes the tail tab to close the lid onto the latch, then parks
+    const lever = leverAt(smooth(4, 4.5, t) - smooth(4.6, 5.6, t) + smooth(9.6, 12, t) - smooth(12.1, 12.7, t))
     this.groups.leverPivot.rotation.z = lever * DEG
-    return { roll, lid: 78 * (smooth(4.4, 5.4, t) - smooth(10, 12, t)) }
+    const released = t > 4.55 && t < 12.05
+    return { roll, lid: Math.min(released ? 78 : 0, lidLimit(lever)) }
   }
 
   private placeOverlay() {
@@ -1031,6 +1164,8 @@ export class BinEngine {
     cancelAnimationFrame(this.raf)
     this.ro.disconnect()
     this.io.disconnect()
+    this.renderer.domElement.removeEventListener('pointermove', this.onPointerMove)
+    this.renderer.domElement.removeEventListener('pointerleave', this.onPointerLeave)
     this.controls.dispose()
     this.renderer.dispose()
     this.scene.traverse((o) => {
