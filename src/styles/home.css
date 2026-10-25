@@ -214,7 +214,7 @@
   animation: rise 1s 0.4s var(--ease-out) both;
 }
 
-/* Ink text that turns red under the pointer, like "portfolio". */
+/* Ink text that turns red under the pointer, like "portfolio"; LinkedIn turns blue, like its icon. */
 .hero__contact a {
   display: inline-flex;
   align-items: center;
@@ -226,6 +226,10 @@
 
 .hero__contact a:hover {
   color: var(--red);
+}
+
+.hero__contact a + a:hover {
+  color: var(--blue);
 }
 
 .hero__contact svg {

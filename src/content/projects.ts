@@ -154,12 +154,12 @@ export const projects: Project[] = [
     title: 'Table-tennis ball launcher',
     kind: 'University of Bath · team of 5',
     period: 'Feb – Oct 2026',
-    blurb: 'A fully mechanical launcher that fires four balls into alternating targets. Two motors, no electronics, and it works: last year only 2 of about 60 groups managed that.',
+    blurb: 'A fully mechanical launcher that fires four balls into alternating targets. Two motors, no electronics, and it works: last year only 2 of 60 groups managed that.',
     media: {
       kind: 'screen',
-      src: '/images/launcher-build-mechanism.webp',
-      alt: 'The finished launcher: yellow 3D-printed Geneva wheel and ramp, clear acrylic gears, and the blue O-ring flywheel on its motor',
-      position: '50% 58%',
+      src: '/images/launcher-build-loaded.webp',
+      alt: 'The finished launcher loaded with table-tennis balls in its yellow Geneva wheel, with the blue O-ring flywheel and its motor to the right',
+      position: '50% 55%',
     },
     facts: [
       { label: 'Role', value: 'CAD lead' },
@@ -171,7 +171,7 @@ export const projects: Project[] = [
     lede: 'A university project to fire four table-tennis balls into alternating target zones using two motors and no electronics.',
     intro: [
       'In a team of five, I designed and built a fully mechanical table-tennis ball launcher for a University of Bath project. It fires four balls in quick succession over the net, to alternating left and right zones.',
-      'On build day it worked, which is rarer than it sounds. Last year, only **2** of about **60** groups got theirs firing. Here it is in action:',
+      'On build day it worked, which is rarer than it sounds. Last year, only **2** of **60** groups got theirs firing. Here it is in action:',
     ],
     // Title and opening side by side, then the clip, photos and 3D model.
     layout: 'web',
@@ -416,7 +416,7 @@ export const projects: Project[] = [
           label: '23 October 2026',
           heading: 'We succeeded!',
           body: [
-            'We switched the finished launcher on and it fired all four balls in quick succession, about **0.8 s** apart, and every one cleared the net. Last year only **2 of about 60** groups got their launcher working.',
+            'We switched the finished launcher on and it fired all four balls in quick succession, about **0.8 s** apart, and every one cleared the net. Last year only **2 of 60** groups got their launcher working.',
             'Each ball flew in an arc about **300 mm** high and landed around **110 cm** away. The flywheel puts a lot of topspin on the ball, so it carried on well after the bounce, and the Magnus effect pulled the arc down just as the trajectory model had allowed for.',
             'The battery pack we were given was more powerful than our design needed, so the launcher ran faster and fired further than planned. On a less powerful pack it would have worked exactly as intended.',
           ],
@@ -433,50 +433,6 @@ export const projects: Project[] = [
         },
       ],
     },
-    sections: [],
-  },
-  {
-    slug: 'dragster',
-    title: 'Spring-powered dragster',
-    kind: 'University of Bath · first-year team project',
-    period: 'Jan 2026',
-    blurb: 'A mostly 3D-printed dragster driven by an elastic band. Our team came first of 60, at 2.26 seconds over 10 m.',
-    // TODO: add `media` (card photo) once there are pictures. Until then the card shows a blank drawing sheet.
-    facts: [
-      { label: 'Result', value: '1st of 60 teams, 2.26 s' },
-      { label: 'Role', value: 'Energy and grip calculations' },
-      { label: 'Team', value: 'Six students' },
-      { label: 'Made with', value: '3D printing, light wood' },
-    ],
-    lede: 'A first-year project to build a spring-powered dragster and race it over a timed 10 m course. Our team came first of 60.',
-    intro:
-      'In my first year at Bath, my team of six designed, built and raced a dragster powered by nothing but an elastic band, over a timed 10 m course from a standing start. Out of 60 teams, we came first overall, with a time of 2.26 seconds.',
-    story: [
-      {
-        label: 'The design',
-        body: [
-          'Most of the dragster is 3D printed. The large back wheel carries a custom wind-up pulley, and the elastic band stretches the full length of the car to a long front. Rubber bands round the rear wheels add grip, and the body is light wood.',
-          'The pulley tapers, so the windings get thinner as the band unwinds. At the start the band pulls on a large radius, giving plenty of torque to get moving; by the end it pulls on a small one, so the wheel spins faster once the car is already up to speed.',
-        ],
-        // TODO: add a photo or CAD render of the whole dragster here.
-      },
-      {
-        label: 'My calculations',
-        body: [
-          'I did the calculations. First, how much energy the stretched elastic band stores and passes to the wheel, which gave the car’s **maximum wheel speed**. Second, whether the rubber on the rear wheels would grip well enough to stop them spinning at the start.',
-          // TODO: add the real figures (band energy, maximum RPM, friction coefficient) once calculated.
-        ],
-        // TODO: add the calculation sheet or a chart as media.
-      },
-      {
-        label: 'Race day',
-        body: [
-          'On race day we came first of **60 teams**, covering the 10 m course in **2.26 seconds**.',
-          // TODO: add the number of runs, how it compared with the other teams, and what we would change.
-        ],
-        // TODO: add race-day photos or video.
-      },
-    ],
     sections: [],
   },
   {
@@ -782,11 +738,6 @@ export const projects: Project[] = [
     lede: 'I designed the brand and built the website for a cruise agency, so customers could search every cruise in one place.',
     intro:
       'Cruising the World is a cruise agency. I designed its brand and built its website, so customers could search every cruise in one place. The agency’s site has since been taken down, so I’ve rebuilt it as a redesign, shown below. The cruises in it are sample data.',
-    stats: [
-      { value: '26,000', label: 'cruise records' },
-      { value: '15 min', label: 'between price refreshes' },
-      { value: '200%', label: 'Instagram growth' },
-    ],
     about: {
       body: [
         'I created the brand, from the logo to the colours, and designed a site where customers can search holidays by region, country, cabin type, number of stops and price.',
