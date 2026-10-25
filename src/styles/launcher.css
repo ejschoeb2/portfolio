@@ -1,0 +1,220 @@
+/* The ball launcher's 3D model, set like the kitchen bin's. */
+
+.l3d {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  border-radius: var(--radius-l);
+  background: radial-gradient(120% 90% at 30% 20%, #ffffff 0%, #f1f5fc 55%, #e7eef9 100%);
+  box-shadow: inset 0 0 0 1.5px var(--line);
+  touch-action: pan-y;
+}
+
+.l3d__canvas,
+.l3d__canvas canvas {
+  position: absolute;
+  inset: 0;
+  width: 100% !important;
+  height: 100% !important;
+  cursor: grab;
+}
+
+.l3d__canvas canvas:active {
+  cursor: grabbing;
+}
+
+.l3d__overlay {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.l3d__wait {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  padding: 24px;
+  color: var(--ink-soft);
+  font-size: 13px;
+  text-align: center;
+}
+
+/* Says the model can be turned; while it runs, says what it's doing. */
+.l3d__hint {
+  position: absolute;
+  top: 14px;
+  left: 14px;
+  padding: 9px 14px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.92);
+  box-shadow: inset 0 0 0 1.5px var(--line);
+  color: var(--ink-soft);
+  font-size: 13px;
+  font-weight: 500;
+  pointer-events: none;
+  transition:
+    background-color 0.3s,
+    color 0.3s;
+}
+
+.l3d__hint[data-live] {
+  background: var(--blue);
+  box-shadow: none;
+  color: #fff;
+  font-size: 15px;
+  font-weight: 650;
+}
+
+.l3d__hint:empty {
+  opacity: 0;
+}
+
+/* Run it, then the switches, along the bottom (Reset view keeps the corner). */
+.l3d__controls {
+  position: absolute;
+  left: 14px;
+  right: 68px;
+  bottom: 14px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  pointer-events: none;
+}
+
+.l3d__play,
+.l3d__toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+  height: 40px;
+  border-radius: 999px;
+  font-size: 14px;
+  pointer-events: auto;
+  transition:
+    background-color 0.3s,
+    box-shadow 0.3s,
+    opacity 0.3s;
+}
+
+.l3d__play {
+  padding: 0 20px 0 16px;
+  background: var(--blue);
+  box-shadow: 0 10px 24px -10px rgba(48, 118, 224, 0.75);
+  color: #fff;
+  font-weight: 650;
+}
+
+.l3d__play:hover:not(:disabled) {
+  background: var(--blue-deep);
+}
+
+.l3d__toggle {
+  padding: 0 15px 0 10px;
+  background: rgba(255, 255, 255, 0.92);
+  box-shadow: inset 0 0 0 1.5px var(--line);
+  color: var(--ink);
+  font-weight: 500;
+}
+
+.l3d__toggle:hover:not(:disabled) {
+  box-shadow: inset 0 0 0 1.5px var(--ink);
+}
+
+.l3d__play:disabled,
+.l3d__toggle:disabled {
+  opacity: 0.55;
+  cursor: default;
+}
+
+.l3d__switch {
+  position: relative;
+  width: 30px;
+  height: 18px;
+  border-radius: 999px;
+  background: #cfd6e2;
+  transition: background-color 0.25s;
+}
+
+.l3d__switch::after {
+  content: '';
+  position: absolute;
+  top: 3px;
+  left: 3px;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: #fff;
+  box-shadow: 0 1px 3px rgba(12, 20, 36, 0.25);
+  transition: translate 0.25s var(--ease-out);
+}
+
+.l3d__toggle[aria-pressed='true'] .l3d__switch {
+  background: var(--blue);
+}
+
+.l3d__toggle[aria-pressed='true'] .l3d__switch::after {
+  translate: 12px 0;
+}
+
+.l3d__reset {
+  position: absolute;
+  right: 14px;
+  bottom: 14px;
+  display: grid;
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  color: var(--ink);
+  background: rgba(255, 255, 255, 0.92);
+  box-shadow: inset 0 0 0 1.5px var(--line);
+}
+
+.l3d__reset:hover {
+  box-shadow: inset 0 0 0 1.5px var(--ink);
+}
+
+/* Part names, pinned to the parts (placed by the engine each frame). */
+.l3d__label {
+  position: absolute;
+  top: 0;
+  left: 0;
+  padding: 5px 10px;
+  border-radius: 999px;
+  background: var(--ink);
+  color: #fff;
+  font-size: 12.5px;
+  font-weight: 600;
+  white-space: nowrap;
+  translate: -50% -50%;
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+
+.l3d__overlay[data-on] .l3d__label {
+  opacity: 1;
+}
+
+@media (max-width: 700px) {
+  .l3d__controls {
+    gap: 6px;
+  }
+
+  .l3d__play,
+  .l3d__toggle {
+    height: 34px;
+    gap: 7px;
+    font-size: 13px;
+  }
+
+  .l3d__play {
+    padding: 0 14px 0 12px;
+  }
+
+  .l3d__toggle {
+    padding: 0 12px 0 8px;
+  }
+}

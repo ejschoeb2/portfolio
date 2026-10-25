@@ -1,12 +1,14 @@
-import { Fragment, lazy, Suspense, type CSSProperties, type MouseEvent, type ReactNode } from 'react'
+import { Fragment, lazy, Suspense, type MouseEvent, type ReactNode } from 'react'
 import { Arrow } from '../components/Arrow'
 import { Builds } from '../components/Builds'
 import { DrawingSheet } from '../components/DrawingSheet'
 import { Linkage } from '../components/Linkage'
 import { Panels } from '../components/Panels'
 import { ProjectMedia } from '../components/ProjectMedia'
+import { Showcase } from '../components/Showcase'
 import { SiteViewer } from '../components/SiteViewer'
 import { Slides } from '../components/Slides'
+import { Trajectory } from '../components/Trajectory'
 import { Walkthrough } from '../components/Walkthrough'
 import {
   projectNumber,
@@ -16,8 +18,6 @@ import {
   type Table,
 } from '../content/projects'
 import { useTransitions } from '../transition'
-
-const order = (i: number) => ({ '--i': i }) as CSSProperties
 
 /** **figures** in story text, picked out in bold blue. */
 const rich = (text: string): ReactNode =>
@@ -42,11 +42,12 @@ export function ProjectPage({ project }: { project: Project }) {
     project.walkthrough ||
     (project.site && !web) ||
     project.gallery
-  const summary = (
-    <p className="project__summary rise" style={order(2)}>
-      {project.intro ?? project.lede}
+  const intro = project.intro ?? project.lede
+  const summary = (typeof intro === 'string' ? [intro] : intro).map((paragraph) => (
+    <p key={paragraph} className="project__summary">
+      {rich(paragraph)}
     </p>
-  )
+  ))
   const back = (e: MouseEvent) => {
     if (e.metaKey || e.ctrlKey || e.shiftKey) return
     e.preventDefault()
@@ -54,15 +55,15 @@ export function ProjectPage({ project }: { project: Project }) {
   }
 
   return (
-    <main className="project" data-still={project.still || undefined}>
-      <a className="pill project__back rise" href="/" onClick={back}>
+    <main className="project">
+      <a className="pill project__back" href="/" onClick={back}>
         <Arrow direction="left" />
         All projects
       </a>
 
       <header className="project__intro" data-layout={web ? 'web' : undefined}>
         <div className="project__intro-text">
-          <h1 className="project__title rise" style={order(1)}>
+          <h1 className="project__title">
             {project.title}
           </h1>
           {!web && summary}
@@ -73,8 +74,7 @@ export function ProjectPage({ project }: { project: Project }) {
             {summary}
             {project.open && (
               <a
-                className="build__link rise"
-                style={order(3)}
+                className="build__link"
                 href={project.open.url}
                 target="_blank"
                 rel="noreferrer"
@@ -85,7 +85,7 @@ export function ProjectPage({ project }: { project: Project }) {
             )}
           </div>
         ) : (
-          <div className="project__media rise" style={order(2)}>
+          <div className="project__media">
             <ProjectMedia project={project} />
             {project.open && (
               <a
@@ -107,14 +107,14 @@ export function ProjectPage({ project }: { project: Project }) {
 
       {/* Web projects: the site itself, full width, straight under the title. */}
       {web && project.site && (
-        <div className="project__site rise" style={order(3)}>
+        <div className="project__site">
           <SiteViewer site={project.site} title={project.title} />
         </div>
       )}
 
       {/* The kitchen bin's 3D model, full width. */}
       {project.slug === 'kitchen-bin' && (
-        <div className="project__site rise" style={order(3)}>
+        <div className="project__site">
           <div className="project__model">
             <Suspense fallback={<ProjectMedia project={project} />}>
               <BinHero />
@@ -122,6 +122,9 @@ export function ProjectPage({ project }: { project: Project }) {
           </div>
         </div>
       )}
+
+      {/* Or the finished thing: a clip and photos, or its 3D model. */}
+      {project.showcase && <Showcase showcase={project.showcase} />}
 
       {/* Or each thing built, one site at a time, full width. */}
       {project.builds && <Builds builds={project.builds} />}
@@ -133,15 +136,27 @@ export function ProjectPage({ project }: { project: Project }) {
               <KitchenBin />
             </Suspense>
           ) : project.story ? (
-            <section className="story" aria-label="The story">
-              {project.story.map((chapter, i) => (
-                <StoryChapter
-                  key={chapter.label}
-                  chapter={chapter}
-                  number={project.stepNumbers === false ? undefined : i + 1}
-                />
-              ))}
-            </section>
+            <>
+              <section className="story" aria-label="The story">
+                {project.story.map((chapter, i) => (
+                  <StoryChapter
+                    key={chapter.label + i}
+                    chapter={chapter}
+                    number={project.stepNumbers === false ? undefined : i + 1}
+                  />
+                ))}
+              </section>
+              {project.results && (
+                <section className="story results" aria-labelledby="results-title">
+                  <h2 className="story__title" id="results-title">
+                    {project.results.title}
+                  </h2>
+                  {project.results.chapters.map((chapter) => (
+                    <StoryChapter key={chapter.label} chapter={chapter} />
+                  ))}
+                </section>
+              )}
+            </>
           ) : (
             <>
               {project.stats && (
@@ -237,7 +252,7 @@ function StoryChapter({ chapter, number }: { chapter: Chapter; number?: number }
     >
       <div className="chapter__text">
         <p className="chapter__label">
-          {number !== undefined && <span className="chapter__number">{String(number).padStart(2, '0')}</span>}
+          {number !== undefined && <span className="chapter__number">{String(number).padStart(2, '0')}.</span>}
           <span className="chapter__date">{chapter.label}</span>
         </p>
         {chapter.heading && <h3 className="chapter__heading">{chapter.heading}</h3>}
@@ -276,14 +291,31 @@ function StoryChapter({ chapter, number }: { chapter: Chapter; number?: number }
               {media.image.caption && <figcaption>{media.image.caption}</figcaption>}
             </figure>
           )}
+          {media.kind === 'video' && (
+            <figure className="shot shot--video">
+              <video
+                src={media.src}
+                poster={media.poster}
+                aria-label={media.alt}
+                controls
+                muted
+                loop
+                playsInline
+                preload="metadata"
+              />
+              {media.caption && <figcaption>{media.caption}</figcaption>}
+            </figure>
+          )}
           {media.kind === 'slides' && <Slides images={media.images} ratio={media.ratio} />}
           {media.kind === 'table' && <DataTable table={media.table} />}
           {media.kind === 'stack' && <Stack images={media.images} />}
           {media.kind === 'linkage' && <Linkage />}
+          {media.kind === 'trajectory' && <Trajectory caption={media.caption} />}
           {media.kind === 'panels' && (
             <Panels
               panels={media.panels.map((panel) => ({
-                caption: panel.caption,
+                label: panel.caption.replaceAll('**', ''),
+                caption: rich(panel.caption),
                 content: panel.kind === 'table' ? <DataTable table={panel.table} /> : <Linkage />,
               }))}
             />
@@ -343,22 +375,24 @@ function DataTable({ table }: { table: Table }) {
   )
 }
 
-/** Sheets laid over one another; the one under the pointer comes to the top. */
+/** Sheets one under another, each headed by its name (a link, where it has one). */
 function Stack({ images }: { images: StoryImage[] }) {
   return (
     <div className="stack">
-      {images.map((image, i) => (
-        <a
-          key={image.src}
-          className="stack__sheet"
-          href={image.src}
-          target="_blank"
-          rel="noreferrer"
-          style={{ '--i': i } as CSSProperties}
-        >
-          <span className="stack__label">{image.caption}</span>
-          <img src={image.src} alt={image.alt} loading="lazy" />
-        </a>
+      {images.map((image) => (
+        <figure key={image.src} className="stack__sheet">
+          {image.link ? (
+            <a className="stack__label" href={image.link} target="_blank" rel="noreferrer">
+              {image.caption}
+              <Arrow direction="out" />
+            </a>
+          ) : (
+            <figcaption className="stack__label">{image.caption}</figcaption>
+          )}
+          <a href={image.src} target="_blank" rel="noreferrer" aria-label={`Open the ${image.caption} order sheet`}>
+            <img src={image.src} alt={image.alt} loading="lazy" />
+          </a>
+        </figure>
       ))}
     </div>
   )

@@ -6,7 +6,7 @@ const A = 26 // crank
 const B = 95 // coupler
 const C = 107 // rocker
 const D = 151.38 // ground: crank pivot O to rocker pivot Q
-const DEG_PER_S = 60 // crank speed for the animation (the real crank turns at ~30°/s)
+const DEG_PER_S = 30 // crank speed for the animation, about what the real crank turns at
 
 const deg = (r: number) => (r * 180) / Math.PI
 
@@ -16,7 +16,7 @@ const rockerAt = (ob: number) => Math.acos((D * D + C * C - ob * ob) / (2 * D * 
 const EXTENDED = rockerAt(A + B)
 const FOLDED = rockerAt(B - A)
 
-type Pose = { ax: number; ay: number; bx: number; by: number; rocker: number; mu: number }
+type Pose = { ax: number; ay: number; bx: number; by: number }
 
 /** Where every joint sits for a given crank angle. y is up. */
 function solve(theta: number): Pose {
@@ -35,11 +35,7 @@ function solve(theta: number): Pose {
   const c1 = { x: px - h * uy, y: py + h * ux }
   const c2 = { x: px + h * uy, y: py - h * ux }
   const { x: bx, y: by } = c1.y > c2.y ? c1 : c2
-  const rocker = Math.atan2(by, -(bx - D)) // from Q → O, opening upwards
-  const v1 = { x: ax - bx, y: ay - by }
-  const v2 = { x: D - bx, y: -by }
-  const mu = Math.acos((v1.x * v2.x + v1.y * v2.y) / (Math.hypot(v1.x, v1.y) * Math.hypot(v2.x, v2.y)))
-  return { ax, ay, bx, by, rocker, mu }
+  return { ax, ay, bx, by }
 }
 
 /** Point at angle `a` (from Q → O, upwards) on a circle of radius r around Q, in SVG space. */
@@ -49,9 +45,10 @@ const aroundQ = (r: number, a: number) => `${D - r * Math.cos(a)} ${-r * Math.si
 export function Linkage() {
   const root = useRef<HTMLDivElement>(null)
   const [theta, setTheta] = useState(2.2)
+  const [playing, setPlaying] = useState(!reducedMotion)
 
   useEffect(() => {
-    if (reducedMotion) return
+    if (!playing) return
     let raf = 0
     let last = 0
     let visible = false
@@ -68,7 +65,7 @@ export function Linkage() {
       cancelAnimationFrame(raf)
       observer.disconnect()
     }
-  }, [])
+  }, [playing])
 
   const p = solve(theta)
   // SVG y runs down, so flip every y.
@@ -112,24 +109,28 @@ export function Linkage() {
         </text>
       </svg>
 
-      <dl className="linkage__readout">
-        <div>
-          <dt>Crank</dt>
-          <dd>{Math.round(deg(theta))}°</dd>
-        </div>
-        <div>
-          <dt>Rocker</dt>
-          <dd>{deg(p.rocker).toFixed(1)}°</dd>
-        </div>
-        <div>
-          <dt>Transmission</dt>
-          <dd>{Math.round(deg(p.mu > Math.PI / 2 ? Math.PI - p.mu : p.mu))}°</dd>
-        </div>
-        <div>
-          <dt>Sweep</dt>
-          <dd>{deg(EXTENDED - FOLDED).toFixed(1)}°</dd>
-        </div>
-      </dl>
+      <div className="linkage__bar">
+        <dl className="linkage__readout">
+          <div>
+            <dt>Crank</dt>
+            <dd>{Math.round(deg(theta))}°</dd>
+          </div>
+          <div>
+            <dt>Sweep</dt>
+            <dd>{deg(EXTENDED - FOLDED).toFixed(1)}°</dd>
+          </div>
+        </dl>
+        <button type="button" className="linkage__play" onClick={() => setPlaying(!playing)} aria-pressed={!playing}>
+          <svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true">
+            {playing ? (
+              <path d="M4 2.5h3v11H4zM9 2.5h3v11H9z" fill="currentColor" />
+            ) : (
+              <path d="M4 2.5v11l9-5.5z" fill="currentColor" />
+            )}
+          </svg>
+          {playing ? 'Pause' : 'Play'}
+        </button>
+      </div>
       <figcaption>
         The final linkage at its real proportions: crank 26, coupler 95, rocker 107 mm. As the crank
         turns, the rocker swings through the shaded 28.5°, and the arm aims from zone A to zone C.

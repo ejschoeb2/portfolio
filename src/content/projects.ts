@@ -16,6 +16,8 @@ export type StoryImage = {
   caption?: string
   /** 'contain' shows the whole image (for drawings) instead of filling the frame. */
   fit?: 'contain'
+  /** A website the caption links to, e.g. a supplier's shop. */
+  link?: string
 }
 
 /** A live website shown in a scrollable window on the page. */
@@ -58,6 +60,8 @@ export type Chapter = {
   body: string[]
   media?:
     | { kind: 'image'; image: StoryImage; small?: boolean }
+    /** A short looping clip (mp4 in public/videos) with a still to show before it loads. */
+    | { kind: 'video'; src: string; poster: string; alt: string; caption?: string }
     /** ratio = frame width / height (default 0.8, portrait). */
     | { kind: 'slides'; images: StoryImage[]; ratio?: number }
     | { kind: 'table'; table: Table }
@@ -65,6 +69,8 @@ export type Chapter = {
     | { kind: 'stack'; images: StoryImage[] }
     /** The ball launcher's four-bar linkage, animated from its real link lengths. */
     | { kind: 'linkage' }
+    /** The ball launcher's planned flight, drawn to scale from the trajectory model. */
+    | { kind: 'trajectory'; caption?: string }
     /** Several tables or animations, switched with arrows and dots. */
     | { kind: 'panels'; panels: Panel[] }
   /** Which side the picture sits on (default right). */
@@ -86,10 +92,15 @@ export type Project = {
   media?: Media
   facts: { label: string; value: string }[]
   lede: string
-  /** Opening paragraph beside the main image. Falls back to `lede`. */
-  intro?: string
+  /** Opening paragraph (or paragraphs) beside the main image. Falls back to `lede`. */
+  intro?: string | string[]
   /** Projects with a story show it in place of `sections` and `gallery`. */
   story?: Chapter[]
+  /** How it turned out, under its own heading after the story (steps not numbered). */
+  results?: { title: string; chapters: Chapter[] }
+  /** The finished thing under the title: a clip of it working and photos, which a
+   *  button swaps for its 3D model. */
+  showcase?: { video: { src: string; poster: string; alt: string }; photos: StoryImage[] }
   stats?: { value: string; label: string }[]
   sections: { heading: string; body: string[] }[]
   site?: Site
@@ -101,14 +112,12 @@ export type Project = {
   method?: { title: string; chapters: Chapter[] }
   /** Set false to show a story's steps without their numbers. */
   stepNumbers?: boolean
-  /** The page opens without the fade-in. */
-  still?: boolean
   /** Shown under a "What I've built" heading, each with its website. */
   builds?: Build[]
   /** The main image opens this in a new tab (a read-only workbook, a live site). */
   open?: { url: string; label: string }
   /** 'web': no main image; title and opening paragraph side by side, then the
-   *  site (or each build's site, or the bin's 3D model) full width below. */
+   *  site (or each build's site, the bin's 3D model, or the showcase) full width below. */
   layout?: 'web'
   gallery?: GalleryItem[]
 }
@@ -145,22 +154,44 @@ export const projects: Project[] = [
     title: 'Table-tennis ball launcher',
     kind: 'University of Bath · team of 5',
     period: 'Feb – Oct 2026',
-    blurb: 'A fully mechanical launcher that fires four balls into alternating targets. Two motors, no electronics.',
+    blurb: 'A fully mechanical launcher that fires four balls into alternating targets. Two motors, no electronics, and it works: last year only 2 of about 60 groups managed that.',
     media: {
       kind: 'screen',
-      src: '/images/launcher-cad.webp',
-      alt: 'CAD render of the ball launcher: flywheel arm, Geneva feed wheel, ball tube and gear train on a base plate',
-      position: '50% 55%',
+      src: '/images/launcher-build-mechanism.webp',
+      alt: 'The finished launcher: yellow 3D-printed Geneva wheel and ramp, clear acrylic gears, and the blue O-ring flywheel on its motor',
+      position: '50% 58%',
     },
     facts: [
       { label: 'Role', value: 'CAD lead' },
       { label: 'Team', value: '5 people' },
       { label: 'When', value: 'Feb – Oct 2026' },
       { label: 'CAD', value: 'Autodesk Inventor' },
+      { label: 'Result', value: 'Built and working' },
     ],
     lede: 'A university project to fire four table-tennis balls into alternating target zones using two motors and no electronics.',
-    intro:
-      'I designed a fully mechanical launcher in a team of five for a University of Bath project. It fires table-tennis balls across the table and over the net, to alternating left and right zones in quick succession. The design is complete, and we build the finished launcher on 23 October. The whole process is below.',
+    intro: [
+      'In a team of five, I designed and built a fully mechanical table-tennis ball launcher for a University of Bath project. It fires four balls in quick succession over the net, to alternating left and right zones.',
+      'On build day it worked, which is rarer than it sounds. Last year, only **2** of about **60** groups got theirs firing. Here it is in action:',
+    ],
+    // Title and opening side by side, then the clip, photos and 3D model.
+    layout: 'web',
+    showcase: {
+      video: {
+        src: '/videos/launcher-firing.mp4',
+        poster: '/videos/launcher-firing-poster.jpg',
+        alt: 'The finished launcher on a workshop bench, feeding and firing table-tennis balls down the table towards a teammate at the far end',
+      },
+      photos: [
+        {
+          src: '/images/launcher-build-mechanism.webp',
+          alt: 'The finished launcher: yellow Geneva wheel and ramp, raised upper plate, acrylic gears and the blue O-ring flywheel on its motor',
+        },
+        {
+          src: '/images/launcher-build-loaded.webp',
+          alt: 'The launcher loaded with table-tennis balls in the Geneva wheel, with the flywheel motor and battery pack to the right',
+        },
+      ],
+    },
     story: [
       {
         label: '9 February 2026',
@@ -188,7 +219,6 @@ export const projects: Project[] = [
         label: '16 February 2026',
         body: [
           'With the specification set, we mapped out the different ways each part of the job could be done, from feeding the balls to aiming them. Then each of us drew up our own concept for the whole launcher.',
-          'Use the arrows to look through three of them, starting with mine.',
         ],
         side: 'left',
         media: {
@@ -217,7 +247,7 @@ export const projects: Project[] = [
       {
         label: '2 March 2026',
         body: [
-          'To choose between our concepts, we scored each one against eight criteria from the specification in a weighted decision matrix. Louis’s came out on top, thanks to its Geneva mechanism, which turns one motor’s steady rotation into four clean steps.',
+          'Louis’s idea came out on top. We scored every concept against eight criteria from the specification in a weighted decision matrix, and his won thanks to its Geneva mechanism, which turns one motor’s steady rotation into four clean steps.',
           'We then combined it with the best ideas from the others, including the cam-driven swivel from mine and Zak’s, so a single Geneva wheel drives both the feed and the aim. The combined design scored **135 out of 145**.',
         ],
         media: {
@@ -248,26 +278,21 @@ export const projects: Project[] = [
         ],
         side: 'left',
         media: {
-          kind: 'image',
-          image: {
-            src: '/images/launcher-trajectory.webp',
-            alt: 'Graph of the ball’s flight path from the launcher over the net to the target zone 930 mm away',
-            caption: 'The planned flight: 3.35 m/s at 35°, over the net and into the zone at 930 mm.',
-          },
+          kind: 'trajectory',
+          caption: 'The planned flight: 3.35 m/s at 35°, over the net and into the zone at 930 mm.',
         },
       },
       {
         label: '23 March 2026',
         body: [
-          'The aim comes from a four-bar linkage: a crank turns continuously and swings the flywheel arm from side to side. It had to sweep exactly the right angle without jamming, and fit on the base plate without hitting anything.',
-          'The first version worked on paper. But each time the CAD showed one part hitting another, I changed the geometry and recalculated the whole linkage. It took **six versions** to get right.',
+          'The aim comes from a four-bar linkage, and while the first version worked on paper, the real geometry was a different matter. Each time the CAD showed one part hitting another, I had to change the geometry and recalculate the length of every arm across the linkage. It took **six versions** until it finally worked.',
         ],
         media: {
           kind: 'panels',
           panels: [
             {
               kind: 'table',
-              caption: 'All six versions, link lengths in mm',
+              caption: 'All six versions, with the **length of each bar in mm**',
               table: {
                 head: ['Version', 'What forced the change', 'Crank', 'Coupler', 'Rocker', 'Ground', 'Sweep'],
                 rows: [
@@ -299,11 +324,13 @@ export const projects: Project[] = [
               src: '/images/launcher-order-technobots.webp',
               alt: 'Technobots order: flywheel motor, geared feed motor, couplings, nine MR84 bearings and six shaft collars, £24.72',
               caption: 'Technobots',
+              link: 'https://www.technobotsonline.com/',
             },
             {
               src: '/images/launcher-order-rs.webp',
               alt: 'RS Components order, £9.75',
               caption: 'RS Components',
+              link: 'https://uk.rs-online.com/',
             },
             {
               src: '/images/launcher-order-uni.webp',
@@ -345,8 +372,8 @@ export const projects: Project[] = [
       {
         label: '9 October 2026',
         body: [
-          'Once we had assembled the first parts and tested them together, we realised we had made a mistake: the flywheel didn’t work as we had designed it, so we redesigned it.',
-          'The new flywheel is a printed hub with two rubber O-rings that grip the ball, and changing the rings lets us tune its speed. I recalculated everything around the smaller wheel: on six AA batteries it should spin at about **3,480 RPM** and launch the ball at **3.3–3.5 m/s**. The ramp had to change to match it, so we reprinted that too.',
+          'When we tested the first parts together, we realised the flywheel wouldn’t work as intended, so we redesigned it.',
+          'The new one is a printed hub with two rubber O-rings that grip the ball, and swapping the rings tunes its speed. I recalculated everything around the smaller wheel: on six AA batteries it should spin at about **3,480 RPM** and launch the ball at **3.3–3.5 m/s**. The ramp changed to match, so we reprinted that too.',
         ],
         side: 'left',
         media: {
@@ -363,20 +390,91 @@ export const projects: Project[] = [
               alt: 'Render of the new flywheel: a yellow hub with two black O-rings seated in its grooves',
               caption: 'The new flywheel with its O-rings fitted (render from the CAD)',
             },
-            {
-              src: '/images/launcher-flywheel-v2-drawing.webp',
-              fit: 'contain',
-              alt: 'Drawing of the O-ring flywheel hub in half section, with groove, bore and O-ring dimensions',
-              caption: 'Hub profile, D-bore and O-ring spec',
-            },
           ],
         },
       },
       {
         label: '23 October 2026',
         body: [
-          'The new flywheel and ramp are ready, and we build the finished launcher on **23 October**. I’ll update this page once it’s firing.',
+          'On build day it took a few fixes. The gear driving the Geneva wheel was misaligned, so I reprinted it. Even then the Geneva wheel was a little finicky: once the driver pin left its slot, nothing held the wheel still, so it sometimes rotated on too far and stopped slightly out of line.',
+          'The firing arm also sat too low. The ball didn’t meet the flywheel until it reached the ramp, and by then it was too slow to make it up. I added spacer layers under the arm’s base so the flywheel caught the ball earlier.',
         ],
+        media: {
+          kind: 'image',
+          image: {
+            src: '/images/launcher-build-assembly.webp',
+            alt: 'Two team members assembling the laser-cut base, the yellow Geneva wheel and the blue flywheel at a workshop bench',
+            caption: 'Putting the base, Geneva wheel and flywheel together on build day.',
+          },
+        },
+      },
+    ],
+    results: {
+      title: 'Final results',
+      chapters: [
+        {
+          label: '23 October 2026',
+          heading: 'We succeeded!',
+          body: [
+            'We switched the finished launcher on and it fired all four balls in quick succession, about **0.8 s** apart, and every one cleared the net. Last year only **2 of about 60** groups got their launcher working.',
+            'Each ball flew in an arc about **300 mm** high and landed around **110 cm** away. The flywheel puts a lot of topspin on the ball, so it carried on well after the bounce, and the Magnus effect pulled the arc down just as the trajectory model had allowed for.',
+            'The battery pack we were given was more powerful than our design needed, so the launcher ran faster and fired further than planned. On a less powerful pack it would have worked exactly as intended.',
+          ],
+          stats: [
+            { value: '4 / 4', label: 'balls fired over the net' },
+            { value: '2 of 60', label: 'groups working last year' },
+          ],
+        },
+        {
+          label: 'Looking back',
+          body: [
+            'The lesson from our design report held up on build day: kinematics and geometry are only the starting point, and nearly every fix was about how the parts physically sat together. For a second version, I would add a locking disc to the Geneva drive, a curved ring on the driver that holds the wheel still between steps and stops the over-rotation we saw.',
+          ],
+        },
+      ],
+    },
+    sections: [],
+  },
+  {
+    slug: 'dragster',
+    title: 'Spring-powered dragster',
+    kind: 'University of Bath · first-year team project',
+    period: 'Jan 2026',
+    blurb: 'A mostly 3D-printed dragster driven by an elastic band. Our team came first of 60, at 2.26 seconds over 10 m.',
+    // TODO: add `media` (card photo) once there are pictures. Until then the card shows a blank drawing sheet.
+    facts: [
+      { label: 'Result', value: '1st of 60 teams, 2.26 s' },
+      { label: 'Role', value: 'Energy and grip calculations' },
+      { label: 'Team', value: 'Six students' },
+      { label: 'Made with', value: '3D printing, light wood' },
+    ],
+    lede: 'A first-year project to build a spring-powered dragster and race it over a timed 10 m course. Our team came first of 60.',
+    intro:
+      'In my first year at Bath, my team of six designed, built and raced a dragster powered by nothing but an elastic band, over a timed 10 m course from a standing start. Out of 60 teams, we came first overall, with a time of 2.26 seconds.',
+    story: [
+      {
+        label: 'The design',
+        body: [
+          'Most of the dragster is 3D printed. The large back wheel carries a custom wind-up pulley, and the elastic band stretches the full length of the car to a long front. Rubber bands round the rear wheels add grip, and the body is light wood.',
+          'The pulley tapers, so the windings get thinner as the band unwinds. At the start the band pulls on a large radius, giving plenty of torque to get moving; by the end it pulls on a small one, so the wheel spins faster once the car is already up to speed.',
+        ],
+        // TODO: add a photo or CAD render of the whole dragster here.
+      },
+      {
+        label: 'My calculations',
+        body: [
+          'I did the calculations. First, how much energy the stretched elastic band stores and passes to the wheel, which gave the car’s **maximum wheel speed**. Second, whether the rubber on the rear wheels would grip well enough to stop them spinning at the start.',
+          // TODO: add the real figures (band energy, maximum RPM, friction coefficient) once calculated.
+        ],
+        // TODO: add the calculation sheet or a chart as media.
+      },
+      {
+        label: 'Race day',
+        body: [
+          'On race day we came first of **60 teams**, covering the 10 m course in **2.26 seconds**.',
+          // TODO: add the number of runs, how it compared with the other teams, and what we would change.
+        ],
+        // TODO: add race-day photos or video.
       },
     ],
     sections: [],
@@ -669,7 +767,6 @@ export const projects: Project[] = [
       alt: 'The Cruising the World homepage, with a cruise search bar over a photo of the Mediterranean coast',
     },
     layout: 'web',
-    still: true,
     site: {
       url: 'https://cruising-redesign.vercel.app/',
       label: 'the redesigned site',
@@ -720,7 +817,6 @@ export const projects: Project[] = [
     lede: 'I ran an Etsy shop selling mirrors in custom shapes, each one laser cut from reflective acrylic.',
     intro:
       'SchoebShop was my small business making custom-shaped mirrors. I drew every design myself in CAD, laser cut it from 3 mm mirrored acrylic and sold the finished mirrors on Etsy, in a range of shapes and sizes.',
-    still: true,
     stepNumbers: false,
     story: [
       {
@@ -810,7 +906,7 @@ export const projects: Project[] = [
     period: '2021 – 2022',
     blurb: 'A calming desk lamp for a friend with ADHD, with laser-cut acrylic fins shaped like octopus tentacles.',
     media: {
-      kind: 'photo',
+      kind: 'screen',
       src: '/images/lamp-final.webp',
       alt: 'The finished lamp lit up on a workshop bench: eight neon acrylic fins curving up around a bulb in a white 3D-printed base',
       position: '50% 42%',

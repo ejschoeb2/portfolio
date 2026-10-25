@@ -1,27 +1,13 @@
-import { useLayoutEffect, useRef, useState, type PointerEvent, type ReactNode } from 'react'
-import { Arrow } from './Arrow'
+import { useRef, useState, type PointerEvent, type ReactNode } from 'react'
 
-export type Panel = { caption: string; content: ReactNode }
+export type Panel = { label: string; caption: ReactNode; content: ReactNode }
 
-/** Like Slides, but each panel is any content (a table, an animation). The
- *  frame eases to the height of the panel on show. */
+/** Like Slides, but each panel is any content (a table, an animation), switched
+ *  with the dots or a swipe. Every panel stands as tall as the tallest. */
 export function Panels({ panels }: { panels: Panel[] }) {
   const [index, setIndex] = useState(0)
   const startX = useRef<number | null>(null)
-  const frame = useRef<HTMLDivElement>(null)
   const count = panels.length
-
-  useLayoutEffect(() => {
-    const el = frame.current!
-    const fit = () => {
-      const panel = el.querySelectorAll<HTMLElement>('.panels__panel')[index]
-      if (panel) el.style.height = `${panel.offsetHeight}px`
-    }
-    fit()
-    const observer = new ResizeObserver(fit)
-    el.querySelectorAll('.panels__panel').forEach((panel) => observer.observe(panel))
-    return () => observer.disconnect()
-  }, [index])
   const go = (i: number) => setIndex((i + count) % count)
 
   const onPointerDown = (e: PointerEvent) => {
@@ -38,14 +24,13 @@ export function Panels({ panels }: { panels: Panel[] }) {
     <div className="panels">
       <div
         className="panels__frame"
-        ref={frame}
         onPointerDown={onPointerDown}
         onPointerUp={onPointerUp}
         onPointerCancel={() => (startX.current = null)}
       >
         <div className="panels__track" style={{ transform: `translateX(${-index * 100}%)` }}>
           {panels.map((panel, i) => (
-            <div key={panel.caption} className="panels__panel" aria-hidden={i !== index} inert={i !== index}>
+            <div key={panel.label} className="panels__panel" aria-hidden={i !== index} inert={i !== index}>
               {panel.content}
             </div>
           ))}
@@ -57,21 +42,15 @@ export function Panels({ panels }: { panels: Panel[] }) {
         <span className="slides__dots">
           {panels.map((panel, i) => (
             <button
-              key={panel.caption}
+              key={panel.label}
               type="button"
               className="slides__dot"
-              aria-label={`Show ${panel.caption.toLowerCase()}`}
+              aria-label={`Show ${panel.label.toLowerCase()}`}
               aria-current={i === index ? 'true' : undefined}
               onClick={() => go(i)}
             />
           ))}
         </span>
-        <button type="button" className="panels__nav" aria-label="Previous" onClick={() => go(index - 1)}>
-          <Arrow direction="left" />
-        </button>
-        <button type="button" className="panels__nav" aria-label="Next" onClick={() => go(index + 1)}>
-          <Arrow />
-        </button>
       </div>
     </div>
   )
