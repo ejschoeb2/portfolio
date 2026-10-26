@@ -449,7 +449,7 @@ export const projects: Project[] = [
     facts: [
       { label: 'Role', value: 'Founder and director' },
       { label: 'Company', value: 'Prompt Automation Ltd' },
-      { label: 'Since', value: 'Dec 2025' },
+      { label: 'Started', value: 'Dec 2025' },
       { label: 'For', value: 'Small businesses' },
     ],
     layout: 'web',
@@ -605,7 +605,7 @@ export const projects: Project[] = [
           label: 'Find the candidates',
           body: [
             'There is no wetlands marker in OECD data, so wetland finance has to be found from each project’s text. Keyword lists catch the candidates: Primary terms count on their own, General terms only in numbers or with supporting evidence such as a biodiversity marker or an environmental funder.',
-            'Matching whole words mattered. Matching inside words, “pan” caught Japan and “bog” caught Bogotá; fixing it cut the candidates from **1,947** to **864**.',
+            'Matching whole words mattered. When it matched inside words, “pan” caught Japan and “bog” caught Bogotá; fixing it cut the candidates from **1,947** to **864**.',
           ],
           media: {
             kind: 'table',
@@ -690,7 +690,7 @@ export const projects: Project[] = [
         {
           label: 'Finish by hand and AI',
           body: [
-            'The money is concentrated, so the biggest projects were screened by hand until **95%** of the value was decided. An AI screener, tested against my labels over nine versions, took the next **4.5%**, and rules the last **0.5%**.',
+            'The money is concentrated, so the biggest projects were screened by hand until **94%** of the value was decided. An AI screener, tested against my labels over nine versions, took the next **5%**, and rules the last **1%**.',
             'In the end **14,045** transactions were screened and **5,489** counted as wetland finance.',
           ],
           side: 'left',
@@ -720,7 +720,7 @@ export const projects: Project[] = [
     media: {
       kind: 'screen',
       src: '/images/ctheworld-card.webp',
-      alt: 'The Cruising the World homepage, with a cruise search bar over a photo of the Mediterranean coast',
+      alt: 'The CruisingTheWorld Travel homepage, with a cruise search bar over a photo of the Mediterranean coast',
     },
     layout: 'web',
     site: {
@@ -737,7 +737,7 @@ export const projects: Project[] = [
     ],
     lede: 'I designed the brand and built the website for a cruise agency, so customers could search every cruise in one place.',
     intro:
-      'Cruising the World is a cruise agency. I designed its brand and built its website, so customers could search every cruise in one place. The agency’s site has since been taken down, so I’ve rebuilt it as a redesign, shown below. The cruises in it are sample data.',
+      'CruisingTheWorld Travel is a cruise agency. I designed its brand and built its website, so customers could search every cruise in one place. The agency’s site has since been taken down, so I’ve rebuilt it as a redesign, shown below. The cruises in it are sample data.',
     about: {
       body: [
         'I created the brand, from the logo to the colours, and designed a site where customers can search holidays by region, country, cabin type, number of stops and price.',
@@ -885,7 +885,7 @@ export const projects: Project[] = [
             rows: [
               ['Form', 'Copies nature, and is relaxing to look at'],
               ['Light', 'Lights a small area with calming light'],
-              ['Power', 'Draws less than 5 W'],
+              ['Power', 'Draws 5 W or less'],
               ['Cost', 'Under £20'],
               ['Size', 'No bigger than 400 × 200 × 200 mm'],
               ['Safety', 'A stable base, no hot filament bulb, survives small knocks'],

@@ -21,7 +21,7 @@ export const chapters: Chapter[] = [
               'Bin (outer box): 0.580 × 0.330 × 0.420 = 0.080 m³',
               '0.080 ÷ 0.280 = 0.29',
               'Lid at 55°: 330 × sin 55° ≈ 270 mm above the rim, so 580 + 270 = 850 mm, against a worktop at 870 mm',
-            ], 'About 29 % of the space, and the lid is 20 mm from the worktop'),
+            ], 'About 29% of the space, and the lid is 20 mm from the worktop'),
           },
           { kind: 'outcome', text: 'So a new bin could be much bigger without taking more room, but a deeper lid would hit the worktop even sooner.' },
         ],
@@ -41,7 +41,7 @@ export const chapters: Chapter[] = [
               ],
             },
             calc: c('From bag to bin (refuse sack)', [
-              'Rim perimeter ≤ 0.95 × open loop (5 % slack to fold over, est.)',
+              'Rim perimeter ≤ 0.95 × open loop (5% slack to fold over, est.)',
               '0.95 × 1474 = 1400 mm → square side 1400 ÷ 4 = 350 mm',
               'Useful depth = 990 − 100 (over the rim) − 150 (bottom corners, est.) = 740 mm',
               'V = 0.350 × 0.350 × 0.740 = 0.0907 m³',
@@ -67,13 +67,13 @@ export const chapters: Chapter[] = [
       {
         id: 's07', date: '3 Oct', title: 'Pedal', dead: true, pointer: '',
         blocks: [
-          { kind: 'text', lead: true, text: 'My first plan was a pedal that rolled the bin out and lifted the lid. I researched pedal forces and found a published limit of 45 N for a pedal pushed with the ankle.¹ Then I worked out what different versions of my design would need.' },
+          { kind: 'text', lead: true, text: 'My first plan was a pedal that rolled the bin out and lifted the lid. I researched pedal forces and found a published limit of 45 N for a pedal pushed with the ankle,¹ so I set my design limit just under it, at 40 N. Then I worked out what different versions of my design would need.' },
           {
             kind: 'table',
             table: {
               head: ['Version of my design', 'Bag', 'Capacity', 'Pedal force needed'],
               rows: [
-                ['One lid', '60 L liner', '48 L', '43 N: just over'],
+                ['One lid', '60 L liner', '48 L', '43 N: just over 40 N'],
                 ['One lid', 'Refuse sack', '53 L', '59 N: fails'],
                 ['Butterfly (two flaps)', '60 L liner', '49 L', '35 N: passes'],
                 ['Butterfly (two flaps)', 'Refuse sack', '74 L', '47 N: fails'],
@@ -85,7 +85,7 @@ export const chapters: Chapter[] = [
               'Lid: E = m g (L/2) sin θ = 0.955 × 9.81 × 0.187 × sin 61° ≈ 1.53 J',
               'Pedal: F = 2.49 ÷ (0.7 efficiency × 0.060 m travel)',
               'The other rows use the same method with each version’s sizes',
-            ], 'F ≈ 59 N, over the 45 N limit', 'Rolling resistance 0.025, efficiency 0.7, 60 mm of travel (all est.).'),
+            ], 'F ≈ 59 N, well over the 40 N limit', 'Rolling resistance 0.025, efficiency 0.7, 60 mm of travel (all est.).'),
           },
           { kind: 'outcome', dropped: 'Dropped the pedal.', text: 'Only one version passed, and it held no more than our current bin.' },
           { kind: 'cite', text: '¹ US Department of Defense, MIL-STD-1472G Human Engineering (2012), Fig. 21, pedals: ankle movement only.' },
@@ -318,13 +318,13 @@ export const chapters: Chapter[] = [
           { kind: 'text', lead: true, text: 'Then I chose parts to suit, keeping them cheap and the base low.' },
           {
             kind: 'text',
-            text: 'A DFRobot FIT0403 gearmotor, which has the encoder built in, works at [[about 20 % of its stall torque]]. Screwfix swivel castors at £2.19 each are only 49.4 mm tall, which dropped the base 20 mm, and printed TPU wheels at the back are driven through metal couplers.',
+            text: 'A DFRobot FIT0403 gearmotor, which has the encoder built in, works at [[about 20% of its stall torque]]. Screwfix swivel castors at £2.19 each are only 49.4 mm tall, which dropped the base 20 mm, and printed TPU wheels at the back are driven through metal couplers.',
             calc: c('Sizing the motor', [
               'Full bin 33 kg (est.), rolling resistance 0.03, 1° floor slope, starts at 0.3 m/s²',
               'F = 9.7 + 5.7 + 9.9 ≈ 25 N; × 1.5 ≈ 38 N',
               'Axle: 38 × 0.0275 ≈ 1.04 N·m',
               'Motor: 1.04 ÷ (1.5 × 0.95) ≈ 0.73 N·m, of 3.7 N·m stall',
-            ], '≈ 20 % of stall, ≈ 0.2 m/s'),
+            ], '≈ 20% of stall, ≈ 0.2 m/s'),
           },
           { kind: 'outcome', text: 'Cheap parts that left more of the height for the bin.' },
         ],
@@ -456,7 +456,7 @@ export const chapters: Chapter[] = [
           {
             kind: 'table',
             table: {
-              head: ['3 mm sheet', 'Bend under a 50 N push'],
+              head: ['Sheet (3 mm unless noted)', 'Bend under a 50 N push'],
               rows: [
                 ['Aluminium composite (ACM)', '≈ 1.5 mm'],
                 ['ACM, 2 mm', '≈ 3.8 mm'],
@@ -472,7 +472,7 @@ export const chapters: Chapter[] = [
               'w = 0.0151 × 50 × 416² ÷ 86 000 ≈ 1.5 mm',
             ], 'ACM is ≈ 37 times stiffer than PVC foam'),
           },
-          { kind: 'outcome', text: 'So I chose flat 3 mm brushed aluminium composite (ACM) panels: they fit the £200 budget and bend only about 1.5 mm under a lean, where PVC foam board would have felt flimsy.' },
+          { kind: 'outcome', text: 'So I chose flat 3 mm brushed aluminium composite (ACM) panels: about £25 for all four walls, and they bend only about 1.5 mm under a lean, where PVC foam board would have felt flimsy.' },
         ],
       },
       {

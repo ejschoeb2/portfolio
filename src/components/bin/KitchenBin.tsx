@@ -301,7 +301,6 @@ export function KitchenBin() {
             <div className="tl-calcview" data-on={calc ? true : undefined} aria-hidden={!calc} onClick={() => setCalc(null)}>
               {lastCalc.current && (
                 <>
-                  <p className="tl-calcview__badge">Worked in text for now · hand working to follow</p>
                   <h4>{lastCalc.current.title}</h4>
                   {lastCalc.current.given && <p className="calc__given">{lastCalc.current.given}</p>}
                   <ol className="calc__lines">

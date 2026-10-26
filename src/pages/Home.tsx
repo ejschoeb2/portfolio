@@ -65,8 +65,8 @@ export function Home({ returnSlug }: { returnSlug: string | null }) {
           <div className="hero__about">
             <p>
               I’m Ethan Schoeb, a second-year mechanical engineering student at the University of
-              Bath and a brakes engineer on Team Bath Racing Electric. I’m looking for a{' '}
-              <strong>mechanical design engineering placement</strong> for 2027.
+              Bath and a brakes engineer on Team Bath Racing Electric. I’m looking for an{' '}
+              <strong>engineering placement</strong> for 2027.
             </p>
             <ToProjects />
           </div>

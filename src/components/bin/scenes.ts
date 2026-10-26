@@ -67,7 +67,7 @@ export const SCENES: Record<string, SceneState> = {
     labels: [
       { at: [-420, 156, 10], text: 'Worktop, 870 mm', frame: 'world' },
       { at: [-235, -460, -10], text: 'Addis 50 L: 580 × 330 × 420', frame: 'world' },
-      { at: [210, -100, 10], text: 'Empty space ≈ 71 %', frame: 'world' },
+      { at: [210, -100, 10], text: 'Empty space ≈ 71%', frame: 'world' },
     ],
   },
   s04: {

@@ -33,7 +33,7 @@ export const problem = {
   intro: 'Nine of us share one 50 L pedal bin in our flat on Bath’s high street, and it lets us down every day.',
   points: [
     'It fills in under a day: we throw away about **57 L** of rubbish a day, and there’s no recycling collection on the high street.',
-    'The lid is left open about **20 %** of the time, so there are **5–10** fruit flies in the kitchen on a normal day.',
+    'The lid is left open about **20%** of the time, so there are **5–10** fruit flies in the kitchen on a normal day.',
     'The pedal only opens the lid to **55°**, so rubbish misses and lands on the floor.',
     'It’s light and top-heavy, so it falls over.',
     'It fills less than **a third** of the space under the worktop.',
@@ -48,7 +48,7 @@ export const specification: Table = {
     ['2. Holds more', '≥ 80 L, about a day and a half of rubbish', '57 L a day measured; the current bin holds 50 L'],
     ['3. Opens hands-free and wide', 'No pedal or handle; the lid opens clear of the worktop', 'The pedal only manages 55° under the worktop'],
     ['4. Fly-proof when shut', 'No gap over 1 mm round the lid', 'Fruit flies get through gaps of about 1 mm'],
-    ['5. Shuts itself, and knows it', 'Closes on its own and checks it is shut before rolling home', 'Left open ≈ 20 % of the time'],
+    ['5. Shuts itself, and knows it', 'Closes on its own and checks it is shut before rolling home', 'Left open ≈ 20% of the time'],
     ['6. Works with the power off', 'Lid opens and shuts by hand; the bin can be pushed', 'A flat battery must never trap the rubbish'],
     ['7. Doesn’t tip', '≥ 20 N push at the rim to tip it over, empty', 'The current bin falls over'],
     ['8. Easy bag change', 'Without lifting the bag over a high rim or unplugging anything', 'Nine people have to be willing to do it'],
@@ -60,7 +60,7 @@ export const specification: Table = {
 export const finalStep = {
   title: 'Where it is now',
   pointer: 'The design as it stands. Click the numbers.',
-  text: 'Everything that survived the process. The lid pieces are printed, and the sheets, aluminium and electronics are bought, so the first prototype is next.',
+  text: 'Everything that survived the process. The lid pieces are printed, and the sheets, aluminium and electronics are being ordered, so the first prototype is next.',
 }
 
 export const aiNote = 'AI was used to help with research and calculations.'
