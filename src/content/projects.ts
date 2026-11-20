@@ -4,6 +4,8 @@
 // To add a photo: drop the original in media/originals, run `npm run images`,
 // then point `media` (the card) or a `gallery` entry at /images/<name>.webp.
 
+import type { Report } from '../components/ReportViewer'
+
 export type Media =
   | { kind: 'photo'; src: string; alt: string; position?: string }
   | { kind: 'screen'; src: string; alt: string; position?: string }
@@ -53,7 +55,7 @@ export type Panel = { caption: string } & ({ kind: 'table'; table: Table } | { k
 
 /** One step of a project's story: text on one side, a picture or slideshow on the other. */
 export type Chapter = {
-  /** The date, shown under the step number. */
+  /** The date, shown under the step number. Leave empty to show none. */
   label: string
   heading?: string
   /** **Figures** in a paragraph are picked out in bold blue. */
@@ -96,8 +98,15 @@ export type Project = {
   intro?: string | string[]
   /** Projects with a story show it in place of `sections` and `gallery`. */
   story?: Chapter[]
+  /** A document (e.g. the project report) to read page by page at the end. */
+  report?: Report
   /** How it turned out, under its own heading after the story (steps not numbered). */
-  results?: { title: string; chapters: Chapter[] }
+  results?: {
+    title: string
+    chapters: Chapter[]
+    /** A smaller heading with no line under it. */
+    compact?: boolean
+  }
   /** The finished thing under the title: a clip of it working and photos, which a
    *  button swaps for its 3D model. */
   showcase?: { video: { src: string; poster: string; alt: string }; photos: StoryImage[] }
@@ -122,33 +131,8 @@ export type Project = {
   gallery?: GalleryItem[]
 }
 
-// In the order the carousel shows them: biggest projects first.
+// In the order the carousel shows them: engineering projects first.
 export const projects: Project[] = [
-  {
-    slug: 'kitchen-bin',
-    title: 'Motorised kitchen bin',
-    kind: 'Personal project',
-    period: 'Sep 2026 – present',
-    blurb: 'A bin that rolls itself out from under the worktop, opens on its own and keeps the flies out.',
-    media: {
-      kind: 'screen',
-      src: '/images/kitchen-bin-render.webp',
-      alt: 'Render of the bin design from my Inventor model, stowed under the worktop',
-      position: '50% 50%',
-    },
-    facts: [
-      { label: 'Type', value: 'Personal project' },
-      { label: 'When', value: 'Sep 2026 – present' },
-      { label: 'CAD', value: 'Autodesk Inventor' },
-      { label: 'Status', value: 'Design done, prototype under way' },
-    ],
-    lede: 'Our kitchen bin fills in under a day. I am redesigning it as one that rolls out from under the worktop, opens and closes itself, and seals against flies.',
-    intro:
-      'Nine of us share a kitchen bin that keeps letting us down. I’m designing a replacement that rolls out from under the worktop, opens by itself and keeps the flies out.',
-    // The 3D model runs full width under the title.
-    layout: 'web',
-    sections: [],
-  },
   {
     slug: 'ball-launcher',
     title: 'Table-tennis ball launcher',
@@ -433,6 +417,444 @@ export const projects: Project[] = [
         },
       ],
     },
+    sections: [],
+  },
+  {
+    slug: 'drive-shaft',
+    title: 'Snowmobile drive shaft',
+    kind: 'University of Bath · group of 4',
+    period: 'Sep – Nov 2026',
+    blurb: 'A snowmobile track drive shaft that delivers 20 kW for a top speed of 50 km/h. I chose the components and bearings, and wrote up the report.',
+    media: {
+      kind: 'screen',
+      src: '/images/shaft-assembly-iso.webp',
+      alt: 'Line drawing of the shaft assembly: two track sprockets on the shaft, the toothed belt pulley beside one of them and a bearing housing on the end',
+      position: '50% 50%',
+    },
+    facts: [
+      { label: 'Team', value: '4 people' },
+      { label: 'My part', value: 'Components and bearings, writing up the report' },
+      { label: 'When', value: 'Sep – Nov 2026' },
+      { label: 'Result', value: '480 mm, 3.93 kg shaft in AISI 5140 steel' },
+    ],
+    lede: 'A second-year design project: a snowmobile track drive shaft.',
+    intro: [
+      'For my second-year design project, our group of four designed a snowmobile track drive shaft. The goal was a shaft that delivers around **20 kW** of power at 3000 RPM, achieving a speed of approximately **50 km/h** over a ten-year life.',
+      'My part was choosing the components, including the bearings, and writing up the report. You can read the full report at the bottom of this page.',
+    ],
+    story: [
+      {
+        label: 'The brief',
+        body: [
+          'There were many options for how this project could be designed. The drive shaft could be laid out in two configurations, and there were four possible drive types to choose from.',
+          'We started with a product design specification, with the client’s requirements ranked from most to least important.',
+        ],
+        media: {
+          kind: 'table',
+          table: {
+            head: ['Requirement', 'Target'],
+            rows: [
+              ['Function', '20 kW at 3000 rpm, continuously'],
+              ['Speed', '50 km/h, ± 5%'],
+              ['Life', '10 hours a week for 10 years'],
+              ['Environment', '−40 °C to +40 °C, heavy shocks, sealed against snow'],
+              ['Parts', 'Standard catalogue parts'],
+              ['Maintenance', 'Bearings and transmission can be removed and replaced'],
+              ['Weight and cost', 'As low as possible'],
+            ],
+          },
+        },
+      },
+      {
+        label: 'Drive and layout',
+        body: [
+          'We compared all four drive types, using the best catalogue selection for each. The synchronous belt was best: it is closest to the target speed, has the largest power margin and grips when icy, since it’s toothed and needs no lubrication.',
+          'Configuration B was chosen for the layout. It reduces the peak bending moment by **62%** and the bearing loads by **21** and **29%**, giving the same bearings 2.0–2.8× the life. Configuration A is easier to maintain, but B’s flaw can be designed around: bearing B sits in a removable bracket.',
+        ],
+        side: 'left',
+        media: {
+          kind: 'panels',
+          panels: [
+            {
+              kind: 'table',
+              caption: 'The four drive types compared',
+              table: {
+                head: ['', 'Synchronous belt', 'Wedge belt', 'Poly-ribbed belt', 'Roller chain'],
+                rows: [
+                  ['Speed', '50.1 km/h', '51.2 km/h', '52.6 km/h', '49.6 km/h'],
+                  ['Power margin', '+55%', '+35%', '+14%', 'Not rated'],
+                  ['Slips on ice?', 'No', 'Yes', 'Yes', 'No'],
+                  ['Rank', '1', '2', '3', '4'],
+                ],
+                highlight: 1,
+              },
+            },
+            {
+              kind: 'table',
+              caption: 'Configuration A against B',
+              table: {
+                head: ['', 'Configuration A', 'Configuration B'],
+                rows: [
+                  ['Peak bending moment', '92.5 N·m', '35.2 N·m'],
+                  ['Bearing A load', '870 N', '688 N'],
+                  ['Bearing B load', '773 N', '545 N'],
+                  ['Belt replacement', 'Slides off the free end', 'Remove bearing B’s bracket first'],
+                ],
+                highlight: 2,
+              },
+            },
+          ],
+        },
+      },
+      {
+        label: 'Choosing the components',
+        body: [
+          'I chose the components part by part, starting at the pulley, where the shaft’s **32 mm** seat was fixed, working outwards to bearing B and then back along the shaft to bearing A. Every part is from the catalogues.',
+          'Deep groove ball bearings best suited the small, mainly radial loads and can locate the shaft. The SKF **6005-2RSH/LT** was the best option for both ends: it has the best water exclusion and low-temperature grease, and keeps **1.75×** its required life even if the track load doubles.',
+          'Where the full torque passes, a 6 mm spacer holds the sprocket instead of a circlip, so there’s no groove weakening the shaft. Bearing B floats in its housing with **0.5 mm** gaps for the shaft’s thermal expansion.',
+        ],
+        media: {
+          kind: 'table',
+          table: {
+            head: ['Check', 'Required', 'SKF 6005-2RSH/LT'],
+            rows: [
+              ['Dynamic rating', '≥ 4.53 kN', '11.9 kN, 18.1× the life'],
+              ['99% reliability', '≥ 1×', '4.5×'],
+              ['Static rating', '≥ 1.03 kN', '6.55 kN'],
+              ['Speed', '917 r/min', '9,500 r/min'],
+              ['Temperature', '−40 to +40 °C', '−40 to +100 °C'],
+            ],
+            highlight: 2,
+            caption: 'The chosen bearing against what the shaft needs.',
+          },
+        },
+      },
+      {
+        label: 'The final shaft',
+        body: [
+          'The finished shaft is **480 mm** long and weighs **3.93 kg**. We checked it at every shoulder, keyseat end, groove and load point, and the keyseat under the belt governs, with safety factors of **4.54** against yield and **3.68** against fatigue.',
+          'It is turned from 45 mm bar, with the keyseats milled and only the bearing seats ground, so each shaft takes about **26 minutes** to make.',
+        ],
+        side: 'left',
+        media: {
+          kind: 'image',
+          image: {
+            src: '/images/shaft-drawing.webp',
+            fit: 'contain',
+            alt: 'The BS 8888 detail drawing of the shaft, with toleranced diameters, geometric tolerances, keyseat sections and enlarged details of every fillet and groove',
+            caption: 'The shaft’s detail drawing, drawn in Inventor by a teammate.',
+          },
+        },
+      },
+    ],
+    results: {
+      title: 'Final design',
+      compact: true,
+      chapters: [
+        {
+          label: '',
+          body: [
+            'The final design meets every demand in the specification except the −40 °C rating, because the belt is only rated down to −25 °C. Before running colder, a cold-rated belt and grease would need confirming with Fenner and SKF, and on a prototype I would measure the track tension, our least certain input.',
+          ],
+          table: {
+            head: ['Requirement', 'Final design', 'Met'],
+            rows: [
+              ['20 kW continuously', 'Belt rated 46.6 kW against 30 kW design power', '✓'],
+              ['50 km/h ± 5%', '50.1 km/h', '✓'],
+              ['10-year life', 'Bearings 18.1× (A) and 36.3× (B) the required life', '✓'],
+              ['−40 to +40 °C', 'Belt rated to −25 °C', '✗'],
+              ['Heavy shocks', 'Shock factor of 1.2 in the design factor', '✓'],
+              ['Sealed', 'Contact seals on both bearings', '✓'],
+              ['Standard parts', 'All from Fenner, SKF, BS 4235 and DIN 471', '✓'],
+              ['Removable parts', 'Bearing B bracket, Taper Lock bush, circlips', '✓'],
+              ['Simple to make', 'Lathe and mill, two seats ground, 26 min', '✓'],
+              ['Low weight', '3.93 kg, of which the collar is 2.5 kg', 'Partly'],
+            ],
+          },
+        },
+      ],
+    },
+    report: {
+      title: 'The full report',
+      note: 'Our group report, from the summary to the conclusions. The appendices are left out.',
+      pdf: '/docs/snowmobile-shaft-report.pdf',
+      pages: Array.from({ length: 29 }, (_, i) => `/images/shaft-report/page-${String(i + 1).padStart(2, '0')}.webp`),
+    },
+    sections: [],
+  },
+  {
+    slug: 'kitchen-bin',
+    title: 'Motorised kitchen bin',
+    kind: 'Personal project',
+    period: 'Sep 2026 – present',
+    blurb: 'A bin that rolls itself out from under the worktop, opens on its own and keeps the flies out.',
+    media: {
+      kind: 'screen',
+      src: '/images/kitchen-bin-render.webp',
+      alt: 'Render of the bin design from my Inventor model, stowed under the worktop',
+      position: '50% 50%',
+    },
+    facts: [
+      { label: 'Type', value: 'Personal project' },
+      { label: 'When', value: 'Sep 2026 – present' },
+      { label: 'CAD', value: 'Autodesk Inventor' },
+      { label: 'Status', value: 'Lid printed; build on hold' },
+    ],
+    lede: 'Our kitchen bin fills in under a day. I am redesigning it as one that rolls out from under the worktop, opens and closes itself, and seals against flies.',
+    intro:
+      'Nine of us share a kitchen bin that keeps letting us down. I’m designing a replacement that rolls out from under the worktop, opens by itself and keeps the flies out.',
+    // The 3D model runs full width under the title.
+    layout: 'web',
+    results: {
+      title: 'Building it',
+      chapters: [
+        {
+          label: 'Printing the lid',
+          body: [
+            'The first part of the prototype is made. The lid frame is bigger than any 3D printer bed in the university Makerspace, so I designed it in **5** pieces that join with printed dovetails, then printed them and fitted them together.',
+            'A laser-cut acrylic top drops into the frame, which used about half the filament of a fully printed lid.',
+          ],
+          media: {
+            kind: 'image',
+            image: {
+              src: '/images/bin-lid-printed.webp',
+              alt: 'The black 3D-printed lid frame of the bin on a desk, its five printed pieces joined into one rounded rectangle with the hinge tab at the back',
+              caption: 'The printed lid frame, joined from five pieces.',
+            },
+          },
+        },
+        {
+          label: 'On hold',
+          body: [
+            'The next parts, starting with the acrylic lid top, need a laser cutter with a bed big enough for them, and the university’s isn’t free for students to use at the moment. The build is on hold until it is. Then the rest of the body, the drive and the electronics go together into the first full prototype.',
+          ],
+        },
+      ],
+    },
+    sections: [],
+  },
+  {
+    slug: 'desk-lamp',
+    title: 'Biomimicry desk lamp',
+    kind: 'GCSE Design and Technology',
+    period: '2021 – 2022',
+    blurb: 'A calming desk lamp for a friend with ADHD, with laser-cut acrylic fins shaped like octopus tentacles.',
+    media: {
+      kind: 'screen',
+      src: '/images/lamp-card.webp',
+      alt: 'The finished lamp lit up on a workshop bench: eight neon acrylic fins curving up around a bulb in a white 3D-printed base',
+      position: '50% 50%',
+    },
+    facts: [
+      { label: 'Role', value: 'Designer and maker' },
+      { label: 'When', value: '2021 – 2022' },
+      { label: 'CAD', value: 'SketchUp, Fusion 360, 2D Design' },
+      { label: 'Made with', value: 'Laser cutter and 3D printer' },
+    ],
+    lede: 'My GCSE Design and Technology project: a calming desk lamp for a friend with ADHD.',
+    intro:
+      'For my GCSE Design and Technology project I designed and made a desk lamp for a friend with ADHD, who found it hard to focus when revising at home. Eight laser-cut acrylic fins, shaped like octopus tentacles, glow around a bulb in a 3D-printed base. The whole process is below.',
+    story: [
+      {
+        label: 'The brief',
+        body: [
+          'My friend wanted something to help him focus while revising at home, where his phone and everything around him kept pulling him away. In an interview he told me lamps and relaxing light had helped him most, that nature helped him relax, and that he could spend **£10–20**.',
+          'I visited his desk to see where it would go: plenty of space and a socket close by, so a mains lamp made more sense than batteries. From the interview, a questionnaire and my research, I wrote the specification.',
+        ],
+        media: {
+          kind: 'table',
+          table: {
+            head: ['Requirement', 'Target'],
+            rows: [
+              ['Form', 'Copies nature, and is relaxing to look at'],
+              ['Light', 'Lights a small area with calming light'],
+              ['Power', 'Draws 5 W or less'],
+              ['Cost', 'Under £20'],
+              ['Size', 'No bigger than 400 × 200 × 200 mm'],
+              ['Safety', 'A stable base, no hot filament bulb, survives small knocks'],
+              ['Materials', 'High quality, recyclable, parts that fit together seamlessly'],
+            ],
+          },
+        },
+      },
+      {
+        label: 'Research',
+        body: [
+          'In a questionnaire of people with ADHD, relaxing lighting came out as what helped most. Research into biomimicry, copying nature in design, backed up my friend’s wish: one study found people’s heart rates were lower walking in a forest than in a city.',
+          'I compared four materials for the parts. Acrylic suited the visible pieces best: it is cheap, cuts cleanly on a laser cutter and comes in bright colours.',
+        ],
+        side: 'left',
+        media: {
+          kind: 'table',
+          table: {
+            head: ['Material', 'For', 'Against'],
+            rows: [
+              ['Acrylic', 'Cheap, laser cuts cleanly, lots of colours', 'Scratches easily, low melting point'],
+              ['PLA', 'Biodegradable, easy to 3D print', 'Not flexible, shatters easily'],
+              ['ABS', 'Very cheap, tough, easy to 3D print', 'Weakened by sunlight, not biodegradable'],
+              ['Aluminium', 'Strong, light, recyclable', 'Expensive and hard to shape'],
+            ],
+          },
+        },
+      },
+      {
+        label: 'Ideas',
+        body: [
+          'I drew ten ideas by hand and modelled most of them in SketchUp. Nearly all copied something from nature: a tree, a honeycomb, a rainbow, a flower, stacking pyramids, and fins inspired by an octopus’s tentacles.',
+        ],
+        media: {
+          kind: 'slides',
+          ratio: 4 / 3,
+          images: [
+            {
+              src: '/images/lamp-ideas-sketch.webp',
+              alt: 'A sheet of hand-drawn initial ideas, including a tentacle lamp, a flower lamp and a lamp on a wooden block',
+              caption: 'A sheet of initial ideas',
+            },
+            {
+              src: '/images/lamp-ideas-pyramid.webp',
+              alt: 'A hand-drawn lamp made of coloured triangular pyramids, with annotations',
+              caption: 'Stacking pyramids',
+            },
+            {
+              src: '/images/lamp-ideas-honeycomb.webp',
+              fit: 'contain',
+              alt: 'SketchUp model of a cylindrical lamp with a honeycomb pattern of yellow panels on a wooden base',
+              caption: 'Honeycomb, modelled in SketchUp',
+            },
+            {
+              src: '/images/lamp-ideas-tree.webp',
+              fit: 'contain',
+              alt: 'SketchUp model of a yellow branching tree lamp on a grey base',
+              caption: 'Tree, modelled in SketchUp',
+            },
+            {
+              src: '/images/lamp-ideas-octopus.webp',
+              fit: 'contain',
+              alt: 'Hand-drawn sketch of a lamp with blue tentacle-like fins around a bulb, with annotations',
+              caption: 'The octopus fins',
+            },
+          ],
+        },
+      },
+      {
+        label: 'Choosing',
+        body: [
+          'I scored every idea against each point of the specification. The octopus fins came top with **18** points, two clear of the next, and my friend chose it too: “I think design 5 looks the best, I can see the biomimicry and it looks like it would be helpful.”',
+        ],
+        side: 'left',
+        media: {
+          kind: 'image',
+          image: {
+            src: '/images/lamp-scores.webp',
+            alt: 'The scoring table: each of the ten ideas rated green, amber or red against every point of the specification, with idea 5 scoring 18',
+            caption: 'Every idea scored against the specification: green 2, amber 1, red 0.',
+          },
+        },
+      },
+      {
+        label: 'Development',
+        body: [
+          'Models showed the problems. In cardboard the fins slumped sideways, acrylic test fins snapped, the lamp was too big and there was no way to wire the bulb.',
+          'So I shrank the base from **150 mm** to **100 mm** across and split it in two: a dome with eight slots for the fins and a **10 mm** hole for the wires, and an insert to hold a standard E27 bulb. The fins went from **8 mm** to **3 mm** thick, and their colours changed to green, red, orange and blue to look more natural. The developed design scored **92 out of 100** against the specification.',
+        ],
+        media: {
+          kind: 'slides',
+          ratio: 4 / 3,
+          images: [
+            {
+              src: '/images/lamp-cardboard.webp',
+              fit: 'contain',
+              alt: 'A cardboard model of the lamp on a workshop bench, its fins slumping sideways',
+              caption: 'The cardboard model',
+            },
+            {
+              src: '/images/lamp-dev-sketch.webp',
+              fit: 'contain',
+              alt: 'Drawing of the developed lamp from the side and from above, with coloured fins around the bulb',
+              caption: 'The developed design, from above and the side',
+            },
+            {
+              src: '/images/lamp-base-cad.webp',
+              fit: 'contain',
+              alt: 'Fusion 360 model of the domed base with eight curved slots for the fins and a hole for the wires',
+              caption: 'The base in Fusion 360',
+            },
+            {
+              src: '/images/lamp-dev-render.webp',
+              fit: 'contain',
+              alt: 'CAD model of the lamp with its fins, bulb and screw fitting',
+              caption: 'How the fins, bulb and base fit together',
+            },
+          ],
+        },
+      },
+      {
+        label: 'Making',
+        body: [
+          'I modelled the base in Fusion 360 and 3D printed it in white PLA, with the bulb fitting adapted from a design on Thingiverse. The fins were drawn in 2D Design and laser cut from 3 mm acrylic in four colours, two of each.',
+          'Then came the hand work: straightening fins that warped in the cutter on a line bender, drilling holes for the wires, sanding the holder to fit and gluing the fins into their slots. A **12 V**, **5 W** bulb on a variable power supply lights it.',
+        ],
+        side: 'left',
+        media: {
+          kind: 'slides',
+          images: [
+            {
+              src: '/images/lamp-printing.webp',
+              alt: 'The white domed base on the bed of a FlashForge 3D printer',
+              caption: 'Printing the base',
+            },
+            {
+              src: '/images/lamp-fin-cut.webp',
+              alt: 'An orange acrylic fin fresh from the laser cutter',
+              caption: 'A fin from the laser cutter',
+            },
+            {
+              src: '/images/lamp-line-bender.webp',
+              alt: 'An orange acrylic fin on a line bender, being straightened',
+              caption: 'Straightening a fin on the line bender',
+            },
+            {
+              src: '/images/lamp-wiring.webp',
+              alt: 'Hands feeding wires through the 3D-printed bulb holder',
+              caption: 'Wiring the bulb holder',
+            },
+            {
+              src: '/images/lamp-first-light.webp',
+              alt: 'The base with its bulb lit for the first time, before the fins went in',
+              caption: 'First light, before the fins went in',
+            },
+          ],
+        },
+      },
+      {
+        label: 'Testing',
+        body: [
+          'I tested the finished lamp against every point of the specification and it scored **208 out of 220**. It draws **5 W**, fits in **120 × 120 × 280 mm**, takes **5 N** to push over and survived a **1.5 m** drop with only small scratches. The parts cost **£19.25**, under budget.',
+          'My friend found it calming and said it helped him focus. If I made it again, I’d look for a warmer light: the colour was calming, but not the most relaxing it could be.',
+        ],
+        media: {
+          kind: 'slides',
+          images: [
+            {
+              src: '/images/lamp-lit-2.webp',
+              alt: 'The finished lamp lit on a workshop bench, its neon fins glowing',
+              caption: 'The finished lamp',
+            },
+            {
+              src: '/images/lamp-lit-1.webp',
+              alt: 'The finished lamp lit beside the variable power supply',
+              caption: 'Running at 12 V',
+            },
+            {
+              src: '/images/lamp-lit-3.webp',
+              alt: 'The lamp from above, with the fins curving over the bulb',
+              caption: 'From above',
+            },
+          ],
+        },
+      },
+    ],
     sections: [],
   },
   {
@@ -846,230 +1268,6 @@ export const projects: Project[] = [
         body: [
           'In the end I sold six mirrors, but I had taken a product from an idea in a school workshop to something people paid for. Two things held the shop back: 3 mm acrylic with lots of cut-outs is fragile to post, and standing out on Etsy is hard.',
         ],
-      },
-    ],
-    sections: [],
-  },
-  {
-    slug: 'desk-lamp',
-    title: 'Biomimicry desk lamp',
-    kind: 'GCSE Design and Technology',
-    period: '2021 – 2022',
-    blurb: 'A calming desk lamp for a friend with ADHD, with laser-cut acrylic fins shaped like octopus tentacles.',
-    media: {
-      kind: 'screen',
-      src: '/images/lamp-final.webp',
-      alt: 'The finished lamp lit up on a workshop bench: eight neon acrylic fins curving up around a bulb in a white 3D-printed base',
-      position: '50% 42%',
-    },
-    facts: [
-      { label: 'Role', value: 'Designer and maker' },
-      { label: 'When', value: '2021 – 2022' },
-      { label: 'CAD', value: 'SketchUp, Fusion 360, 2D Design' },
-      { label: 'Made with', value: 'Laser cutter and 3D printer' },
-    ],
-    lede: 'My GCSE Design and Technology project: a calming desk lamp for a friend with ADHD.',
-    intro:
-      'For my GCSE Design and Technology project I designed and made a desk lamp for a friend with ADHD, who found it hard to focus when revising at home. Eight laser-cut acrylic fins, shaped like octopus tentacles, glow around a bulb in a 3D-printed base. The whole process is below.',
-    story: [
-      {
-        label: 'The brief',
-        body: [
-          'My friend wanted something to help him focus while revising at home, where his phone and everything around him kept pulling him away. In an interview he told me lamps and relaxing light had helped him most, that nature helped him relax, and that he could spend **£10–20**.',
-          'I visited his desk to see where it would go: plenty of space and a socket close by, so a mains lamp made more sense than batteries. From the interview, a questionnaire and my research, I wrote the specification.',
-        ],
-        media: {
-          kind: 'table',
-          table: {
-            head: ['Requirement', 'Target'],
-            rows: [
-              ['Form', 'Copies nature, and is relaxing to look at'],
-              ['Light', 'Lights a small area with calming light'],
-              ['Power', 'Draws 5 W or less'],
-              ['Cost', 'Under £20'],
-              ['Size', 'No bigger than 400 × 200 × 200 mm'],
-              ['Safety', 'A stable base, no hot filament bulb, survives small knocks'],
-              ['Materials', 'High quality, recyclable, parts that fit together seamlessly'],
-            ],
-          },
-        },
-      },
-      {
-        label: 'Research',
-        body: [
-          'In a questionnaire of people with ADHD, relaxing lighting came out as what helped most. Research into biomimicry, copying nature in design, backed up my friend’s wish: one study found people’s heart rates were lower walking in a forest than in a city.',
-          'I compared four materials for the parts. Acrylic suited the visible pieces best: it is cheap, cuts cleanly on a laser cutter and comes in bright colours.',
-        ],
-        side: 'left',
-        media: {
-          kind: 'table',
-          table: {
-            head: ['Material', 'For', 'Against'],
-            rows: [
-              ['Acrylic', 'Cheap, laser cuts cleanly, lots of colours', 'Scratches easily, low melting point'],
-              ['PLA', 'Biodegradable, easy to 3D print', 'Not flexible, shatters easily'],
-              ['ABS', 'Very cheap, tough, easy to 3D print', 'Weakened by sunlight, not biodegradable'],
-              ['Aluminium', 'Strong, light, recyclable', 'Expensive and hard to shape'],
-            ],
-          },
-        },
-      },
-      {
-        label: 'Ideas',
-        body: [
-          'I drew ten ideas by hand and modelled most of them in SketchUp. Nearly all copied something from nature: a tree, a honeycomb, a rainbow, a flower, stacking pyramids, and fins inspired by an octopus’s tentacles.',
-        ],
-        media: {
-          kind: 'slides',
-          ratio: 4 / 3,
-          images: [
-            {
-              src: '/images/lamp-ideas-sketch.webp',
-              alt: 'A sheet of hand-drawn initial ideas, including a tentacle lamp, a flower lamp and a lamp on a wooden block',
-              caption: 'A sheet of initial ideas',
-            },
-            {
-              src: '/images/lamp-ideas-pyramid.webp',
-              alt: 'A hand-drawn lamp made of coloured triangular pyramids, with annotations',
-              caption: 'Stacking pyramids',
-            },
-            {
-              src: '/images/lamp-ideas-honeycomb.webp',
-              fit: 'contain',
-              alt: 'SketchUp model of a cylindrical lamp with a honeycomb pattern of yellow panels on a wooden base',
-              caption: 'Honeycomb, modelled in SketchUp',
-            },
-            {
-              src: '/images/lamp-ideas-tree.webp',
-              fit: 'contain',
-              alt: 'SketchUp model of a yellow branching tree lamp on a grey base',
-              caption: 'Tree, modelled in SketchUp',
-            },
-            {
-              src: '/images/lamp-ideas-octopus.webp',
-              fit: 'contain',
-              alt: 'Hand-drawn sketch of a lamp with blue tentacle-like fins around a bulb, with annotations',
-              caption: 'The octopus fins',
-            },
-          ],
-        },
-      },
-      {
-        label: 'Choosing',
-        body: [
-          'I scored every idea against each point of the specification. The octopus fins came top with **18** points, two clear of the next, and my friend chose it too: “I think design 5 looks the best, I can see the biomimicry and it looks like it would be helpful.”',
-        ],
-        side: 'left',
-        media: {
-          kind: 'image',
-          image: {
-            src: '/images/lamp-scores.webp',
-            alt: 'The scoring table: each of the ten ideas rated green, amber or red against every point of the specification, with idea 5 scoring 18',
-            caption: 'Every idea scored against the specification: green 2, amber 1, red 0.',
-          },
-        },
-      },
-      {
-        label: 'Development',
-        body: [
-          'Models showed the problems. In cardboard the fins slumped sideways, acrylic test fins snapped, the lamp was too big and there was no way to wire the bulb.',
-          'So I shrank the base from **150 mm** to **100 mm** across and split it in two: a dome with eight slots for the fins and a **10 mm** hole for the wires, and an insert to hold a standard E27 bulb. The fins went from **8 mm** to **3 mm** thick, and their colours changed to green, red, orange and blue to look more natural. The developed design scored **92 out of 100** against the specification.',
-        ],
-        media: {
-          kind: 'slides',
-          ratio: 4 / 3,
-          images: [
-            {
-              src: '/images/lamp-cardboard.webp',
-              fit: 'contain',
-              alt: 'A cardboard model of the lamp on a workshop bench, its fins slumping sideways',
-              caption: 'The cardboard model',
-            },
-            {
-              src: '/images/lamp-dev-sketch.webp',
-              fit: 'contain',
-              alt: 'Drawing of the developed lamp from the side and from above, with coloured fins around the bulb',
-              caption: 'The developed design, from above and the side',
-            },
-            {
-              src: '/images/lamp-base-cad.webp',
-              fit: 'contain',
-              alt: 'Fusion 360 model of the domed base with eight curved slots for the fins and a hole for the wires',
-              caption: 'The base in Fusion 360',
-            },
-            {
-              src: '/images/lamp-dev-render.webp',
-              fit: 'contain',
-              alt: 'CAD model of the lamp with its fins, bulb and screw fitting',
-              caption: 'How the fins, bulb and base fit together',
-            },
-          ],
-        },
-      },
-      {
-        label: 'Making',
-        body: [
-          'I modelled the base in Fusion 360 and 3D printed it in white PLA, with the bulb fitting adapted from a design on Thingiverse. The fins were drawn in 2D Design and laser cut from 3 mm acrylic in four colours, two of each.',
-          'Then came the hand work: straightening fins that warped in the cutter on a line bender, drilling holes for the wires, sanding the holder to fit and gluing the fins into their slots. A **12 V**, **5 W** bulb on a variable power supply lights it.',
-        ],
-        side: 'left',
-        media: {
-          kind: 'slides',
-          images: [
-            {
-              src: '/images/lamp-printing.webp',
-              alt: 'The white domed base on the bed of a FlashForge 3D printer',
-              caption: 'Printing the base',
-            },
-            {
-              src: '/images/lamp-fin-cut.webp',
-              alt: 'An orange acrylic fin fresh from the laser cutter',
-              caption: 'A fin from the laser cutter',
-            },
-            {
-              src: '/images/lamp-line-bender.webp',
-              alt: 'An orange acrylic fin on a line bender, being straightened',
-              caption: 'Straightening a fin on the line bender',
-            },
-            {
-              src: '/images/lamp-wiring.webp',
-              alt: 'Hands feeding wires through the 3D-printed bulb holder',
-              caption: 'Wiring the bulb holder',
-            },
-            {
-              src: '/images/lamp-first-light.webp',
-              alt: 'The base with its bulb lit for the first time, before the fins went in',
-              caption: 'First light, before the fins went in',
-            },
-          ],
-        },
-      },
-      {
-        label: 'Testing',
-        body: [
-          'I tested the finished lamp against every point of the specification and it scored **208 out of 220**. It draws **5 W**, fits in **120 × 120 × 280 mm**, takes **5 N** to push over and survived a **1.5 m** drop with only small scratches. The parts cost **£19.25**, under budget.',
-          'My friend found it calming and said it helped him focus. If I made it again, I’d look for a warmer light: the colour was calming, but not the most relaxing it could be.',
-        ],
-        media: {
-          kind: 'slides',
-          images: [
-            {
-              src: '/images/lamp-lit-2.webp',
-              alt: 'The finished lamp lit on a workshop bench, its neon fins glowing',
-              caption: 'The finished lamp',
-            },
-            {
-              src: '/images/lamp-lit-1.webp',
-              alt: 'The finished lamp lit beside the variable power supply',
-              caption: 'Running at 12 V',
-            },
-            {
-              src: '/images/lamp-lit-3.webp',
-              alt: 'The lamp from above, with the fins curving over the bulb',
-              caption: 'From above',
-            },
-          ],
-        },
       },
     ],
     sections: [],

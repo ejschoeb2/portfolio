@@ -60,7 +60,7 @@ export const specification: Table = {
 export const finalStep = {
   title: 'Where it is now',
   pointer: 'The design as it stands. Click the numbers.',
-  text: 'Everything that survived the process. The lid pieces are printed, and the sheets, aluminium and electronics are being ordered, so the first prototype is next.',
+  text: 'Everything that survived the process. The lid frame is printed, and the rest of the build is waiting for a laser cutter big enough for the panels.',
 }
 
 export const aiNote = 'AI was used to help with research and calculations.'

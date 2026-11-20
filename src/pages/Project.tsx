@@ -5,6 +5,7 @@ import { DrawingSheet } from '../components/DrawingSheet'
 import { Linkage } from '../components/Linkage'
 import { Panels } from '../components/Panels'
 import { ProjectMedia } from '../components/ProjectMedia'
+import { ReportViewer } from '../components/ReportViewer'
 import { Showcase } from '../components/Showcase'
 import { SiteViewer } from '../components/SiteViewer'
 import { Slides } from '../components/Slides'
@@ -48,6 +49,21 @@ export function ProjectPage({ project }: { project: Project }) {
       {rich(paragraph)}
     </p>
   ))
+  // How it turned out (or, for the bin, how the build is going), after the story.
+  const results = project.results && (
+    <section
+      className="story results"
+      data-compact={project.results.compact || undefined}
+      aria-labelledby="results-title"
+    >
+      <h2 className="story__title" id="results-title">
+        {project.results.title}
+      </h2>
+      {project.results.chapters.map((chapter) => (
+        <StoryChapter key={chapter.label + chapter.body[0]} chapter={chapter} />
+      ))}
+    </section>
+  )
   const back = (e: MouseEvent) => {
     if (e.metaKey || e.ctrlKey || e.shiftKey) return
     e.preventDefault()
@@ -132,9 +148,12 @@ export function ProjectPage({ project }: { project: Project }) {
       {hasBody && (
         <div className="project__body">
           {project.slug === 'kitchen-bin' ? (
-            <Suspense fallback={<div style={{ minHeight: '100svh' }} />}>
-              <KitchenBin />
-            </Suspense>
+            <>
+              <Suspense fallback={<div style={{ minHeight: '100svh' }} />}>
+                <KitchenBin />
+              </Suspense>
+              {results}
+            </>
           ) : project.story ? (
             <>
               <section className="story" aria-label="The story">
@@ -146,16 +165,8 @@ export function ProjectPage({ project }: { project: Project }) {
                   />
                 ))}
               </section>
-              {project.results && (
-                <section className="story results" aria-labelledby="results-title">
-                  <h2 className="story__title" id="results-title">
-                    {project.results.title}
-                  </h2>
-                  {project.results.chapters.map((chapter) => (
-                    <StoryChapter key={chapter.label} chapter={chapter} />
-                  ))}
-                </section>
-              )}
+              {results}
+              {project.report && <ReportViewer report={project.report} />}
             </>
           ) : (
             <>
@@ -251,10 +262,12 @@ function StoryChapter({ chapter, number }: { chapter: Chapter; number?: number }
       data-plain={media ? undefined : true}
     >
       <div className="chapter__text">
-        <p className="chapter__label">
-          {number !== undefined && <span className="chapter__number">{String(number).padStart(2, '0')}.</span>}
-          <span className="chapter__date">{chapter.label}</span>
-        </p>
+        {(number !== undefined || chapter.label) && (
+          <p className="chapter__label">
+            {number !== undefined && <span className="chapter__number">{String(number).padStart(2, '0')}.</span>}
+            {chapter.label && <span className="chapter__date">{chapter.label}</span>}
+          </p>
+        )}
         {chapter.heading && <h3 className="chapter__heading">{chapter.heading}</h3>}
         {chapter.body.map((paragraph) => (
           <p key={paragraph} className="chapter__body">
