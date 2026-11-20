@@ -1,5 +1,6 @@
 import { Fragment, useCallback, useEffect, useLayoutEffect, useRef, useState, type CSSProperties, type ReactNode } from 'react'
-import { aiNote, chapters, finalStep, problem, specification, type Block, type Calc, type Step } from '../../content/kitchenBin'
+import { aiNote, build, chapters, finalStep, problem, specification, type Block, type Calc, type Step } from '../../content/kitchenBin'
+import { Arrow } from '../Arrow'
 import type { Table } from '../../content/projects'
 import '../../styles/timeline.css'
 import { lenis } from '../../lib/scroll'
@@ -343,6 +344,93 @@ export function KitchenBin() {
         </div>
       </section>
 
+      <BuildSection />
     </div>
+  )
+}
+
+/** Building the prototype: the same photo-and-card stage as the design process,
+ *  stepped through with arrows and dots. */
+function BuildSection() {
+  const [index, setIndex] = useState(0)
+  const go = (i: number) => setIndex(Math.max(0, Math.min(build.length - 1, i)))
+  return (
+    <section className="tl kb__build" aria-labelledby="kb-build">
+      <div className="tl__head">
+        <h2 className="story__title" id="kb-build">
+          Building it
+        </h2>
+      </div>
+
+      <div className="tl__stage kb-build__stage">
+        <figure className="kb-build__photo">
+          {build.map((s, i) => (
+            <img
+              key={s.image.src}
+              src={s.image.src}
+              alt={s.image.alt}
+              loading="lazy"
+              draggable={false}
+              aria-hidden={i !== index}
+              data-on={i === index || undefined}
+            />
+          ))}
+          <figcaption>{build[index].image.caption}</figcaption>
+        </figure>
+
+        <div className="tl__panel">
+          <div className="tl__window">
+            <div className="tl__track" style={{ transform: `translateX(${-index * 100}%)` }}>
+              {build.map((s, i) => (
+                <article key={s.title} className="tl-card" aria-hidden={i !== index} inert={i !== index}>
+                  <h3 className="tl-card__step">{i + 1}</h3>
+                  <p className="tl-card__summary">{s.title}</p>
+                  <div className="tl-card__body">
+                    {s.text.map((t) => (
+                      <p key={t} className="tl-text">
+                        {rich(t)}
+                      </p>
+                    ))}
+                  </div>
+                </article>
+              ))}
+            </div>
+          </div>
+
+          <div className="kb-build__nav">
+            <button
+              type="button"
+              className="kb-build__arrow"
+              aria-label="Previous step"
+              disabled={index === 0}
+              onClick={() => go(index - 1)}
+            >
+              <Arrow direction="left" />
+            </button>
+            <span className="slides__dots">
+              {build.map((s, i) => (
+                <button
+                  key={s.title}
+                  type="button"
+                  className="slides__dot"
+                  aria-label={`Step ${i + 1}: ${s.title}`}
+                  aria-current={i === index ? 'true' : undefined}
+                  onClick={() => go(i)}
+                />
+              ))}
+            </span>
+            <button
+              type="button"
+              className="kb-build__arrow"
+              aria-label="Next step"
+              disabled={index === build.length - 1}
+              onClick={() => go(index + 1)}
+            >
+              <Arrow />
+            </button>
+          </div>
+        </div>
+      </div>
+    </section>
   )
 }

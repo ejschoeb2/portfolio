@@ -63,6 +63,40 @@ export const finalStep = {
   text: 'Everything that survived the process. The lid frame is printed, and the rest of the build is waiting for a laser cutter big enough for the panels.',
 }
 
+/** Building the prototype, step by step (a photo and a card for each). **Figures** in bold blue. */
+export type BuildStep = {
+  title: string
+  text: string[]
+  image: { src: string; alt: string; caption: string }
+}
+
+export const build: BuildStep[] = [
+  {
+    title: 'Printing the lid',
+    text: [
+      'The first part of the prototype is made. The lid frame is bigger than any 3D printer bed in the university Makerspace, so I designed it in **5** pieces that join with printed dovetails, then printed them and fitted them together.',
+      'A laser-cut acrylic top drops into the frame, which used about half the filament of a fully printed lid.',
+    ],
+    image: {
+      src: '/images/bin-lid-printed.webp',
+      alt: 'The black 3D-printed lid frame of the bin on a desk, its five printed pieces joined into one rounded rectangle with the hinge tab at the back',
+      caption: 'The printed lid frame, joined from five pieces.',
+    },
+  },
+  {
+    title: 'On hold',
+    text: [
+      'The next parts, starting with the acrylic lid top, need a laser cutter with a bed big enough for them, and the university’s isn’t free for students to use at the moment.',
+      'The build is on hold until it is. Then the rest of the body, the drive and the electronics go together into the first full prototype.',
+    ],
+    image: {
+      src: '/images/kitchen-bin-render.webp',
+      alt: 'Render of the finished bin design from the Inventor model, stowed under the worktop',
+      caption: 'Where it’s heading: the full design, waiting on the laser cutter.',
+    },
+  },
+]
+
 export const aiNote = 'AI was used to help with research and calculations.'
 
 export { chapters } from './kitchenBinSteps'

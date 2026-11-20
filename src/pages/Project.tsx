@@ -49,7 +49,7 @@ export function ProjectPage({ project }: { project: Project }) {
       {rich(paragraph)}
     </p>
   ))
-  // How it turned out (or, for the bin, how the build is going), after the story.
+  // How it turned out, after the story.
   const results = project.results && (
     <section
       className="story results"
@@ -148,12 +148,9 @@ export function ProjectPage({ project }: { project: Project }) {
       {hasBody && (
         <div className="project__body">
           {project.slug === 'kitchen-bin' ? (
-            <>
-              <Suspense fallback={<div style={{ minHeight: '100svh' }} />}>
-                <KitchenBin />
-              </Suspense>
-              {results}
-            </>
+            <Suspense fallback={<div style={{ minHeight: '100svh' }} />}>
+              <KitchenBin />
+            </Suspense>
           ) : project.story ? (
             <>
               <section className="story" aria-label="The story">

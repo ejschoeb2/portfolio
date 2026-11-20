@@ -1362,3 +1362,97 @@
   box-shadow: none;
   color: #fff;
 }
+
+/* ---------- Building it: photo left, step card right, arrows underneath ---------- */
+
+.kb__build {
+  padding-top: clamp(48px, 6vw, 96px);
+}
+
+.kb-build__stage {
+  --stage-h: clamp(360px, 56svh, 600px);
+}
+
+.kb-build__photo {
+  position: relative;
+  height: calc(var(--stage-h) + 64px);
+  margin: 0;
+}
+
+.kb-build__photo img {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: calc(100% - 34px);
+  max-width: none;
+  object-fit: cover;
+  border-radius: var(--radius-l);
+  box-shadow: var(--media-shadow);
+  opacity: 0;
+  transition: opacity 0.5s;
+}
+
+.kb-build__photo img[data-on] {
+  opacity: 1;
+}
+
+.kb-build__photo figcaption {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  color: var(--ink-soft);
+  font-size: 14px;
+  line-height: 1.4;
+}
+
+.kb-build__stage .tl__window {
+  height: var(--stage-h);
+}
+
+.kb-build__nav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin-top: 16px;
+}
+
+.kb-build__arrow {
+  display: grid;
+  place-items: center;
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: #fff;
+  color: var(--ink);
+  box-shadow: inset 0 0 0 1.5px var(--ink);
+  transition:
+    background-color 0.3s,
+    color 0.3s,
+    box-shadow 0.3s,
+    opacity 0.3s;
+}
+
+.kb-build__arrow:hover:not(:disabled) {
+  background: var(--blue);
+  box-shadow: inset 0 0 0 1.5px var(--blue);
+  color: #fff;
+}
+
+.kb-build__arrow:disabled {
+  opacity: 0.3;
+  cursor: default;
+}
+
+@media (max-width: 900px) {
+  .kb-build__stage {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .kb-build__photo {
+    height: auto;
+    aspect-ratio: 4 / 3;
+  }
+}

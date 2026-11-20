@@ -605,32 +605,6 @@ export const projects: Project[] = [
       'Nine of us share a kitchen bin that keeps letting us down. I’m designing a replacement that rolls out from under the worktop, opens by itself and keeps the flies out.',
     // The 3D model runs full width under the title.
     layout: 'web',
-    results: {
-      title: 'Building it',
-      chapters: [
-        {
-          label: 'Printing the lid',
-          body: [
-            'The first part of the prototype is made. The lid frame is bigger than any 3D printer bed in the university Makerspace, so I designed it in **5** pieces that join with printed dovetails, then printed them and fitted them together.',
-            'A laser-cut acrylic top drops into the frame, which used about half the filament of a fully printed lid.',
-          ],
-          media: {
-            kind: 'image',
-            image: {
-              src: '/images/bin-lid-printed.webp',
-              alt: 'The black 3D-printed lid frame of the bin on a desk, its five printed pieces joined into one rounded rectangle with the hinge tab at the back',
-              caption: 'The printed lid frame, joined from five pieces.',
-            },
-          },
-        },
-        {
-          label: 'On hold',
-          body: [
-            'The next parts, starting with the acrylic lid top, need a laser cutter with a bed big enough for them, and the university’s isn’t free for students to use at the moment. The build is on hold until it is. Then the rest of the body, the drive and the electronics go together into the first full prototype.',
-          ],
-        },
-      ],
-    },
     sections: [],
   },
   {
